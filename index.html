@@ -3,163 +3,1032 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Flux v4.0.1</title>
-
+  <title>Flux</title>
   <style>
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
-      background:#ffffff;
-      color:#111;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:100vh;
-      text-align:center;
+    :root{ --text:#333; --muted:#666; --line:rgba(0,0,0,.06); }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"; background:#fff; color:var(--text); }
+
+    @keyframes fluxSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes fluxFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fluxPulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+    .app{ min-height:100vh; position:relative; overflow:hidden; }
+    .page{
+      position:absolute; inset:0; background:#fff;
+      display:flex; flex-direction:column; z-index:10;
+      animation: fluxFadeIn .18s ease-out;
+    }
+    .content{ flex:1; overflow:auto; padding:24px; padding-bottom:100px; }
+
+    .glowBg{
+      position:absolute; inset:0; pointer-events:none;
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(210,226,255,0.55), rgba(255,255,255,0) 60%),
+        radial-gradient(900px 700px at 80% 20%, rgba(255,220,210,0.45), rgba(255,255,255,0) 55%),
+        radial-gradient(900px 700px at 50% 80%, rgba(220,245,235,0.40), rgba(255,255,255,0) 60%);
     }
 
-    .container{
-      padding:24px;
-      max-width:420px;
-      width:100%;
+    .topBar{
+      height:56px; padding:0 18px;
+      display:flex; align-items:center; justify-content:space-between;
+      position:relative; z-index:20;
     }
-
-    .logo{
-      font-size:64px;
-      margin-bottom:20px;
-    }
-
-    .title{
-      font-size:32px;
-      font-weight:700;
-      margin-bottom:12px;
-    }
-
-    .subtitle{
-      font-size:16px;
-      color:#666;
-      margin-bottom:40px;
-    }
-
-    .btn{
-      width:100%;
-      padding:16px;
+    .brand{ font-size:18px; font-weight:700; letter-spacing:.5px; }
+    .iconBtn{
+      width:40px; height:40px; border-radius:999px;
+      border:none; background:transparent; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
       font-size:18px;
-      border-radius:16px;
-      border:none;
-      background:#111;
-      color:white;
+    }
+
+    .center{
+      flex:1; display:flex; flex-direction:column; align-items:center;
+      padding-top:40px; position:relative;
+    }
+    .todayLabel{ font-size:12px; letter-spacing:1.5px; font-weight:700; color:#999; margin-bottom:8px; }
+    .greetingTitle{ font-size:28px; font-weight:700; margin-bottom:6px; text-align:center; padding:0 18px; }
+    .greetingSub{ font-size:15px; color:#666; margin-bottom:40px; text-align:center; padding:0 18px; }
+
+    .bigCircleBtn{
+      width:220px; height:220px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.75);
+      background:rgba(255,255,255,.35);
+      box-shadow:0 26px 60px rgba(0,0,0,.08);
       cursor:pointer;
-      margin-top:12px;
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
+    }
+    .circleRing{ position:absolute; inset:16px; border-radius:999px; border:1px solid rgba(0,0,0,.06); pointer-events:none; }
+    .camIcon{ opacity:.75; display:flex; align-items:center; justify-content:center; font-size:54px; }
+    .spinner{ width:24px; height:24px; border:2px solid #ddd; border-top-color:#333; border-radius:50%; animation:fluxSpin 1s linear infinite; }
+
+    .cta{ margin-top:24px; font-size:16px; font-weight:700; opacity:.9; color:#111; }
+    .homeHint{ margin-top:8px; font-size:13px; opacity:.45; color:#000; text-align:center; padding:0 18px; }
+
+    .tabBar{
+      position:absolute; left:0; right:0; bottom:0; height:86px;
+      background:rgba(255,255,255,.85);
+      border-top:1px solid rgba(0,0,0,.06);
+      backdrop-filter: blur(12px);
+      display:flex; align-items:center; justify-content:space-around;
+      z-index:9998; padding-bottom:20px;
+    }
+    .tabItem{ display:flex; flex-direction:column; align-items:center; gap:4px; color:#999; cursor:pointer; font-size:10px; font-weight:600; user-select:none; }
+    .tabItem.active{ color:#111; }
+    .tabIcon{ opacity:.9; font-size:18px; }
+    .tabLabel{ font-size:11px; font-weight:700; }
+
+    .navBar{
+      height:56px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 8px; border-bottom:1px solid #f5f5f5;
+    }
+    .navTitle{ font-size:16px; font-weight:600; }
+
+    .scoreCard{ text-align:center; padding:32px; background:#fafafa; border-radius:24px; margin-bottom:24px; }
+    .emoji{ font-size:64px; margin-bottom:12px; }
+    .scoreNum{ font-size:56px; font-weight:700; line-height:1; }
+    .scoreLabel{ font-size:12px; font-weight:700; color:#999; letter-spacing:1px; margin-top:4px; }
+    .scoreMsg{ font-size:16px; color:#444; margin-top:16px; line-height:1.5; max-width:260px; margin-inline:auto; }
+
+    .insightBox{ background:#fff; border:1px solid #eee; border-radius:16px; padding:20px; margin-bottom:24px; }
+    .insightHead{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:#888; margin-bottom:8px; text-transform:uppercase; }
+    .insightBody{ font-size:15px; line-height:1.6; color:#333; }
+    .insightNote{ font-size:12px; color:#bbb; margin-top:12px; }
+    .disclaimer{ font-size:12px; color:#ccc; text-align:center; line-height:1.4; padding:0 20px; }
+
+    .footer{ padding:24px; background:#fff; border-top:1px solid #f5f5f5; }
+    .primaryBtn{
+      width:100%; padding:16px; border-radius:16px;
+      background:#111; color:#fff; font-size:16px; font-weight:600;
+      border:none; cursor:pointer;
     }
 
-    .btn:active{
-      transform:scale(0.98);
+    .menuItem{
+      width:100%;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:16px 8px; border:none; background:transparent;
+      border-bottom:1px solid #f9f9f9; cursor:pointer;
+      font-size:16px; color:#222;
+    }
+    .menuLeft{ display:flex; gap:12px; align-items:center; }
+    .divider{ height:8px; background:#f9f9f9; margin:0 -24px 16px; }
+    .sectionLabel{ font-size:12px; font-weight:700; color:#999; margin-left:12px; margin-bottom:8px; text-transform:uppercase; }
+
+    .field{ margin-bottom:24px; }
+    .label{ font-size:14px; font-weight:500; color:#333; margin-bottom:8px; }
+    input.text{
+      width:100%; padding:14px; border-radius:12px; border:1px solid #eee;
+      font-size:16px; outline:none;
+    }
+    .inputHint{ font-size:12px; color:#999; margin-top:6px; }
+
+    .card{ padding:20px; background:#f9f9f9; border-radius:16px; font-size:15px; line-height:1.6; color:#444; }
+    .dangerBtn{
+      width:100%; padding:14px; border-radius:12px;
+      background:#fff0f0; color:#d00;
+      font-size:15px; font-weight:600;
+      border:1px solid #ffd0d0;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      cursor:pointer;
+    }
+    .confirmBox{ padding:16px; background:#f9f9f9; border-radius:12px; margin-top:12px; }
+    .confirmTitle{ font-weight:700; margin-bottom:8px; }
+    .confirmRow{ display:flex; gap:10px; justify-content:flex-end; }
+    .btn{ padding:8px 16px; border-radius:8px; background:#fff; color:#333; border:1px solid #ddd; font-size:14px; cursor:pointer; }
+
+    .list{ display:flex; flex-direction:column; }
+    .row{ display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid #f0f0f0; }
+    .rowDate{ font-size:16px; font-weight:600; }
+    .rowSub{ font-size:12px; color:#999; margin-top:4px; }
+    .rowScore{ font-size:18px; font-weight:800; color:#333; }
+    .empty{ text-align:center; margin-top:80px; color:#999; }
+
+    .centerContent{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
+    .logo{
+      width:64px; height:64px; background:#111; color:#fff;
+      border-radius:16px; display:flex; align-items:center; justify-content:center;
+      font-size:32px; font-weight:800; margin-bottom:20px;
     }
 
-    .score{
-      font-size:72px;
-      font-weight:700;
-      margin:20px 0;
+    .toast{
+      position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
+      background:rgba(0,0,0,.85); color:#fff;
+      padding:10px 20px; border-radius:30px; font-size:14px;
+      z-index:9999;
     }
 
-    .emoji{
-      font-size:56px;
+    .camPage{ position:absolute; inset:0; background:#000; z-index:999; display:flex; flex-direction:column; }
+    .camHeader{
+      height:60px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 20px; color:#fff; position:relative; z-index:2;
     }
+    .iconBtnWhite{ background:none; border:none; color:#fff; cursor:pointer; padding:8px; font-size:18px; }
+    .camTitle{ font-size:16px; font-weight:700; }
+    .camView{ flex:1; background:#111; display:flex; align-items:center; justify-content:center; }
+    .camPlaceholder{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+    .pickDesc{ color:rgba(255,255,255,.6); font-size:14px; margin-top:20px; text-align:center; padding:0 18px; }
+    .camFooter{ height:160px; display:flex; align-items:center; justify-content:center; background:#000; }
+    .pickRow{ display:flex; gap:24px; }
+    .pickAction{ display:flex; flex-direction:column; align-items:center; gap:12px; background:none; border:none; cursor:pointer; }
+    .pickIconCircle{ width:72px; height:72px; border-radius:50%; background:#222; color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; }
 
-    .hidden{
-      display:none;
-    }
-
-    .hint{
-      font-size:13px;
-      color:#999;
-      margin-top:12px;
-    }
+    .muted{ color:#999; }
+    .right{ color:#ccc; font-weight:800; }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div id="home">
-      <div class="logo">🚀</div>
-      <div class="title">Flux v4.0.1</div>
-      <div class="subtitle">已成功部署（Stable Web Version）</div>
-
-      <button class="btn" onclick="openCamera()">
-        📸 拍照分析
-      </button>
-
-      <button class="btn" onclick="openGallery()">
-        🖼️ 從相簿選擇
-      </button>
-
-      <div class="hint">（支援 Android / iPhone / WebView 穩定版本）</div>
-    </div>
-
-    <div id="result" class="hidden">
-      <div class="emoji" id="emoji">😀</div>
-      <div class="score" id="score">0</div>
-      <div class="subtitle" id="message">分析完成</div>
-
-      <button class="btn" onclick="goHome()">返回首頁</button>
-    </div>
-
-    <!-- 隱藏輸入 -->
-    <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden">
-    <input id="galleryInput" type="file" accept="image/*" class="hidden">
-  </div>
+  <div id="app" class="app"></div>
 
   <script>
-    function goHome(){
-      document.getElementById("home").classList.remove("hidden");
-      document.getElementById("result").classList.add("hidden");
+    /* ========= 0) Icons (no external libs) ========= */
+    const ICONS = {
+      settings: "⚙️",
+      activity: "◉",
+      calendar: "📅",
+      sparkles: "✨",
+      user: "👤",
+      shield: "🛡️",
+      globe: "🌐",
+      info: "ℹ️",
+      chevronLeft: "‹",
+      chevronRight: "›",
+      x: "✕",
+      camera: "📷",
+      image: "🖼️",
+      trash: "🗑️",
+      check: "✅",
+    };
+
+    /* ========= 1) i18n & CONFIG (v4.0.1 Stable) ========= */
+    const LS_KEYS = {
+      LANG: "flux.lang_v4",
+      NAME: "flux.name_v4",
+      HISTORY: "flux.history_v4",
+      INSIGHT_CLOCK: "flux.insight_clock_v4",
+    };
+
+    const I18N = {
+      "zh-TW": {
+        APP_NAME: "Flux",
+        BTN_BACK: "返回",
+        BTN_CLOSE: "關閉",
+        BTN_DONE: "完成",
+        BTN_CLEAR: "清空",
+        BTN_CANCEL: "取消",
+
+        HOME_TODAY: "TODAY",
+        HOME_GREET: "早安",
+        HOME_GREET_SUB: "最近整體狀態很穩定。",
+        HOME_CTA: "拍下今天的狀態",
+        HOME_HINT: "第一次需要允許相機權限",
+        HOME_ALBUM: "改用照片",
+
+        TAB_TODAY: "今天",
+        TAB_HISTORY: "紀錄",
+        TAB_INSIGHT: "洞察",
+
+        ANALYZING: "分析中…",
+        ERROR_READ: "讀取照片失敗，請重試",
+
+        RESULT_TITLE: "今日狀態",
+        SCORE_LABEL: "Flux Score",
+        DISCLAIMER: "此 App 僅用於日常觀察與記錄，不代表健康或醫療判斷。",
+
+        INSIGHT_TITLE: "本週摘要",
+        INSIGHT_STABLE: "這週整體狀態很穩定，保持目前的節奏即可。",
+        INSIGHT_MIXED: "這週有一些起伏，仍在可觀察範圍內。",
+        INSIGHT_VARIABLE: "這週變化較多，不急著下結論，持續觀察就好。",
+        INSIGHT_NOTE: "洞察每 7 天最多出現一次。",
+
+        SETTINGS_TITLE: "設定",
+        SET_NAME_LABEL: "稱呼方式",
+        SET_NAME_DESC: "你希望我怎麼稱呼你",
+        SET_NAME_PLACEHOLDER: "例如：Alex",
+        SET_NAME_HINT: "用於首頁問候，可留空",
+
+        SET_SEC_DATA: "帳戶與資料",
+        SET_SEC_APP: "關於",
+        SET_HISTORY: "我的紀錄",
+        SET_PRIVACY: "隱私與資料",
+        SET_LANG: "語言 / Language",
+        SET_ABOUT: "關於 Flux",
+
+        PRIVACY_TITLE: "隱私與資料",
+        PRIVACY_DESC: "Flux 只將資料儲存在你的手機（LocalStorage）。我們無法存取你的照片或紀錄。你可以隨時清空。",
+        PRIVACY_CLEAR: "清空所有資料",
+        PRIVACY_CONFIRM_TITLE: "確定要清空嗎？",
+        PRIVACY_CONFIRM_MSG: "這將刪除所有歷史紀錄與設定，無法復原。",
+        TOAST_CLEARED: "已清空所有紀錄",
+
+        HISTORY_TITLE: "我的紀錄",
+        HISTORY_EMPTY: "目前還沒有紀錄。",
+
+        ABOUT_SLOGAN: "一個安靜的日常觀察夥伴。",
+
+        PICK_TITLE: "選擇方式",
+        PICK_DESC: "你要拍照，還是從相簿選一張？",
+        BTN_CAMERA: "拍照",
+        BTN_GALLERY: "相簿",
+      },
+
+      en: {
+        APP_NAME: "Flux",
+        BTN_BACK: "Back",
+        BTN_CLOSE: "Close",
+        BTN_DONE: "Done",
+        BTN_CLEAR: "Clear",
+        BTN_CANCEL: "Cancel",
+
+        HOME_TODAY: "TODAY",
+        HOME_GREET: "Good morning",
+        HOME_GREET_SUB: "Your rhythm is stable recently.",
+        HOME_CTA: "Capture today",
+        HOME_HINT: "Camera permission needed",
+        HOME_ALBUM: "Select Photo",
+
+        TAB_TODAY: "Today",
+        TAB_HISTORY: "History",
+        TAB_INSIGHT: "Insights",
+
+        ANALYZING: "Analyzing…",
+        ERROR_READ: "Failed to read image",
+
+        RESULT_TITLE: "Today",
+        SCORE_LABEL: "Flux Score",
+        DISCLAIMER: "For personal observation only. Not medical advice.",
+
+        INSIGHT_TITLE: "Weekly Summary",
+        INSIGHT_STABLE: "Your state has been consistent this week.",
+        INSIGHT_MIXED: "Some fluctuations this week, within range.",
+        INSIGHT_VARIABLE: "More variations this week. Just keep observing.",
+        INSIGHT_NOTE: "Insights appear at most once a week.",
+
+        SETTINGS_TITLE: "Settings",
+        SET_NAME_LABEL: "Your Name",
+        SET_NAME_DESC: "How should I call you?",
+        SET_NAME_PLACEHOLDER: "e.g. Alex",
+        SET_NAME_HINT: "Used for greetings. Optional.",
+
+        SET_SEC_DATA: "Data",
+        SET_SEC_APP: "App",
+
+        SET_HISTORY: "History",
+        SET_PRIVACY: "Privacy & Data",
+        SET_LANG: "Language",
+        SET_ABOUT: "About Flux",
+
+        PRIVACY_TITLE: "Privacy & Data",
+        PRIVACY_DESC: "Flux stores data locally on your device. We cannot access your photos or records. Clear anytime.",
+        PRIVACY_CLEAR: "Clear All Data",
+        PRIVACY_CONFIRM_TITLE: "Clear everything?",
+        PRIVACY_CONFIRM_MSG: "This deletes all history and settings. Cannot be undone.",
+        TOAST_CLEARED: "All data cleared",
+
+        HISTORY_TITLE: "History",
+        HISTORY_EMPTY: "No records yet.",
+
+        ABOUT_SLOGAN: "A quiet companion for daily observation.",
+
+        PICK_TITLE: "Choose",
+        PICK_DESC: "Take a photo, or pick from gallery?",
+        BTN_CAMERA: "Camera",
+        BTN_GALLERY: "Gallery",
+      },
+
+      ja: {
+        APP_NAME: "Flux",
+        BTN_BACK: "戻る",
+        BTN_CLOSE: "閉じる",
+        BTN_DONE: "完了",
+        BTN_CLEAR: "削除",
+        BTN_CANCEL: "キャンセル",
+
+        HOME_TODAY: "TODAY",
+        HOME_GREET: "おはようございます",
+        HOME_GREET_SUB: "最近のリズムは安定しています。",
+        HOME_CTA: "今日の状態を記録",
+        HOME_HINT: "カメラの許可が必要です",
+        HOME_ALBUM: "写真を選ぶ",
+
+        TAB_TODAY: "今日",
+        TAB_HISTORY: "記録",
+        TAB_INSIGHT: "洞察",
+
+        ANALYZING: "分析中…",
+        ERROR_READ: "読み込みに失敗しました",
+
+        RESULT_TITLE: "今日の状態",
+        SCORE_LABEL: "Flux Score",
+        DISCLAIMER: "日々の観察用であり、医療的な判断ではありません。",
+
+        INSIGHT_TITLE: "今週のまとめ",
+        INSIGHT_STABLE: "今週は全体的に安定しています。",
+        INSIGHT_MIXED: "少し変化がありましたが、範囲内です。",
+        INSIGHT_VARIABLE: "変化が多い週でした。焦らず観察しましょう。",
+        INSIGHT_NOTE: "洞察は週に1回まで表示されます。",
+
+        SETTINGS_TITLE: "設定",
+        SET_NAME_LABEL: "お名前",
+        SET_NAME_DESC: "何とお呼びしましょうか？",
+        SET_NAME_PLACEHOLDER: "例：Alex",
+        SET_NAME_HINT: "挨拶に表示されます（省略可）",
+
+        SET_SEC_DATA: "データ",
+        SET_SEC_APP: "アプリ",
+
+        SET_HISTORY: "記録",
+        SET_PRIVACY: "プライバシー",
+        SET_LANG: "言語 / Language",
+        SET_ABOUT: "Fluxについて",
+
+        PRIVACY_TITLE: "プライバシー",
+        PRIVACY_DESC: "Fluxはデータを端末内（LocalStorage）にのみ保存します。いつでも削除可能です。",
+        PRIVACY_CLEAR: "すべてのデータを削除",
+        PRIVACY_CONFIRM_TITLE: "削除しますか？",
+        PRIVACY_CONFIRM_MSG: "履歴と設定がすべて削除されます。元に戻せません。",
+        TOAST_CLEARED: "削除しました",
+
+        HISTORY_TITLE: "記録",
+        HISTORY_EMPTY: "まだ記録がありません。",
+
+        ABOUT_SLOGAN: "静かな日常の観察パートナー。",
+
+        PICK_TITLE: "選択",
+        PICK_DESC: "撮影しますか？写真を選びますか？",
+        BTN_CAMERA: "撮影",
+        BTN_GALLERY: "写真",
+      }
+    };
+
+    function t(lang, key){
+      return (I18N[lang] && I18N[lang][key]) || (I18N["zh-TW"] && I18N["zh-TW"][key]) || key;
     }
 
-    function openCamera(){
-      document.getElementById("cameraInput").click();
+    function detectLanguage(){
+      try{
+        const saved = localStorage.getItem(LS_KEYS.LANG);
+        if (saved && I18N[saved]) return saved;
+        const sys = navigator.language || "";
+        if (sys.startsWith("en")) return "en";
+        if (sys.startsWith("ja")) return "ja";
+        return "zh-TW";
+      }catch{
+        return "zh-TW";
+      }
     }
 
-    function openGallery(){
-      document.getElementById("galleryInput").click();
+    /* ========= 2) Score messages & Logic ========= */
+    const SCORE_MESSAGES = {
+      "zh-TW": {
+        range_70: ["今天的狀態看起來相對穩定。","整體表現平穩，可以持續觀察。","目前狀態維持在不錯的區間。","今天的狀態相對安定，記錄下來即可。"],
+        range_50: ["今天的狀態有些變化，屬於可觀察的範圍。","目前狀態落在中段，記錄下來觀察趨勢。","今天的狀態略有起伏，持續記錄會更清楚。","狀態處於中間區間，留意近期的變化即可。"],
+        range_30: ["今天的狀態略低，先記錄下來。","狀態落在偏低區間，持續觀察即可。","今天的狀態顯得比較安靜。","目前狀態較低，之後的變化會更重要。"],
+        range_0:  ["今天的狀態與平時不同，先記錄下來。","目前狀態偏低，建議持續觀察變化。","今天的狀態較為特殊，後續紀錄會有幫助。","狀態顯示有明顯變化，留意後續記錄。"],
+      },
+      en: {
+        range_70: ["State looks stable today.","Overall consistent, keep observing.","Maintaining a good range.","Stable today, just record it."],
+        range_50: ["Some variations today, within observable range.","In the middle range, let's track the trend.","Slight fluctuations, recording helps.","Mid-range state, just notice the changes."],
+        range_30: ["State is a bit low, recording it.","In the lower range, keep observing.","A quieter state today.","Lower than usual, future trends matter."],
+        range_0:  ["Different from usual, recording it.","Low range, suggest observing changes.","Unique state today, records help.","Noticeable change, keep tracking."],
+      },
+      ja: {
+        range_70: ["今日は比較的安定しています。","全体的に落ち着いています。","良い範囲を維持しています。","安定しています。記録しましょう。"],
+        range_50: ["少し変化が見られますが、観察範囲内です。","中間の範囲です。傾向を見ましょう。","わずかな変動です。記録が役立ちます。","変化に気付くだけで十分です。"],
+        range_30: ["少し低めです。記録しておきましょう。","低めの範囲です。観察を続けましょう。","今日は静かな状態です。","普段より低めです。今後の変化が大切です。"],
+        range_0:  ["普段と違います。記録しましょう。","低めです。変化を見守りましょう。","特異な状態です。記録が役立ちます。","変化が見られます。記録を続けましょう。"],
+      }
+    };
+
+    function getScoreBucket(score){
+      if (score >= 70) return "range_70";
+      if (score >= 50) return "range_50";
+      if (score >= 30) return "range_30";
+      return "range_0";
+    }
+    function pickMessageForScore(lang, score, seedInt){
+      const pool = SCORE_MESSAGES[lang] || SCORE_MESSAGES.en;
+      const bucket = getScoreBucket(score);
+      const messages = pool[bucket] || [];
+      if (!messages.length) return "";
+      const idx = Math.abs(seedInt) % messages.length;
+      return messages[idx];
     }
 
-    function analyzeFile(file){
-      if(!file) return;
+    /* ========= 3) Storage ========= */
+    function loadRecords(){
+      try{
+        const raw = localStorage.getItem(LS_KEYS.HISTORY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      }catch{ return []; }
+    }
+    function saveRecords(records){
+      try{ localStorage.setItem(LS_KEYS.HISTORY, JSON.stringify(records)); }catch{}
+    }
+    function clearFluxData(){
+      try{
+        Object.keys(localStorage).filter(k => k.startsWith("flux.")).forEach(k => localStorage.removeItem(k));
+      }catch{}
+    }
+    function resetInsightClock(){
+      try{ localStorage.removeItem(LS_KEYS.INSIGHT_CLOCK); }catch{}
+    }
+    function loadUserName(){
+      try{ return localStorage.getItem(LS_KEYS.NAME) || ""; }catch{ return ""; }
+    }
+    function saveUserName(name){
+      try{ localStorage.setItem(LS_KEYS.NAME, name); }catch{}
+    }
 
-      // 穩定隨機（模擬 aHash 穩定分數）
-      const seed = file.size % 100;
-      const score = (seed * 7 + 23) % 100;
+    /* ========= 4) Date & Insight Logic ========= */
+    function todayISO(){
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
 
-      let emoji = "😀";
-      let message = "狀態穩定";
+    function daysSince(isoDate){
+      if (!isoDate) return Infinity;
+      const parts = isoDate.split("-").map(Number);
+      if (parts.length !== 3 || parts.some(n => !Number.isFinite(n))) return Infinity;
+      const [y,m,d] = parts;
+      const past = new Date(y, m-1, d);
+      const now = new Date();
+      const pastMid = new Date(past.getFullYear(), past.getMonth(), past.getDate()).getTime();
+      const nowMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      return Math.floor((nowMid - pastMid) / (1000*60*60*24));
+    }
 
-      if(score <= 30){
-        emoji = "🥺";
-        message = "今日狀態偏低，建議觀察";
-      }else if(score <= 60){
-        emoji = "😀";
-        message = "今日狀態正常";
-      }else{
-        emoji = "😆";
-        message = "今日狀態良好";
+    function shouldShowWeeklyInsight(records, currentView){
+      if (currentView !== "result") return false;
+      if (!Array.isArray(records) || records.length < 3) return false;
+      const lastAt = localStorage.getItem(LS_KEYS.INSIGHT_CLOCK);
+      if (daysSince(lastAt) < 7) return false;
+      return true;
+    }
+
+    function markInsightShown(){
+      try{ localStorage.setItem(LS_KEYS.INSIGHT_CLOCK, todayISO()); }catch{}
+    }
+
+    function classifyWeeklyTrend(records){
+      const recent = records.slice(0, 7);
+      if (recent.length < 3) return "VARIABLE";
+      const lowCount = recent.filter(r => r.confidence === "low").length;
+      if (lowCount / recent.length > 0.5) return "VARIABLE";
+      const scores = recent.map(r => r.score).filter(s => typeof s === "number");
+      if (scores.length < 2) return "VARIABLE";
+      const min = Math.min(...scores);
+      const max = Math.max(...scores);
+      const diff = max - min;
+      if (diff <= 12) return "STABLE";
+      if (diff <= 24) return "MIXED";
+      return "VARIABLE";
+    }
+
+    function getWeeklyInsightText(lang, trend){
+      if (trend === "STABLE") return t(lang, "INSIGHT_STABLE");
+      if (trend === "MIXED") return t(lang, "INSIGHT_MIXED");
+      return t(lang, "INSIGHT_VARIABLE");
+    }
+
+    function getEmoji(score){
+      if (score <= 30) return "🥺";
+      if (score <= 60) return "😀";
+      return "😆";
+    }
+
+    /* ========= 5) Image Utils & Stable Scoring (FNV-1a) ========= */
+    function fnv1aHash(u8){
+      let h = 0x811c9dc5;
+      for (let i=0;i<u8.length;i++){
+        h ^= u8[i];
+        h = (h + ((h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24))) >>> 0;
+      }
+      return h >>> 0;
+    }
+    function stableScoreFromHash(hash){ return hash % 101; }
+
+    async function readAsArrayBuffer(blob){
+      return await blob.arrayBuffer();
+    }
+
+    async function compressImageToJpeg(fileOrBlob, opts){
+      const maxEdge = (opts && opts.maxEdge) || 1280;
+      const quality = (opts && opts.quality) || 0.85;
+
+      const img = await new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(fileOrBlob);
+        const im = new Image();
+        im.onload = () => { URL.revokeObjectURL(url); resolve(im); };
+        im.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+        im.src = url;
+      });
+
+      const iw = img.width, ih = img.height;
+      const scale = Math.min(1, maxEdge / Math.max(iw, ih));
+      const w = Math.round(iw * scale);
+      const h = Math.round(ih * scale);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("NO_CANVAS_CTX");
+      ctx.drawImage(img, 0, 0, w, h);
+
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+      if (!blob) throw new Error("COMPRESS_FAILED");
+      return blob;
+    }
+
+    async function analyzeImageStable(jpegBlob){
+      await new Promise(r => setTimeout(r, 600));
+      const ab = await readAsArrayBuffer(jpegBlob);
+      const u8 = new Uint8Array(ab);
+      const hash = fnv1aHash(u8);
+      const score = stableScoreFromHash(hash);
+      const confidence = (hash % 10 === 0) ? "low" : "normal";
+      const emoji = getEmoji(score);
+      const msgSeed = (hash ^ (hash >>> 16)) >>> 0;
+      return { score, confidence, emoji, hash, msgSeed };
+    }
+
+    /* ========= 6) App State ========= */
+    const state = {
+      lang: detectLanguage(),
+      userName: loadUserName(),
+      page: "home", // home | pick | result | history | settings | name | language | privacy | about
+      toast: "",
+      records: loadRecords(),
+      todayResult: null,
+      isAnalyzing: false,
+    };
+
+    /* ========= 7) UI Rendering ========= */
+    const appEl = document.getElementById("app");
+
+    function setToast(msg){
+      state.toast = msg || "";
+      render();
+      if (msg){
+        setTimeout(() => {
+          if (state.toast === msg){
+            state.toast = "";
+            render();
+          }
+        }, 2000);
+      }
+    }
+
+    function setPage(p){
+      state.page = p;
+      render();
+    }
+
+    function setLang(l){
+      state.lang = l;
+      try{ localStorage.setItem(LS_KEYS.LANG, l); }catch{}
+      render();
+    }
+
+    function setName(n){
+      state.userName = n;
+      saveUserName(n);
+      render();
+    }
+
+    function clearAll(){
+      clearFluxData();
+      resetInsightClock();
+      state.records = [];
+      state.userName = "";
+      state.todayResult = null;
+      setToast(t(state.lang, "TOAST_CLEARED"));
+      setPage("home");
+    }
+
+    async function ingestAndAnalyze(fileOrBlob){
+      state.isAnalyzing = true;
+      setPage("home");
+      render();
+
+      try{
+        const compressed = await compressImageToJpeg(fileOrBlob, { maxEdge: 1280, quality: 0.85 });
+        const { score, confidence, emoji, msgSeed } = await analyzeImageStable(compressed);
+
+        const rec = {
+          id: Date.now(),
+          createdAt: todayISO(),
+          score,
+          confidence,
+          emoji,
+          msgSeed,
+        };
+
+        const next = [rec, ...state.records].slice(0, 200);
+        state.records = next;
+        saveRecords(next);
+
+        state.todayResult = rec;
+        setPage("result");
+      }catch(e){
+        console.error(e);
+        setToast(t(state.lang, "ERROR_READ"));
+        setPage("home");
+      }finally{
+        state.isAnalyzing = false;
+        render();
+      }
+    }
+
+    function el(tag, attrs, children){
+      const node = document.createElement(tag);
+      if (attrs){
+        for (const [k,v] of Object.entries(attrs)){
+          if (k === "class") node.className = v;
+          else if (k === "style") node.setAttribute("style", v);
+          else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2).toLowerCase(), v);
+          else if (v === true) node.setAttribute(k, "");
+          else if (v !== false && v != null) node.setAttribute(k, String(v));
+        }
+      }
+      (children || []).forEach(ch => {
+        if (ch == null) return;
+        if (typeof ch === "string") node.appendChild(document.createTextNode(ch));
+        else node.appendChild(ch);
+      });
+      return node;
+    }
+
+    function iconBtn(text, onClick, white){
+      return el("button", { class: white ? "iconBtnWhite" : "iconBtn", onclick: onClick, type:"button" }, [text]);
+    }
+
+    function TopTabs(active){
+      const tab = (key, ico, label, target) => {
+        const cls = "tabItem" + (active === key ? " active" : "");
+        return el("div", { class: cls, role:"button", tabindex:"0", onclick: () => setPage(target) }, [
+          el("div", { class:"tabIcon" }, [ico]),
+          el("div", { class:"tabLabel" }, [label]),
+        ]);
+      };
+      return el("div", { class:"tabBar" }, [
+        tab("today", ICONS.activity, t(state.lang,"TAB_TODAY"), "home"),
+        tab("history", ICONS.calendar, t(state.lang,"TAB_HISTORY"), "history"),
+        tab("insight", ICONS.sparkles, t(state.lang,"TAB_INSIGHT"), "settings"),
+      ]);
+    }
+
+    function HomeView(){
+      const greetingBase = t(state.lang, "HOME_GREET");
+      let greetingFull = `${greetingBase}。`;
+      if (state.userName){
+        if (state.lang === "en") greetingFull = `${greetingBase}, ${state.userName}.`;
+        else if (state.lang === "ja") greetingFull = `${greetingBase}、${state.userName}さん。`;
+        else greetingFull = `${greetingBase}，${state.userName}。`;
       }
 
-      document.getElementById("score").innerText = score;
-      document.getElementById("emoji").innerText = emoji;
-      document.getElementById("message").innerText = message;
-
-      document.getElementById("home").classList.add("hidden");
-      document.getElementById("result").classList.remove("hidden");
+      return el("div", { class:"page" }, [
+        el("div", { class:"glowBg" }),
+        el("div", { class:"topBar" }, [
+          el("div", { class:"brand" }, [t(state.lang,"APP_NAME")]),
+          iconBtn(ICONS.settings, () => setPage("settings"), false),
+        ]),
+        el("div", { class:"center" }, [
+          el("div", { class:"todayLabel" }, [t(state.lang,"HOME_TODAY")]),
+          el("div", { class:"greetingTitle" }, [greetingFull]),
+          el("div", { class:"greetingSub" }, [t(state.lang,"HOME_GREET_SUB")]),
+          el("button", {
+            class:"bigCircleBtn",
+            type:"button",
+            onclick: () => { if (!state.isAnalyzing) setPage("pick"); }
+          }, [
+            el("div", { class:"circleRing" }),
+            el("div", { class:"camIcon" }, [ state.isAnalyzing ? el("div", { class:"spinner" }) : ICONS.camera ]),
+          ]),
+          el("div", { class:"cta" }, [ state.isAnalyzing ? t(state.lang,"ANALYZING") : t(state.lang,"HOME_CTA") ]),
+          state.isAnalyzing ? null : el("div", { class:"homeHint" }, [t(state.lang,"HOME_HINT")]),
+        ]),
+        TopTabs("today"),
+      ]);
     }
 
-    document.getElementById("cameraInput").addEventListener("change",(e)=>{
-      analyzeFile(e.target.files[0]);
-    });
+    function PickView(){
+      const camInput = el("input", {
+        type:"file", accept:"image/*", capture:"environment", style:"display:none",
+        onchange: (e) => { const f = e.target.files && e.target.files[0]; if (f) ingestAndAnalyze(f); e.target.value = ""; }
+      });
+      const galInput = el("input", {
+        type:"file", accept:"image/*", style:"display:none",
+        onchange: (e) => { const f = e.target.files && e.target.files[0]; if (f) ingestAndAnalyze(f); e.target.value = ""; }
+      });
 
-    document.getElementById("galleryInput").addEventListener("change",(e)=>{
-      analyzeFile(e.target.files[0]);
-    });
+      return el("div", { class:"camPage" }, [
+        el("div", { class:"camHeader" }, [
+          iconBtn(ICONS.x, () => setPage("home"), true),
+          el("div", { class:"camTitle" }, [t(state.lang,"PICK_TITLE")]),
+          el("div", { style:"width:24px" }, []),
+        ]),
+        el("div", { class:"camView" }, [
+          el("div", { class:"camPlaceholder" }, [
+            el("div", { class:"pickDesc" }, [t(state.lang,"PICK_DESC")]),
+          ]),
+        ]),
+        camInput,
+        galInput,
+        el("div", { class:"camFooter" }, [
+          el("div", { class:"pickRow" }, [
+            el("button", { class:"pickAction", type:"button", onclick: () => camInput.click() }, [
+              el("div", { class:"pickIconCircle" }, [ICONS.camera]),
+              el("span", { style:"color:#fff" }, [t(state.lang,"BTN_CAMERA")]),
+            ]),
+            el("button", { class:"pickAction", type:"button", onclick: () => galInput.click() }, [
+              el("div", { class:"pickIconCircle" }, [ICONS.image]),
+              el("span", { style:"color:#fff" }, [t(state.lang,"BTN_GALLERY")]),
+            ]),
+          ])
+        ]),
+      ]);
+    }
+
+    function ResultView(){
+      const r = state.todayResult;
+      if (!r) return HomeView();
+
+      const msg = pickMessageForScore(state.lang, r.score, r.msgSeed);
+      const showInsight = shouldShowWeeklyInsight(state.records, "result");
+      const trend = showInsight ? classifyWeeklyTrend(state.records) : null;
+      const insightText = showInsight ? getWeeklyInsightText(state.lang, trend) : "";
+
+      if (showInsight) markInsightShown();
+
+      return el("div", { class:"page" }, [
+        el("div", { class:"navBar" }, [
+          el("div", {}, []),
+          el("div", { class:"navTitle" }, [t(state.lang,"RESULT_TITLE")]),
+          iconBtn(ICONS.x, () => setPage("home"), false),
+        ]),
+        el("div", { class:"content" }, [
+          el("div", { class:"scoreCard" }, [
+            el("div", { class:"emoji" }, [r.emoji]),
+            el("div", { class:"scoreNum" }, [String(r.score)]),
+            el("div", { class:"scoreLabel" }, ["/ 100"]),
+            el("div", { class:"scoreMsg" }, [msg]),
+          ]),
+          showInsight ? el("div", { class:"insightBox" }, [
+            el("div", { class:"insightHead" }, [ICONS.sparkles, el("span", {}, [t(state.lang,"INSIGHT_TITLE")])]),
+            el("div", { class:"insightBody" }, [insightText]),
+            el("div", { class:"insightNote" }, [t(state.lang,"INSIGHT_NOTE")]),
+          ]) : null,
+          el("div", { class:"disclaimer" }, [t(state.lang,"DISCLAIMER")]),
+        ]),
+        el("div", { class:"footer" }, [
+          el("button", { class:"primaryBtn", type:"button", onclick: () => setPage("home") }, [t(state.lang,"BTN_DONE")]),
+        ])
+      ]);
+    }
+
+    function HistoryView(){
+      const rows = state.records.length
+        ? el("div", { class:"list" }, state.records.map(r =>
+            el("div", { class:"row" }, [
+              el("div", {}, [
+                el("div", { class:"rowDate" }, [r.createdAt]),
+                el("div", { class:"rowSub" }, [getEmoji(r.score)]),
+              ]),
+              el("div", { class:"rowScore" }, [String(r.score)]),
+            ])
+          ))
+        : el("div", { class:"empty" }, [t(state.lang,"HISTORY_EMPTY")]);
+
+      return el("div", { class:"page" }, [
+        el("div", { class:"navBar" }, [
+          iconBtn(ICONS.chevronLeft, () => setPage("home"), false),
+          el("div", { class:"navTitle" }, [t(state.lang,"HISTORY_TITLE")]),
+          el("div", { style:"width:24px" }, []),
+        ]),
+        el("div", { class:"content" }, [rows]),
+      ]);
+    }
+
+    function MenuItem(icon, label, onClick){
+      return el("button", { class:"menuItem", type:"button", onclick: onClick }, [
+        el("div", { class:"menuLeft" }, [
+          el("span", {}, [icon]),
+          el("span", {}, [label]),
+        ]),
+        el("span", { class:"right" }, [ICONS.chevronRight]),
+      ]);
+    }
+
+    function SettingsView(){
+      return el("div", { class:"page" }, [
+        el("div", { class:"navBar" }, [
+          iconBtn(ICONS.chevronLeft, () => setPage("home"), false),
+          el("div", { class:"navTitle" }, [t(state.lang,"SETTINGS_TITLE")]),
+          el("div", { style:"width:24px" }, []),
+        ]),
+        el("div", { class:"content" }, [
+          MenuItem(ICONS.user, t(state.lang,"SET_NAME_LABEL"), () => setPage("name")),
+          el("div", { class:"divider" }),
+          el("div", { class:"sectionLabel" }, [t(state.lang,"SET_SEC_DATA")]),
+          MenuItem(ICONS.calendar, t(state.lang,"SET_HISTORY"), () => setPage("history")),
+          MenuItem(ICONS.shield, t(state.lang,"SET_PRIVACY"), () => setPage("privacy")),
+          el("div", { class:"sectionLabel" }, [t(state.lang,"SET_SEC_APP")]),
+          MenuItem(ICONS.globe, t(state.lang,"SET_LANG"), () => setPage("language")),
+          MenuItem(ICONS.info, t(state.lang,"SET_ABOUT"), () => setPage("about")),
+        ]),
+      ]);
+    }
+
+    function NameView(){
+      const input = el("input", {
+        class:"text",
+        value: state.userName || "",
+        placeholder: t(state.lang,"SET_NAME_PLACEHOLDER"),
+        oninput: (e) => setName(e.target.value)
+      });
+
+      return el("div", { class:"page" }, [
+        el("div", { class:"navBar" }, [
+          iconBtn(ICONS.chevronLeft, () => setPage("settings"), false),
+          el("div", { class:"navTitle" }, [t(state.lang,"SET_NAME_LABEL")]),
+          el("div", { style:"width:24px" }, []),
+        ]),
+        el("div", { class:"content" }, [
+          el("div", { class:"field" }, [
+            el("div", { class:"label" }, [t(state.lang,"SET_NAME_DESC")]),
+            input,
+            el("div", { class:"inputHint" }, [t(state.lang,"SET_NAME_HINT")]),
+          ])
+        ]),
+      ]);
+    }
+
+    function LanguageView(){
+      const item = (label, active, onClick) => el("button", { class:"menuItem", type:"button", onclick: onClick, style: active ? "font-weight:800" : "" }, [
+        el("span", {}, [label]),
+        active ? el("span", {}, [ICONS.check]) : el("span", {}, [""]),
+      ]);
+
+      return el("div", { class:"page" }, [
+        el("div", { class:"navBar" }, [
+          iconBtn(ICONS.chevronLeft, () => setPage("settings"), false),
+          el("div", { class:"navTitle" }, [t(state.lang,"SET_LANG")]),
+          el("div", { style:"width:24px" }, []),
+        ]),
+        el("div", { class:"content" }, [
+          item("繁體中文", state.lang === "zh-TW", () => setLang("zh-TW")),
+          item("English", state.lang === "en", () => setLang("en")),
+          item("日本語", state.lang === "ja", () => setLang("ja")),
+        ]),
+      ]);
+    }
+
+    function PrivacyView(){
+      let confirming = false;
+
+      const danger = el("button", { class:"dangerBtn", type:"button", onclick: () => { confirming = true; render(); } }, [
+        ICONS.trash, " ", t(state.lang,"PRIVACY_CLEAR")
+      ]);
+
+      const confirmBox = el("div", { class:"confirmBox" }, [
+        el("div", { class:"confirmTitle" }, [t(state.lang,"PRIVACY_CONFIRM_TITLE")]),
+        el("div", { style:"font-size:13px;color:#666;margin-bottom:12px" }, [t(state.lang,"PRIVACY_CONFIRM_MSG")]),
+        el("div", { class:"confirmRow" }, [
+          el("button", { class:"btn", type:"button", onclick: () => { confirming = false; render(); } }, [t(state.lang,"BTN_CANCEL")]),
+          el("button", { class:"dangerBtn", type:"button", onclick: () => clearAll() }, [t(state.lang,"BTN_CLEAR")]),
+        ])
+      ]);
+
+      const view = el("div", { class:"page" }, [
+        el("div", { class:"navBar" }, [
+          iconBtn(ICONS.chevronLeft, () => setPage("settings"), false),
+          el("div", { class:"navTitle" }, [t(state.lang,"PRIVACY_TITLE")]),
+          el("div", { style:"width:24px" }, []),
+        ]),
+        el("div", { class:"content" }, [
+          el("div", { class:"card" }, [t(state.lang,"PRIVACY_DESC")]),
+          el("div", { class:"divider" }),
+          confirming ? confirmBox : danger,
+        ]),
+      ]);
+
+      // Hack: preserve confirming across renders for this view only
+      view.__confirming = confirming;
+      return view;
+    }
+
+    function AboutView(){
+      return el("div", { class:"page" }, [
+        el("div", { class:"navBar" }, [
+          iconBtn(ICONS.chevronLeft, () => setPage("settings"), false),
+          el("div", { class:"navTitle" }, [t(state.lang,"SET_ABOUT")]),
+          el("div", { style:"width:24px" }, []),
+        ]),
+        el("div", { class:"centerContent" }, [
+          el("div", { class:"logo" }, ["F"]),
+          el("h2", { style:"font-size:20px;font-weight:900;margin-top:16px;margin-bottom:6px" }, ["Flux"]),
+          el("p", { style:"color:#999;font-size:14px;margin:0 0 32px" }, ["v4.0.1"]),
+          el("p", { style:"text-align:center;line-height:1.8;color:#555;margin:0;max-width:320px" }, [t(state.lang,"ABOUT_SLOGAN")]),
+        ]),
+      ]);
+    }
+
+    /* ========= 8) Router ========= */
+    function render(){
+      appEl.innerHTML = "";
+      let node = null;
+
+      if (state.page === "home") node = HomeView();
+      else if (state.page === "pick") node = PickView();
+      else if (state.page === "result") node = ResultView();
+      else if (state.page === "history") node = HistoryView();
+      else if (state.page === "settings") node = SettingsView();
+      else if (state.page === "name") node = NameView();
+      else if (state.page === "language") node = LanguageView();
+      else if (state.page === "privacy") {
+        // Preserve confirm state: re-rendering in vanilla JS is tricky; simplest is store a flag on state.
+        if (typeof state._privacyConfirming !== "boolean") state._privacyConfirming = false;
+
+        const base = el("div", { class:"page" }, [
+          el("div", { class:"navBar" }, [
+            iconBtn(ICONS.chevronLeft, () => setPage("settings"), false),
+            el("div", { class:"navTitle" }, [t(state.lang,"PRIVACY_TITLE")]),
+            el("div", { style:"width:24px" }, []),
+          ]),
+          el("div", { class:"content" }, [
+            el("div", { class:"card" }, [t(state.lang,"PRIVACY_DESC")]),
+            el("div", { class:"divider" }),
+            !state._privacyConfirming
+              ? el("button", { class:"dangerBtn", type:"button", onclick: () => { state._privacyConfirming = true; render(); } }, [ICONS.trash, " ", t(state.lang,"PRIVACY_CLEAR")])
+              : el("div", { class:"confirmBox" }, [
+                  el("div", { class:"confirmTitle" }, [t(state.lang,"PRIVACY_CONFIRM_TITLE")]),
+                  el("div", { style:"font-size:13px;color:#666;margin-bottom:12px" }, [t(state.lang,"PRIVACY_CONFIRM_MSG")]),
+                  el("div", { class:"confirmRow" }, [
+                    el("button", { class:"btn", type:"button", onclick: () => { state._privacyConfirming = false; render(); } }, [t(state.lang,"BTN_CANCEL")]),
+                    el("button", { class:"dangerBtn", type:"button", onclick: () => clearAll() }, [t(state.lang,"BTN_CLEAR")]),
+                  ]),
+                ]),
+          ]),
+        ]);
+        node = base;
+      }
+      else if (state.page === "about") node = AboutView();
+      else node = HomeView();
+
+      appEl.appendChild(node);
+
+      if (state.toast){
+        appEl.appendChild(el("div", { class:"toast" }, [state.toast]));
+      }
+    }
+
+    render();
   </script>
 </body>
 </html>

@@ -1,34 +1,165 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flux App</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Flux v4.0.1</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
+      background:#ffffff;
+      color:#111;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      text-align:center;
+    }
+
+    .container{
+      padding:24px;
+      max-width:420px;
+      width:100%;
+    }
+
+    .logo{
+      font-size:64px;
+      margin-bottom:20px;
+    }
+
+    .title{
+      font-size:32px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .subtitle{
+      font-size:16px;
+      color:#666;
+      margin-bottom:40px;
+    }
+
+    .btn{
+      width:100%;
+      padding:16px;
+      font-size:18px;
+      border-radius:16px;
+      border:none;
+      background:#111;
+      color:white;
+      cursor:pointer;
+      margin-top:12px;
+    }
+
+    .btn:active{
+      transform:scale(0.98);
+    }
+
+    .score{
+      font-size:72px;
+      font-weight:700;
+      margin:20px 0;
+    }
+
+    .emoji{
+      font-size:56px;
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    .hint{
+      font-size:13px;
+      color:#999;
+      margin-top:12px;
+    }
+  </style>
 </head>
+
 <body>
-  <div id="root"></div>
+  <div class="container">
+    <div id="home">
+      <div class="logo">🚀</div>
+      <div class="title">Flux v4.0.1</div>
+      <div class="subtitle">已成功部署（Stable Web Version）</div>
 
-  <script type="module">
-    import React from "https://esm.sh/react";
-    import { createRoot } from "https://esm.sh/react-dom/client";
-    
-    const App = () => {
-      return React.createElement("div", {
-        style: {
-          fontFamily: "sans-serif",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          background: "#fff"
-        }
-      }, 
-        React.createElement("h1", null, "Flux v4.0.1 已成功部署 🚀")
-      );
-    };
+      <button class="btn" onclick="openCamera()">
+        📸 拍照分析
+      </button>
 
-    const root = createRoot(document.getElementById("root"));
-    root.render(React.createElement(App));
+      <button class="btn" onclick="openGallery()">
+        🖼️ 從相簿選擇
+      </button>
+
+      <div class="hint">（支援 Android / iPhone / WebView 穩定版本）</div>
+    </div>
+
+    <div id="result" class="hidden">
+      <div class="emoji" id="emoji">😀</div>
+      <div class="score" id="score">0</div>
+      <div class="subtitle" id="message">分析完成</div>
+
+      <button class="btn" onclick="goHome()">返回首頁</button>
+    </div>
+
+    <!-- 隱藏輸入 -->
+    <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden">
+    <input id="galleryInput" type="file" accept="image/*" class="hidden">
+  </div>
+
+  <script>
+    function goHome(){
+      document.getElementById("home").classList.remove("hidden");
+      document.getElementById("result").classList.add("hidden");
+    }
+
+    function openCamera(){
+      document.getElementById("cameraInput").click();
+    }
+
+    function openGallery(){
+      document.getElementById("galleryInput").click();
+    }
+
+    function analyzeFile(file){
+      if(!file) return;
+
+      // 穩定隨機（模擬 aHash 穩定分數）
+      const seed = file.size % 100;
+      const score = (seed * 7 + 23) % 100;
+
+      let emoji = "😀";
+      let message = "狀態穩定";
+
+      if(score <= 30){
+        emoji = "🥺";
+        message = "今日狀態偏低，建議觀察";
+      }else if(score <= 60){
+        emoji = "😀";
+        message = "今日狀態正常";
+      }else{
+        emoji = "😆";
+        message = "今日狀態良好";
+      }
+
+      document.getElementById("score").innerText = score;
+      document.getElementById("emoji").innerText = emoji;
+      document.getElementById("message").innerText = message;
+
+      document.getElementById("home").classList.add("hidden");
+      document.getElementById("result").classList.remove("hidden");
+    }
+
+    document.getElementById("cameraInput").addEventListener("change",(e)=>{
+      analyzeFile(e.target.files[0]);
+    });
+
+    document.getElementById("galleryInput").addEventListener("change",(e)=>{
+      analyzeFile(e.target.files[0]);
+    });
   </script>
 </body>
 </html>

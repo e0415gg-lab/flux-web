@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flux App</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="module">
+    import React from "https://esm.sh/react";
+    import { createRoot } from "https://esm.sh/react-dom/client";
+    
+    const App = () => {
+      return React.createElement("div", {
+        style: {
+          fontFamily: "sans-serif",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          background: "#fff"
+        }
+      }, 
+        React.createElement("h1", null, "Flux v4.0.1 已成功部署 🚀")
+      );
+    };
+
+    const root = createRoot(document.getElementById("root"));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>

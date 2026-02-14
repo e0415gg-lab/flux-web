@@ -1,187 +1,1233 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flux Companion — Your Gentle AI Listener</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Flux Companion · Your Gentle AI Listener</title>
+  <style>
+    :root{
+      --bg0:#070a14;
+      --bg1:#0b1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.55);
+      --good:#31d07d;
+      --warn:#ffcc66;
+      --bad:#ff5c7a;
+      --blue:#5aa2ff;
+      --btn:#4b7dff;
+      --btn2: rgba(255,255,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --r: 26px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans TC, "PingFang TC", "Microsoft JhengHei", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(108,99,255,.28), transparent 55%),
+        radial-gradient(900px 500px at 80% 20%, rgba(58,157,255,.20), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      overflow-x:hidden;
+    }
+    a{color:inherit}
+    .wrap{
+      min-height:100%;
+      display:flex;
+      flex-direction:column;
+      padding: 18px 16px 28px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
 
-<style>
-:root{
-  --bg1:#0f172a;
-  --bg2:#1e293b;
-  --accent:#7c8cff;
-  --text:#e6ecff;
-  --card:rgba(255,255,255,0.06);
-  --border:rgba(255,255,255,0.12);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-}
+    /* Top bar */
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 4px 2px 16px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #b6a7ff, #5aa2ff 70%, #2b4cff);
+      box-shadow: 0 0 18px rgba(90,162,255,.35);
+      flex: 0 0 auto;
+    }
+    .brandText{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+    .brandTitle{
+      font-weight: 800;
+      letter-spacing:.2px;
+      font-size: 16px;
+      line-height: 1.1;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brandSub{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .rightTools{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .badge{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--muted);
+      font-size: 12px;
+      white-space:nowrap;
+    }
+    .badgeDot{width:8px;height:8px;border-radius:50%}
+    .gear{
+      width:40px;height:40px;border-radius:14px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+    }
+    .gear:active{transform:scale(.98)}
+    .gear svg{opacity:.9}
 
-*{box-sizing:border-box}
+    /* Main card */
+    .hero{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 18px 18px 16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:"";
+      position:absolute; inset:-80px -120px auto auto;
+      width:260px;height:260px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(90,162,255,.30), transparent 65%);
+      filter: blur(0px);
+      pointer-events:none;
+    }
+    .todayRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .today{
+      font-size: 12px;
+      letter-spacing: .6px;
+      color: var(--muted2);
+    }
+    .hello{
+      margin-top: 6px;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+    .desc{
+      margin-top: 8px;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 52ch;
+    }
 
-body{
-  margin:0;
-  min-height:100vh;
-  color:var(--text);
-  background:
-  radial-gradient(1200px 600px at 20% 10%, rgba(108,99,255,.25), transparent 55%),
-  radial-gradient(900px 500px at 80% 20%, rgba(58,157,255,.18), transparent 55%),
-  linear-gradient(180deg,var(--bg2),var(--bg1));
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
+    .centerCircle{
+      margin-top: 16px;
+      height: clamp(230px, 38vw, 360px);
+      display:grid;
+      place-items:center;
+      position:relative;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(255,255,255,.08), transparent 55%),
+        radial-gradient(circle at 50% 55%, rgba(90,162,255,.12), transparent 55%);
+      border: 1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .rings{
+      position:absolute;
+      inset:-40px;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,255,255,.08) 40% 40.5%, transparent 41%),
+        radial-gradient(circle at 50% 50%, transparent 0 54%, rgba(255,255,255,.06) 54% 54.5%, transparent 55%),
+        radial-gradient(circle at 50% 50%, transparent 0 68%, rgba(255,255,255,.05) 68% 68.5%, transparent 69%);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .camBtn{
+      width:96px;height:96px;border-radius: 22px;
+      display:grid;place-items:center;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.14);
+      cursor:pointer;
+      user-select:none;
+      position:relative;
+      z-index:2;
+    }
+    .camBtn:active{transform:scale(.99)}
+    .camBtn svg{opacity:.9}
+    .preview{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:1;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity .18s ease;
+    }
+    .preview img{
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+      border-radius: 22px;
+      filter: saturate(1.02);
+    }
+    .preview.show{opacity:1}
 
-.app{
-  width:100%;
-  max-width:420px;
-  padding:24px;
-}
+    .actions{
+      display:flex;
+      gap:12px;
+      margin-top: 14px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      flex:1 1 160px;
+      height: 54px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      cursor:pointer;
+      font-weight: 800;
+      letter-spacing:.2px;
+      font-size: 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+    }
+    .btnPrimary{
+      background: linear-gradient(135deg, rgba(107,99,255,.95), rgba(90,162,255,.95));
+      color: #fff;
+      border-color: rgba(255,255,255,.08);
+    }
+    .btnGhost{
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.88);
+    }
+    .hint{
+      margin-top: 10px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.45;
+    }
 
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:24px;
-  padding:24px;
-  backdrop-filter:blur(20px);
-}
+    /* Side info card (desktop) */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.4fr .9fr;
+      gap: 14px;
+      margin-top: 14px;
+      align-items:start;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns: 1fr}
+    }
+    .panel{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 22px;
+      padding: 14px 14px 12px;
+    }
+    .panelTitle{
+      font-weight: 900;
+      margin: 2px 0 6px;
+      font-size: 14px;
+    }
+    .panelText{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .pillRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top: 10px;
+    }
+    .pill{
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.11);
+      color: rgba(255,255,255,.78);
+      font-size: 12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pill b{color:#fff}
 
-.title{
-  font-size:28px;
-  font-weight:700;
-  margin-bottom:8px;
-}
+    /* Modal */
+    .modalWrap{
+      position:fixed;
+      inset:0;
+      display:none;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      padding: 14px;
+    }
+    .modalWrap.show{display:flex}
+    .modal{
+      width:min(680px, 100%);
+      margin:auto;
+      background: rgba(12,16,32,.92);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 24px;
+      box-shadow: 0 28px 90px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .modalHeader h3{
+      margin:0;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing:.2px;
+    }
+    .close{
+      width:38px;height:38px;border-radius: 14px;
+      display:grid;place-items:center;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      cursor:pointer;
+    }
+    .modalBody{
+      padding: 14px 16px 16px;
+    }
+    .field{
+      margin-top: 12px;
+    }
+    .label{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-bottom: 6px;
+    }
+    .input{
+      width:100%;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 0 12px;
+      outline:none;
+      font-size: 14px;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .smallBtn{
+      flex: 1 1 140px;
+      height: 46px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.07);
+      color: rgba(255,255,255,.9);
+      font-weight: 900;
+      cursor:pointer;
+      user-select:none;
+    }
+    .smallBtn.primary{
+      background: linear-gradient(135deg, rgba(107,99,255,.92), rgba(90,162,255,.92));
+      border-color: rgba(255,255,255,.10);
+    }
 
-.subtitle{
-  opacity:.8;
-  margin-bottom:24px;
-}
+    /* Result card */
+    .resultCard{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .resultTop{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .emoji{
+      width:46px;height:46px;border-radius: 16px;
+      display:grid;place-items:center;
+      font-size: 24px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      flex: 0 0 auto;
+    }
+    .resultText{
+      margin-top: 10px;
+      color: rgba(255,255,255,.90);
+      line-height: 1.65;
+      font-size: 14px;
+      white-space:pre-wrap;
+    }
+    .footerBtns{
+      display:flex;
+      gap:10px;
+      margin-top: 12px;
+      flex-wrap:wrap;
+    }
 
-.camera-box{
-  height:220px;
-  border-radius:20px;
-  border:1px dashed var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:20px;
-}
+    /* History */
+    .history{
+      margin-top: 12px;
+    }
+    .histTitle{
+      font-weight: 900;
+      font-size: 14px;
+      margin: 0 0 8px;
+    }
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height: 46vh;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .item{
+      padding: 12px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.11);
+      cursor:pointer;
+    }
+    .itemTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .itemWhen{font-size: 12px; color: var(--muted2)}
+    .itemTag{
+      font-size: 12px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.80);
+      white-space:nowrap;
+    }
+    .itemText{
+      margin-top: 6px;
+      color: rgba(255,255,255,.86);
+      font-size: 13px;
+      line-height: 1.5;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
 
-.buttons{
-  display:flex;
-  gap:12px;
-}
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      background: rgba(10,12,22,.88);
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.40);
+      display:none;
+      z-index: 80;
+      font-size: 13px;
+      max-width: 92vw;
+      text-align:center;
+    }
+    .toast.show{display:block}
 
-button{
-  flex:1;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.primary{
-  background:linear-gradient(135deg,#7c8cff,#4cc9f0);
-  color:white;
-}
-
-.secondary{
-  background:rgba(255,255,255,0.08);
-  color:var(--text);
-  border:1px solid var(--border);
-}
-
-.ai-box{
-  margin-top:20px;
-  background:rgba(255,255,255,0.05);
-  border-radius:18px;
-  padding:18px;
-  line-height:1.7;
-}
-</style>
+    /* Hidden file inputs */
+    input[type="file"]{display:none}
+  </style>
 </head>
 
 <body>
-<div class="app">
-  <div class="card">
-    <div class="title">今天的你，還好嗎？</div>
-    <div class="subtitle">我在這裡陪你。拍一張照片，我會溫柔回應你的情境。</div>
-
-    <div class="camera-box" id="preview">
-      📷 上傳一張照片
+  <div class="wrap" id="app">
+    <div class="top">
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="brandText">
+          <div class="brandTitle" id="appTitle">Flux Companion</div>
+          <div class="brandSub" id="appSub">Your Gentle AI Listener</div>
+        </div>
+      </div>
+      <div class="rightTools">
+        <div class="badge" id="badgeBrowser">
+          <span class="badgeDot" id="dotBrowser"></span>
+          <span id="txtBrowser">Browser: ...</span>
+        </div>
+        <div class="badge" id="badgeHttps">
+          <span class="badgeDot" id="dotHttps"></span>
+          <span id="txtHttps">HTTPS: ...</span>
+        </div>
+        <div class="gear" id="btnSettings" title="設定">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="rgba(255,255,255,.9)" stroke-width="2"/>
+            <path d="M19.4 15a7.96 7.96 0 0 0 .1-1 7.96 7.96 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a8.2 8.2 0 0 0-1.7-1l-.4-2.6H9.1l-.4 2.6a8.2 8.2 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.96 7.96 0 0 0-.1 1 7.96 7.96 0 0 0 .1 1l-2 1.6 2 3.4 2.4-1c.5.4 1.1.7 1.7 1l.4 2.6h5.8l.4-2.6c.6-.3 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.6Z" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
     </div>
 
-    <div class="buttons">
-      <button class="primary" id="cameraBtn">拍照</button>
-      <button class="secondary" id="galleryBtn">相簿</button>
-    </div>
+    <div class="grid">
+      <div class="hero">
+        <div class="todayRow">
+          <div>
+            <div class="today">TODAY</div>
+            <div class="hello" id="helloText">今天的你，還好嗎？</div>
+            <div class="desc" id="descText">我在這裡陪你。拍一張照片或選一張照片，我會用溫柔的方式回應你當下的情境。</div>
+          </div>
+        </div>
 
-    <div class="ai-box" id="aiReply" style="display:none;"></div>
+        <div class="centerCircle" id="tapZone">
+          <div class="rings"></div>
+          <div class="preview" id="previewBox"><img id="previewImg" alt="preview"/></div>
+          <div class="camBtn" id="btnUploadCenter" title="上傳一張照片">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <path d="M4 7h3l2-2h6l2 2h3v12H4V7Z" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="rgba(255,255,255,.8)" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="btn btnPrimary" id="btnCamera">拍照</div>
+          <div class="btn btnGhost" id="btnAlbum">相簿</div>
+        </div>
+        <div class="hint" id="hintText">
+          若在某些 App 內建瀏覽器受限，建議用 Chrome / Safari 開啟；本頁會自動改用相簿避免卡死。
+        </div>
+
+        <!-- file inputs -->
+        <input id="inCamera" type="file" accept="image/*" capture="environment" />
+        <input id="inAlbum" type="file" accept="image/*" />
+      </div>
+
+      <div class="panel">
+        <div class="panelTitle">你的陪伴設定</div>
+        <div class="panelText">
+          這個版本會把照片的「光線 / 色調 / 對比」做成情境線索，然後用 <b>A + B</b> 的方式回覆你：<br/>
+          A：感性理解（聽你）<br/>
+          B：一個很小、你做得到的下一步（陪你走）
+        </div>
+        <div class="pillRow" id="pillRow">
+          <div class="pill"><b>回覆：</b> A + B</div>
+          <div class="pill" id="pillEnv">環境：檢測中…</div>
+        </div>
+
+        <div class="history">
+          <div class="histTitle">最近的紀錄</div>
+          <div class="list" id="historyList"></div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<input type="file" id="fileInput" accept="image/*" capture="environment" hidden>
+  <!-- Modals -->
+  <div class="modalWrap" id="modalWrap">
+    <div class="modal" id="modal">
+      <div class="modalHeader">
+        <h3 id="modalTitle">設定</h3>
+        <div class="close" id="btnCloseModal" title="關閉">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6 6 18" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="modalBody" id="modalBody">
+        <!-- dynamic -->
+      </div>
+    </div>
+  </div>
 
-<script>
-const fileInput = document.getElementById("fileInput");
-const cameraBtn = document.getElementById("cameraBtn");
-const galleryBtn = document.getElementById("galleryBtn");
-const preview = document.getElementById("preview");
-const aiReply = document.getElementById("aiReply");
+  <div class="toast" id="toast">已儲存</div>
 
-/* 防止任何 JS 崩潰影響按鈕 */
-window.addEventListener("error", e => {
-  console.log("已攔截錯誤:", e.message);
-});
+  <script>
+    (function(){
+      "use strict";
 
-/* 拍照（智慧降級） */
-cameraBtn.onclick = () => {
-  try{
-    fileInput.setAttribute("capture","environment");
-    fileInput.click();
-  }catch{
-    fileInput.removeAttribute("capture");
-    fileInput.click();
-  }
-};
+      // ---------- State ----------
+      const LS_KEY = "flux_companion_records_v1";
+      const LS_CFG = "flux_companion_cfg_v1";
 
-/* 相簿 */
-galleryBtn.onclick = () => {
-  fileInput.removeAttribute("capture");
-  fileInput.click();
-};
+      const state = {
+        cfg: {
+          appTitle: "Flux Companion",
+          appSub: "Your Gentle AI Listener",
+          hello: "今天的你，還好嗎？",
+          desc: "我在這裡陪你。拍一張照片或選一張照片，我會用溫柔的方式回應你當下的情境。",
+          showInAppHint: true,
+          modeBadge: "Stable v4.4B"
+        },
+        env: {
+          isHttps: false,
+          browserLabel: "Unknown",
+          inApp: false
+        },
+        lastImageDataUrl: "",
+        lastAnalysis: null,
+        records: []
+      };
 
-/* 上傳後 AI 回覆 */
-fileInput.onchange = e => {
-  const file = e.target.files[0];
-  if(!file) return;
+      // ---------- DOM helpers ----------
+      const $ = (id)=>document.getElementById(id);
 
-  const url = URL.createObjectURL(file);
-  preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">`;
+      function safeJsonParse(str, fallback){
+        try{
+          if(!str) return fallback;
+          const v = JSON.parse(str);
+          return (v===null || v===undefined) ? fallback : v;
+        }catch(_){
+          return fallback;
+        }
+      }
 
-  generateAIReply();
-};
+      function toast(msg){
+        const el = $("toast");
+        el.textContent = msg;
+        el.classList.add("show");
+        setTimeout(()=>el.classList.remove("show"), 1300);
+      }
 
-function generateAIReply(){
-  const repliesA = [
-    "我看見你正在記錄生活的一刻。",
-    "這張畫面帶著一種真實與存在感。",
-    "你願意拍下這一刻，本身就很有力量。"
-  ];
+      function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
 
-  const repliesB = [
-    "不用完美，只要存在就已經很好。",
-    "慢慢來，你已經走在自己的節奏上。",
-    "今天不需要很厲害，只需要對自己溫柔。"
-  ];
+      function nowISO(){
+        const d=new Date();
+        const pad=(x)=>String(x).padStart(2,"0");
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
 
-  const a = repliesA[Math.floor(Math.random()*repliesA.length)];
-  const b = repliesB[Math.floor(Math.random()*repliesB.length)];
+      // ---------- Env detect ----------
+      function detectEnv(){
+        const ua = navigator.userAgent || "";
+        const isAndroid = /Android/i.test(ua);
+        const isIOS = /iPhone|iPad|iPod/i.test(ua);
+        let browser = "Browser";
 
-  aiReply.style.display = "block";
-  aiReply.innerHTML = `💛 AI 回覆<br><br>${a}<br><br>${b}`;
-}
-</script>
+        if(/Chrome/i.test(ua) && !/Edg/i.test(ua) && !/OPR/i.test(ua)) browser="Chrome";
+        if(/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser="Safari";
+        if(/Edg/i.test(ua)) browser="Edge";
+        if(/OPR|Opera/i.test(ua)) browser="Opera";
+        if(/SamsungBrowser/i.test(ua)) browser="Samsung";
+        if(isIOS && /CriOS/i.test(ua)) browser="Chrome(iOS)";
+
+        const inApp = /(FBAN|FBAV|Instagram|Line\/|MicroMessenger|WeChat|TikTok|KAKAOTALK|Twitter|Threads|GSA|wv)/i.test(ua);
+        const https = (location.protocol === "https:");
+
+        state.env.isHttps = https;
+        state.env.browserLabel = browser;
+        state.env.inApp = inApp;
+
+        // badges
+        $("txtBrowser").textContent = `Browser: ${browser}${inApp ? " (In-App)" : ""}`;
+        $("dotBrowser").style.background = inApp ? "var(--warn)" : "var(--good)";
+        $("txtHttps").textContent = `HTTPS: ${https ? "OK" : "NO"}`;
+        $("dotHttps").style.background = https ? "var(--good)" : "var(--warn)";
+
+        $("pillEnv").textContent = `環境：${browser} · ${https ? "HTTPS ✓" : "HTTP"}${inApp ? " · In-App" : ""}`;
+      }
+
+      // ---------- Persistence ----------
+      function loadCfg(){
+        const cfg = safeJsonParse(localStorage.getItem(LS_CFG), null);
+        if(cfg && typeof cfg === "object"){
+          state.cfg = {...state.cfg, ...cfg};
+        }
+      }
+
+      function saveCfg(){
+        localStorage.setItem(LS_CFG, JSON.stringify(state.cfg));
+      }
+
+      function loadRecords(){
+        // ✅ 這裡就是你電腦爆掉的點：records 可能是 null
+        const raw = safeJsonParse(localStorage.getItem(LS_KEY), []);
+        state.records = Array.isArray(raw) ? raw : [];
+      }
+
+      function saveRecords(){
+        localStorage.setItem(LS_KEY, JSON.stringify(state.records));
+      }
+
+      // ---------- Render ----------
+      function renderText(){
+        $("appTitle").textContent = state.cfg.appTitle;
+        $("appSub").textContent = state.cfg.appSub;
+        $("helloText").textContent = state.cfg.hello;
+        $("descText").textContent = state.cfg.desc;
+        $("hintText").style.display = state.cfg.showInAppHint ? "block" : "none";
+      }
+
+      function renderHistory(){
+        const list = $("historyList");
+        list.innerHTML = "";
+
+        // ✅ 防呆：永遠確保是陣列
+        const arr = Array.isArray(state.records) ? state.records : [];
+        if(arr.length === 0){
+          const empty = document.createElement("div");
+          empty.className = "panelText";
+          empty.style.marginTop = "6px";
+          empty.textContent = "尚無紀錄。上傳一張照片後，回覆會被存進這裡。";
+          list.appendChild(empty);
+          return;
+        }
+
+        // 最新在上
+        const sorted = [...arr].sort((a,b)=> (b.ts||0)-(a.ts||0)).slice(0,30);
+
+        for(const r of sorted){
+          const item = document.createElement("div");
+          item.className = "item";
+          item.onclick = ()=> openResultModal(r);
+
+          const top = document.createElement("div");
+          top.className = "itemTop";
+
+          const when = document.createElement("div");
+          when.className = "itemWhen";
+          when.textContent = r.when || "";
+
+          const tag = document.createElement("div");
+          tag.className = "itemTag";
+          tag.textContent = (r.tags && r.tags[0]) ? r.tags[0] : "AI 回覆";
+
+          top.appendChild(when);
+          top.appendChild(tag);
+
+          const txt = document.createElement("div");
+          txt.className = "itemText";
+          txt.textContent = r.reply || "";
+
+          item.appendChild(top);
+          item.appendChild(txt);
+          list.appendChild(item);
+        }
+      }
+
+      function setPreview(dataUrl){
+        state.lastImageDataUrl = dataUrl || "";
+        const box = $("previewBox");
+        const img = $("previewImg");
+        if(dataUrl){
+          img.src = dataUrl;
+          box.classList.add("show");
+        }else{
+          box.classList.remove("show");
+          img.removeAttribute("src");
+        }
+      }
+
+      // ---------- Image analysis (lightweight, deterministic) ----------
+      function analyzeImage(file){
+        return new Promise((resolve,reject)=>{
+          const reader = new FileReader();
+          reader.onerror = ()=>reject(new Error("讀取失敗"));
+          reader.onload = ()=>{
+            const dataUrl = String(reader.result || "");
+            const img = new Image();
+            img.onload = ()=>{
+              const w = 220;
+              const h = Math.round(img.height * (w / img.width));
+              const canvas = document.createElement("canvas");
+              canvas.width = w;
+              canvas.height = Math.max(1, h);
+              const ctx = canvas.getContext("2d", { willReadFrequently: true });
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+              let sumL=0, sumS=0, sumC=0;
+              let lMin=999, lMax=-999;
+              // sample every N pixels for speed
+              const step = 4 * 5; // every 5 pixels
+              for(let i=0; i<data.length; i+=step){
+                const r=data[i], g=data[i+1], b=data[i+2];
+                // luminance
+                const l = (0.2126*r + 0.7152*g + 0.0722*b) / 255; // 0..1
+                // saturation approx
+                const max = Math.max(r,g,b), min = Math.min(r,g,b);
+                const s = (max===0) ? 0 : (max-min)/max; // 0..1
+                sumL += l; sumS += s;
+
+                lMin = Math.min(lMin, l);
+                lMax = Math.max(lMax, l);
+              }
+              const n = Math.max(1, Math.floor(data.length/step));
+              const avgL = sumL / n;
+              const avgS = sumS / n;
+              const contrast = clamp((lMax - lMin), 0, 1);
+
+              // make tags
+              const light = avgL < 0.28 ? "偏暗" : (avgL > 0.72 ? "偏亮" : "柔和");
+              const tone = avgS < 0.22 ? "偏中性" : (avgS > 0.55 ? "偏鮮明" : "偏自然");
+              const mood = (avgL < 0.28 && contrast > 0.40) ? "沉靜" :
+                           (avgL > 0.72 && avgS > 0.45) ? "明朗" :
+                           (tone==="偏中性") ? "平穩" : "舒展";
+
+              const emoji = (mood==="明朗") ? "😊" :
+                            (mood==="沉靜") ? "🫧" :
+                            (mood==="平穩") ? "🙂" : "🌿";
+
+              resolve({
+                dataUrl,
+                metrics: { avgL, avgS, contrast },
+                tags: [`明暗：${light}`, `色調：${tone}`, `氛圍：${mood}`],
+                emoji
+              });
+            };
+            img.onerror = ()=>reject(new Error("圖片載入失敗"));
+            img.src = dataUrl;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // ---------- A+B reply generator ----------
+      function genReply(analysis){
+        const tags = analysis.tags || [];
+        const m = analysis.metrics || {avgL:.5, avgS:.3, contrast:.3};
+
+        const light = tags[0] || "";
+        const tone  = tags[1] || "";
+        const mood  = tags[2] || "";
+
+        // A = 感性理解
+        let A = "";
+        if(m.avgL < 0.28){
+          A = "我感覺你此刻需要一點安靜與被接住的空間。你願意把這一刻交給我，代表你其實已經很努力了。";
+        }else if(m.avgL > 0.72){
+          A = "我看到一種比較明亮、能呼吸的感覺。就算今天很忙，你也還願意停一下，這很不容易。";
+        }else{
+          A = "這張照片的狀態很平衡，不急、不吵。像是在告訴我：你正在撐住日常，也在找一個可以放心的地方。";
+        }
+
+        // B = 小步驟
+        let B = "";
+        if(m.avgL < 0.28){
+          B = "接下來你只要做一件很小的事：把肩膀放鬆一次，慢慢吸氣 4 秒、吐氣 6 秒，做 3 回合就好。你不需要立刻解決一切。";
+        }else if(m.avgL > 0.72){
+          B = "接下來你只要做一件很小的事：喝一口水，然後用一句話寫下「我今天最想被理解的是…」。寫完就停，剩下我陪你。";
+        }else{
+          B = "接下來你只要做一件很小的事：選一個你現在做得到的微小照顧（補水 / 伸展 20 秒 / 把手機放下 1 分鐘）。做到就算贏。";
+        }
+
+        const intro = "我在。";
+        const sense = `我看這張照片：${light}、${tone}，氛圍是${mood.replace("氛圍：","")}。`;
+        const closing = "今天不用變得很強，你只要被好好對待就可以。";
+
+        return `${intro}\n\n${sense}\n\n${A}\n\n${B}\n\n${closing}`;
+      }
+
+      // ---------- Modal builders ----------
+      function openModal(title, bodyNode){
+        $("modalTitle").textContent = title;
+        const body = $("modalBody");
+        body.innerHTML = "";
+        body.appendChild(bodyNode);
+        $("modalWrap").classList.add("show");
+      }
+      function closeModal(){
+        $("modalWrap").classList.remove("show");
+      }
+
+      function settingsModal(){
+        const root = document.createElement("div");
+
+        const f1 = document.createElement("div");
+        f1.className="field";
+        f1.innerHTML = `<div class="label">App 標題（左上）</div><input class="input" id="cfgTitle" />`;
+        root.appendChild(f1);
+
+        const f2 = document.createElement("div");
+        f2.className="field";
+        f2.innerHTML = `<div class="label">副標（左上）</div><input class="input" id="cfgSub" />`;
+        root.appendChild(f2);
+
+        const f3 = document.createElement("div");
+        f3.className="field";
+        f3.innerHTML = `<div class="label">首頁主句</div><input class="input" id="cfgHello" />`;
+        root.appendChild(f3);
+
+        const f4 = document.createElement("div");
+        f4.className="field";
+        f4.innerHTML = `<div class="label">首頁描述</div><input class="input" id="cfgDesc" />`;
+        root.appendChild(f4);
+
+        const f5 = document.createElement("div");
+        f5.className="field";
+        f5.innerHTML = `
+          <div class="label">In-App Browser 提示（可開關）</div>
+          <label style="display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.85);font-size:14px;">
+            <input type="checkbox" id="cfgHint" style="width:18px;height:18px;" />
+            顯示「內建瀏覽器可能限制相機」提示
+          </label>`;
+        root.appendChild(f5);
+
+        const row = document.createElement("div");
+        row.className="row";
+        row.innerHTML = `
+          <button class="smallBtn primary" id="btnSaveCfg">儲存</button>
+          <button class="smallBtn" id="btnResetCfg">重置</button>
+          <button class="smallBtn" id="btnClearAll">清空所有紀錄</button>`;
+        root.appendChild(row);
+
+        const note = document.createElement("div");
+        note.className="resultCard";
+        note.innerHTML = `
+          <div class="panelTitle" style="margin:0 0 6px;">Smart Fallback 會怎麼做？</div>
+          <div class="panelText">
+            點「拍照」先嘗試叫相機；若內建瀏覽器攔截（click 無反應/被阻擋），會自動改叫「相簿」，確保一定能上傳。
+          </div>`;
+        root.appendChild(note);
+
+        openModal("設定", root);
+
+        // fill
+        $("cfgTitle").value = state.cfg.appTitle;
+        $("cfgSub").value = state.cfg.appSub;
+        $("cfgHello").value = state.cfg.hello;
+        $("cfgDesc").value = state.cfg.desc;
+        $("cfgHint").checked = !!state.cfg.showInAppHint;
+
+        $("btnSaveCfg").onclick = ()=>{
+          state.cfg.appTitle = $("cfgTitle").value.trim() || "Flux Companion";
+          state.cfg.appSub   = $("cfgSub").value.trim()   || "Your Gentle AI Listener";
+          state.cfg.hello    = $("cfgHello").value.trim() || "今天的你，還好嗎？";
+          state.cfg.desc     = $("cfgDesc").value.trim()  || "我在這裡陪你。拍一張照片或選一張照片，我會用溫柔的方式回應你當下的情境。";
+          state.cfg.showInAppHint = $("cfgHint").checked;
+          saveCfg();
+          renderText();
+          toast("已儲存設定");
+          closeModal();
+        };
+
+        $("btnResetCfg").onclick = ()=>{
+          localStorage.removeItem(LS_CFG);
+          loadCfg();
+          renderText();
+          toast("已重置設定");
+          closeModal();
+        };
+
+        $("btnClearAll").onclick = ()=>{
+          localStorage.removeItem(LS_KEY);
+          state.records = [];
+          renderHistory();
+          toast("已清空紀錄");
+          closeModal();
+        };
+      }
+
+      function openResultModal(record){
+        const root = document.createElement("div");
+
+        const card = document.createElement("div");
+        card.className = "resultCard";
+
+        const top = document.createElement("div");
+        top.className = "resultTop";
+
+        const emo = document.createElement("div");
+        emo.className="emoji";
+        emo.textContent = record.emoji || "🙂";
+
+        const meta = document.createElement("div");
+        meta.innerHTML = `
+          <div style="font-weight:900">AI 回覆</div>
+          <div style="color:rgba(255,255,255,.55);font-size:12px;margin-top:2px;">${record.when || ""}</div>
+        `;
+
+        top.appendChild(emo);
+        top.appendChild(meta);
+
+        const text = document.createElement("div");
+        text.className="resultText";
+        text.textContent = record.reply || "";
+
+        const pills = document.createElement("div");
+        pills.className="pillRow";
+        const tags = Array.isArray(record.tags) ? record.tags : [];
+        for(const t of tags){
+          const p = document.createElement("div");
+          p.className="pill";
+          p.textContent = t;
+          pills.appendChild(p);
+        }
+        const envP = document.createElement("div");
+        envP.className="pill";
+        envP.textContent = `環境：${state.env.browserLabel} · ${state.env.isHttps ? "HTTPS ✓" : "HTTP"}`;
+        pills.appendChild(envP);
+
+        card.appendChild(top);
+        card.appendChild(text);
+        card.appendChild(pills);
+
+        const footer = document.createElement("div");
+        footer.className="footerBtns";
+        footer.innerHTML = `
+          <button class="smallBtn primary" id="btnCloseR">關閉</button>
+          <button class="smallBtn" id="btnCopyR">複製文字</button>
+          <button class="smallBtn" id="btnDeleteR">刪除此筆</button>
+        `;
+
+        root.appendChild(card);
+        root.appendChild(footer);
+
+        openModal("AI 回覆", root);
+
+        $("btnCloseR").onclick = closeModal;
+        $("btnCopyR").onclick = async ()=>{
+          try{
+            await navigator.clipboard.writeText(record.reply || "");
+            toast("已複製");
+          }catch(_){
+            toast("無法複製（請手動選取）");
+          }
+        };
+        $("btnDeleteR").onclick = ()=>{
+          const id = record.id;
+          state.records = (Array.isArray(state.records) ? state.records : []).filter(r=>r.id!==id);
+          saveRecords();
+          renderHistory();
+          toast("已刪除");
+          closeModal();
+        };
+      }
+
+      function openAnalyzeModal(analysis, reply){
+        const root = document.createElement("div");
+
+        const card = document.createElement("div");
+        card.className="resultCard";
+
+        const top = document.createElement("div");
+        top.className="resultTop";
+
+        const emo = document.createElement("div");
+        emo.className="emoji";
+        emo.textContent = analysis.emoji || "🙂";
+
+        const meta = document.createElement("div");
+        meta.innerHTML = `<div style="font-weight:900">AI 回覆</div><div style="color:rgba(255,255,255,.55);font-size:12px;margin-top:2px;">來源：照片 · A + B</div>`;
+
+        top.appendChild(emo);
+        top.appendChild(meta);
+
+        const text = document.createElement("div");
+        text.className="resultText";
+        text.textContent = reply;
+
+        const pills = document.createElement("div");
+        pills.className="pillRow";
+        for(const t of (analysis.tags||[])){
+          const p = document.createElement("div");
+          p.className="pill";
+          p.textContent = t;
+          pills.appendChild(p);
+        }
+        const envP = document.createElement("div");
+        envP.className="pill";
+        envP.textContent = `環境：${state.env.browserLabel} · ${state.env.isHttps ? "HTTPS ✓" : "HTTP"}`;
+        pills.appendChild(envP);
+
+        card.appendChild(top);
+        card.appendChild(text);
+        card.appendChild(pills);
+
+        const footer = document.createElement("div");
+        footer.className="footerBtns";
+        footer.innerHTML = `
+          <button class="smallBtn primary" id="btnSaveRec">存成紀錄</button>
+          <button class="smallBtn" id="btnRepick">換一張</button>
+          <button class="smallBtn" id="btnHome">回首頁</button>
+        `;
+
+        root.appendChild(card);
+        root.appendChild(footer);
+
+        openModal("分析結果", root);
+
+        $("btnSaveRec").onclick = ()=>{
+          const rec = {
+            id: crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2),
+            ts: Date.now(),
+            when: nowISO(),
+            emoji: analysis.emoji || "🙂",
+            tags: analysis.tags || [],
+            reply: reply || "",
+            // 不存整張圖，避免 localStorage 爆掉；要存圖可再加選項
+          };
+          state.records = Array.isArray(state.records) ? state.records : [];
+          state.records.push(rec);
+          saveRecords();
+          renderHistory();
+          toast("已存成紀錄");
+        };
+
+        $("btnRepick").onclick = ()=>{
+          closeModal();
+          // 使用者自己再點拍照/相簿
+        };
+
+        $("btnHome").onclick = ()=>{
+          closeModal();
+        };
+      }
+
+      // ---------- Smart fallback (camera -> album) ----------
+      function openCameraSmart(){
+        // 先嘗試 camera input；如果 650ms 沒有 change 事件，就 fallback 到相簿
+        let changed = false;
+
+        const onChange = ()=>{ changed = true; cleanup(); };
+        const cleanup = ()=>{
+          $("inCamera").removeEventListener("change", onChange);
+        };
+
+        $("inCamera").addEventListener("change", onChange, { once: true });
+
+        try{
+          $("inCamera").click();
+        }catch(_){
+          cleanup();
+          $("inAlbum").click();
+          return;
+        }
+
+        setTimeout(()=>{
+          if(!changed){
+            cleanup();
+            // fallback
+            $("inAlbum").click();
+          }
+        }, 650);
+      }
+
+      function openAlbum(){
+        $("inAlbum").click();
+      }
+
+      // ---------- Handle file selection ----------
+      async function handleFile(file){
+        if(!file) return;
+        try{
+          const analysis = await analyzeImage(file);
+          setPreview(analysis.dataUrl);
+          state.lastAnalysis = analysis;
+
+          const reply = genReply(analysis);
+          openAnalyzeModal(analysis, reply);
+        }catch(err){
+          console.error(err);
+          toast("圖片分析失敗，請換一張");
+        }
+      }
+
+      // ---------- Init / bind ----------
+      function bind(){
+        $("btnSettings").onclick = settingsModal;
+        $("btnCloseModal").onclick = closeModal;
+        $("modalWrap").addEventListener("click", (e)=>{
+          if(e.target === $("modalWrap")) closeModal();
+        });
+
+        $("btnCamera").onclick = openCameraSmart;
+        $("btnAlbum").onclick = openAlbum;
+
+        $("btnUploadCenter").onclick = openAlbum;
+        $("tapZone").onclick = (e)=>{
+          // 點背景也能開相簿（避免點不到）
+          if(e.target === $("tapZone") || e.target.classList.contains("rings")) openAlbum();
+        };
+
+        $("inCamera").addEventListener("change", (e)=>{
+          const f = e.target.files && e.target.files[0];
+          // reset value so selecting same file twice still triggers change
+          e.target.value = "";
+          handleFile(f);
+        });
+
+        $("inAlbum").addEventListener("change", (e)=>{
+          const f = e.target.files && e.target.files[0];
+          e.target.value = "";
+          handleFile(f);
+        });
+      }
+
+      function init(){
+        loadCfg();
+        loadRecords();   // ✅ crash 修好：即使是 null 也會變成 []
+        detectEnv();
+        renderText();
+        renderHistory();
+
+        // 如果不是 HTTPS，提醒但不阻止
+        if(!state.env.isHttps){
+          toast("提醒：非 HTTPS 可能影響相機功能");
+        }
+
+        // In-app hint (可關)
+        if(state.env.inApp && state.cfg.showInAppHint){
+          $("hintText").style.display = "block";
+        }
+
+        bind();
+      }
+
+      // ✅ 確保 DOM 準備好才 init（避免事件綁不上）
+      document.addEventListener("DOMContentLoaded", init);
+    })();
+  </script>
 </body>
 </html>

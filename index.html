@@ -3,1520 +3,1068 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Flux</title>
-  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#0B1024" />
+  <title>Flux Companion</title>
   <style>
     :root{
-      --bg:#fff;
-      --text:#111;
-      --muted:#666;
-      --line:rgba(0,0,0,.08);
-      --card:#fafafa;
-      --btn:#111;
-      --btnText:#fff;
-      --dangerBg:#fff0f0;
-      --danger:#c00;
-      --shadow:0 26px 60px rgba(0,0,0,.08);
+      --bg1:#070A16;
+      --bg2:#0B1024;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.08);
+      --border:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.66);
+      --muted2:rgba(255,255,255,.46);
+      --accent1:#6C63FF;
+      --accent2:#3A9DFF;
+      --good:#36d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --radius:22px;
+      --radius2:16px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg:#0b0b0c;
-        --text:#f3f3f3;
-        --muted:#b6b6b6;
-        --line:rgba(255,255,255,.12);
-        --card:rgba(255,255,255,.06);
-        --btn:#f3f3f3;
-        --btnText:#111;
-        --dangerBg:rgba(255,0,0,.08);
-        --danger:#ff6b6b;
-        --shadow:0 26px 60px rgba(0,0,0,.35);
-      }
-    }
-
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      background:var(--bg);
+      font-family:var(--font);
       color:var(--text);
-    }
-
-    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
-    .app{ min-height:100vh; position:relative; overflow:hidden; }
-    .page{
-      position:absolute; inset:0;
-      display:flex; flex-direction:column;
-      animation:fadeIn .18s ease-out;
-    }
-
-    /* Glow background */
-    .glowBg{
-      position:absolute; inset:0; pointer-events:none;
       background:
-        radial-gradient(1200px 800px at 20% 10%, rgba(210,226,255,0.55), rgba(255,255,255,0) 60%),
-        radial-gradient(900px 700px at 80% 20%, rgba(255,220,210,0.45), rgba(255,255,255,0) 55%),
-        radial-gradient(900px 700px at 50% 80%, rgba(220,245,235,0.40), rgba(255,255,255,0) 60%);
-      opacity:.9;
-    }
-    @media (prefers-color-scheme: dark){
-      .glowBg{ opacity:.35; }
+        radial-gradient(1200px 600px at 20% 10%, rgba(108,99,255,.30), transparent 55%),
+        radial-gradient(900px 500px at 80% 20%, rgba(58,157,255,.22), transparent 55%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
+      min-height:100%;
+      overflow-x:hidden;
     }
 
-    .topBar{
-      height:56px; padding:0 16px;
+    .wrap{max-width:980px;margin:0 auto;padding:18px 16px 42px}
+    .top{
       display:flex; align-items:center; justify-content:space-between;
-      position:relative; z-index:2;
+      padding:10px 6px 14px;
     }
-    .brand{ font-size:18px; font-weight:700; letter-spacing:.3px; display:flex; align-items:center; gap:10px; }
+    .brand{display:flex; align-items:center; gap:10px}
+    .dot{
+      width:12px;height:12px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent2),var(--accent1));
+      box-shadow:0 0 0 6px rgba(108,99,255,.14);
+    }
+    .brand h1{
+      font-size:18px; margin:0; letter-spacing:.2px; font-weight:750;
+    }
+    .badgeRow{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
     .pill{
-      font-size:11px; font-weight:700;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid var(--line);
-      color:var(--muted);
-      background:rgba(255,255,255,.6);
+      font-size:12px; padding:7px 10px; border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color:rgba(255,255,255,.78);
+      display:inline-flex; align-items:center; gap:6px;
+      backdrop-filter: blur(10px);
     }
-    @media (prefers-color-scheme: dark){
-      .pill{ background:rgba(0,0,0,.35); }
-    }
+    .pill .led{width:8px;height:8px;border-radius:50%; background:var(--good)}
+    .pill.warn .led{background:var(--warn)}
+    .pill.bad .led{background:var(--bad)}
 
     .iconBtn{
-      width:40px;height:40px;border-radius:999px;
-      border:1px solid transparent;
-      background:transparent;color:var(--text);
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;font-size:18px;
-    }
-    .iconBtn:active{ transform:scale(.98); }
-
-    .content{ flex:1; overflow:auto; padding:24px; padding-bottom:110px; position:relative; z-index:2; }
-
-    /* Home center */
-    .center{
-      flex:1; display:flex; flex-direction:column; align-items:center;
-      padding-top:32px; padding-bottom:24px;
-    }
-    .todayLabel{ font-size:12px; letter-spacing:1.5px; font-weight:800; color:var(--muted); margin-bottom:8px; }
-    .greetingTitle{ font-size:26px; font-weight:800; margin:0 0 6px; text-align:center; padding:0 18px; line-height:1.2; }
-    .greetingSub{ font-size:15px; color:var(--muted); margin:0 0 28px; text-align:center; padding:0 18px; line-height:1.6; }
-
-    .bigCircleBtn{
-      width:220px;height:220px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.75);
-      background:rgba(255,255,255,.35);
-      box-shadow:var(--shadow);
+      width:42px;height:42px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:rgba(255,255,255,.92);
+      display:grid; place-items:center;
       cursor:pointer;
-      display:flex;align-items:center;justify-content:center;
-      position:relative;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
+      backdrop-filter: blur(10px);
     }
-    @media (prefers-color-scheme: dark){
-      .bigCircleBtn{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); }
+    .iconBtn:active{transform:scale(.98)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
     }
-    .circleRing{ position:absolute; inset:16px; border-radius:999px; border:1px solid var(--line); pointer-events:none; }
-    .camIcon{ opacity:.9; display:flex; align-items:center; justify-content:center; font-size:52px; }
-    .spinner{ width:26px;height:26px;border:2px solid rgba(0,0,0,.2); border-top-color:rgba(0,0,0,.7); border-radius:50%; animation:spin 1s linear infinite; }
-    @media (prefers-color-scheme: dark){
-      .spinner{ border:2px solid rgba(255,255,255,.25); border-top-color:rgba(255,255,255,.85); }
+    @media(min-width:920px){
+      .grid{grid-template-columns: 1.15fr .85fr; align-items:start}
     }
-    .cta{ margin-top:18px; font-size:16px; font-weight:800; opacity:.95; }
-    .homeHint{ margin-top:8px; font-size:13px; color:var(--muted); opacity:.9; text-align:center; padding:0 18px; line-height:1.5; }
 
-    /* Tabs */
-    .tabBar{
-      position:absolute; left:0; right:0; bottom:0; height:90px;
-      background:rgba(255,255,255,.82);
-      border-top:1px solid var(--line);
-      backdrop-filter: blur(12px);
-      display:flex; align-items:center; justify-content:space-around;
-      z-index:3; padding-bottom:22px;
-    }
-    @media (prefers-color-scheme: dark){
-      .tabBar{ background:rgba(0,0,0,.45); }
-    }
-    .tabItem{
-      display:flex; flex-direction:column; align-items:center; gap:4px;
-      color:var(--muted); cursor:pointer;
-      font-size:10px; font-weight:700; user-select:none;
-      padding:8px 10px; border-radius:12px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .tabItem.active{ color:var(--text); }
-    .tabIcon{ font-size:18px; opacity:.95; }
-    .tabLabel{ font-size:11px; font-weight:800; }
-
-    /* Nav */
-    .navBar{
-      height:56px; display:flex; align-items:center; justify-content:space-between;
-      padding:0 8px; border-bottom:1px solid var(--line);
-      position:relative; z-index:2;
-      background:rgba(255,255,255,.85);
-      backdrop-filter: blur(12px);
-    }
-    @media (prefers-color-scheme: dark){
-      .navBar{ background:rgba(0,0,0,.45); }
-    }
-    .navTitle{ font-size:16px; font-weight:800; }
-
-    /* Cards */
     .card{
       background:var(--card);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:18px;
-    }
-    .cardTitle{
-      font-size:12px; font-weight:900; letter-spacing:1px;
-      color:var(--muted);
-      text-transform:uppercase;
-      display:flex; align-items:center; gap:8px;
-      margin-bottom:10px;
-    }
-    .replyText{
-      font-size:16px;
-      line-height:1.75;
-      white-space:pre-wrap;
-    }
-    .metaRow{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;
-      color:var(--muted); font-size:12px;
-    }
-    .chip{
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:6px 10px;
-      background:rgba(255,255,255,.55);
-    }
-    @media (prefers-color-scheme: dark){
-      .chip{ background:rgba(0,0,0,.25); }
-    }
-
-    .primaryBtn{
-      width:100%; padding:16px; border-radius:16px;
-      background:var(--btn); color:var(--btnText);
-      font-size:16px; font-weight:800;
-      border:none; cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .primaryBtn:active{ transform:scale(.99); }
-
-    .dangerBtn{
-      width:100%; padding:14px; border-radius:14px;
-      background:var(--dangerBg); color:var(--danger);
-      border:1px solid rgba(255,0,0,.18);
-      font-size:15px; font-weight:800;
-      cursor:pointer;
-    }
-
-    .menuItem{
-      width:100%;
-      display:flex; justify-content:space-between; align-items:center;
-      padding:16px 8px; border:none; background:transparent;
-      border-bottom:1px solid rgba(0,0,0,.04);
-      color:var(--text);
-      cursor:pointer;
-      font-size:16px; font-weight:700;
-      -webkit-tap-highlight-color: transparent;
-    }
-    @media (prefers-color-scheme: dark){
-      .menuItem{ border-bottom:1px solid rgba(255,255,255,.06); }
-    }
-    .menuLeft{ display:flex; gap:12px; align-items:center; }
-    .menuIcon{ width:26px; text-align:center; opacity:.9; }
-    .right{ color:var(--muted); font-weight:900; }
-
-    .divider{ height:10px; background:transparent; }
-    .sectionLabel{
-      font-size:12px; font-weight:900; color:var(--muted);
-      margin:10px 0 6px 8px; letter-spacing:1px;
-      text-transform:uppercase;
-    }
-
-    input.text{
-      width:100%; padding:14px; border-radius:12px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.65);
-      color:var(--text);
-      font-size:16px; outline:none;
-    }
-    @media (prefers-color-scheme: dark){
-      input.text{ background:rgba(0,0,0,.25); }
-    }
-    .inputHint{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.5; }
-
-    /* Pick page */
-    .pickWrap{
-      background:#000;
-      color:#fff;
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
-    .pickHero{
-      flex:1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-    }
-    .pickDesc{
-      color:rgba(255,255,255,.72);
-      text-align:center;
-      padding:0 22px;
-      line-height:1.6;
-      font-size:14px;
-      max-width:520px;
-    }
-    .pickFooter{
-      height:170px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#000;
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-    .pickRow{ display:flex; gap:24px; }
-    .pickAction{
-      display:flex; flex-direction:column; align-items:center; gap:12px;
-      background:none; border:none; color:#fff; cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .pickIconCircle{
-      width:76px; height:76px; border-radius:50%;
-      background:#1b1b1b; border:1px solid rgba(255,255,255,.08);
-      display:flex; align-items:center; justify-content:center;
-      font-size:28px;
-    }
-
-    /* Toast */
-    .toast{
-      position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
-      background:rgba(0,0,0,.85); color:#fff;
-      padding:10px 18px; border-radius:30px;
-      font-size:14px; z-index:99;
-      max-width:min(520px, 92vw);
-      text-align:center;
-    }
-
-    /* History */
-    .row{
-      display:flex; justify-content:space-between; gap:14px;
-      padding:14px 0; border-bottom:1px solid var(--line);
-      align-items:flex-start;
-    }
-    .row:last-child{ border-bottom:none; }
-    .rowDate{ font-size:13px; color:var(--muted); margin-bottom:6px; }
-    .rowText{
-      font-size:14px; line-height:1.55;
-      color:var(--text);
-      max-width:72ch;
-      display:-webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .empty{ text-align:center; color:var(--muted); padding:60px 0; line-height:1.6; }
+    .hero{
+      padding:22px 20px 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    .hero .today{
+      font-size:12px; letter-spacing:.9px;
+      color:rgba(255,255,255,.50);
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .hero .title{
+      font-size:40px; line-height:1.05; margin:0 0 10px; font-weight:820;
+      letter-spacing:.2px;
+    }
+    .hero .sub{
+      margin:0;
+      color:rgba(255,255,255,.74);
+      line-height:1.6;
+      font-size:15px;
+    }
 
-    /* Footer bar */
-    .footer{
-      padding:24px;
-      border-top:1px solid var(--line);
-      background:rgba(255,255,255,.85);
-      backdrop-filter: blur(12px);
+    .stage{
+      padding:18px 20px 20px;
     }
-    @media (prefers-color-scheme: dark){
-      .footer{ background:rgba(0,0,0,.45); }
+    .ring{
+      height:240px;
+      display:grid; place-items:center;
+      border-radius:var(--radius);
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(100px 100px at 50% 48%, rgba(255,255,255,.10), transparent 65%),
+        radial-gradient(260px 260px at 50% 60%, rgba(108,99,255,.20), transparent 60%),
+        radial-gradient(340px 340px at 50% 60%, rgba(58,157,255,.14), transparent 62%);
+      border:1px solid rgba(255,255,255,.08);
     }
+    .camBtnBig{
+      width:86px;height:86px;border-radius:26px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.16);
+      display:grid; place-items:center;
+    }
+    .camBtnBig svg{opacity:.92}
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+    .btn{
+      border:none;
+      border-radius:16px;
+      padding:14px 14px;
+      font-size:16px;
+      font-weight:750;
+      cursor:pointer;
+      color:rgba(255,255,255,.92);
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+    }
+    .btn.primary{
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      border:none;
+    }
+    .btn:active{transform:scale(.99)}
+    .hint{
+      margin-top:10px;
+      color:rgba(255,255,255,.62);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .drop{
+      margin-top:14px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.18);
+      padding:14px;
+      color:rgba(255,255,255,.60);
+      font-size:13px;
+      text-align:center;
+      background:rgba(0,0,0,.12);
+    }
+    .drop strong{color:rgba(255,255,255,.78)}
+    .preview{
+      margin-top:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .thumb{
+      width:96px;height:96px;border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+      display:grid; place-items:center;
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .meta{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color:rgba(255,255,255,.76);
+    }
+
+    .replyCard{
+      margin-top:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:20px;
+      padding:16px 16px 14px;
+    }
+    .replyTitle{
+      display:flex; align-items:center; gap:10px;
+      font-weight:820;
+      margin-bottom:10px;
+    }
+    .heart{
+      width:22px;height:22px;border-radius:8px;
+      display:grid; place-items:center;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .replyText{
+      color:rgba(255,255,255,.82);
+      line-height:1.75;
+      font-size:15px;
+      white-space:pre-wrap;
+    }
+    .footerBtns{
+      display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;
+    }
+    .btn2{
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.07);
+      color:rgba(255,255,255,.92);
+    }
+    .btn2.dark{
+      background:rgba(0,0,0,.20);
+    }
+
+    .side{
+      padding:18px;
+    }
+    .side h2{margin:0 0 10px; font-size:16px; font-weight:850}
+    .side p{margin:0 0 14px; color:rgba(255,255,255,.70); line-height:1.6; font-size:13px}
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .item{
+      display:flex; gap:10px; align-items:center;
+      padding:10px;
+      border-radius:16px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      cursor:pointer;
+    }
+    .item:active{transform:scale(.995)}
+    .itemThumb{
+      width:52px;height:52px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      overflow:hidden;
+      background:rgba(255,255,255,.06);
+      flex:0 0 auto;
+    }
+    .itemThumb img{width:100%;height:100%;object-fit:cover}
+    .itemMeta{flex:1; min-width:0}
+    .itemMeta .t{font-weight:820; font-size:13px; margin-bottom:2px}
+    .itemMeta .d{font-size:12px; color:rgba(255,255,255,.62); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .itemActions{display:flex; gap:8px}
+    .mini{
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      cursor:pointer;
+    }
+
+    .note{
+      margin-top:12px;
+      color:rgba(255,255,255,.42);
+      font-size:12px;
+      line-height:1.55;
+    }
+
+    /* Modal */
+    .modalWrap{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding:18px 12px 22px;
+      z-index:50;
+    }
+    .modal{
+      width:min(640px, 100%);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      border:1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .modalHead h3{margin:0; font-size:16px; font-weight:900}
+    .modalBody{padding:14px}
+    .row{display:flex; flex-direction:column; gap:8px; margin-bottom:12px}
+    label{font-size:12px; color:rgba(255,255,255,.70)}
+    input[type="text"]{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      background:rgba(0,0,0,.20);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.92);
+      outline:none;
+    }
+    .checkRow{display:flex; align-items:center; gap:10px}
+    .checkRow input{width:18px;height:18px}
+    .modalBtns{display:flex; gap:10px; padding:0 14px 14px}
+    .modalBtns .btn{flex:1}
+
+    /* small toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:20px;
+      background:rgba(0,0,0,.65);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.92);
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:13px;
+      display:none;
+      z-index:60;
+      backdrop-filter: blur(10px);
+      max-width:min(560px, calc(100vw - 24px));
+    }
+
+    /* hidden inputs */
+    input[type="file"]{position:absolute; left:-9999px; width:1px; height:1px; opacity:0}
   </style>
 </head>
-
 <body>
-  <div id="app" class="app"></div>
-
-  <!-- hidden inputs -->
-  <input id="cameraInput" type="file" accept="image/*" capture="environment" style="display:none" />
-  <input id="galleryInput" type="file" accept="image/*" style="display:none" />
-
-  <script>
-    /* =========================
-       Flux v5 — Companion Edition (Single File)
-       - Hybrid Input + Smart Fallback
-       - No score; AI-like A+B replies for any photo
-       - Local history, settings, i18n
-    ========================= */
-
-    const LS = {
-      LANG: "flux.lang_v5",
-      NAME: "flux.name_v5",
-      HISTORY: "flux.history_v5",
-    };
-
-    const I18N = {
-      "zh-TW": {
-        APP_NAME: "Flux",
-        TODAY: "TODAY",
-        HELLO: "早安",
-        SUB: "把任何照片丟給我，我會用溫柔 + 正能量陪你走一段。",
-        CTA: "上傳一張照片",
-        HINT: "如果相機被 WebView 限制，我會自動改用相簿，不會卡住。",
-        TAB_TODAY: "今天",
-        TAB_HISTORY: "紀錄",
-        TAB_SETTINGS: "設定",
-
-        PICK_TITLE: "選擇方式",
-        PICK_DESC: "你想拍照，還是從相簿選一張？（有些內建瀏覽器會限制相機，這是正常的）",
-        BTN_CAMERA: "拍照",
-        BTN_GALLERY: "相簿",
-        BTN_BACK: "返回",
-        BTN_CLOSE: "關閉",
-        BTN_DONE: "完成",
-
-        REPLY_TITLE: "AI 回覆",
-        META_LIGHT: "明暗",
-        META_COLOR: "色調",
-        META_MOOD: "氛圍",
-        META_ENV: "環境",
-        BTN_SAVE: "存成紀錄",
-        BTN_HOME: "回首頁",
-
-        HISTORY_TITLE: "我的紀錄",
-        HISTORY_EMPTY: "目前還沒有紀錄。\n你可以拍一張照片，我會回覆一段陪伴文字。",
-        SETTINGS_TITLE: "設定",
-        NAME_TITLE: "稱呼方式",
-        NAME_DESC: "你希望我怎麼稱呼你？",
-        NAME_PH: "例如：利蓉",
-        NAME_HINT: "用於首頁問候，可留空。",
-        LANG_TITLE: "語言 / Language",
-        PRIV_TITLE: "隱私與資料",
-        PRIV_DESC: "所有資料只存在你的手機（LocalStorage）。我們不會上傳任何照片或紀錄。",
-        CLEAR: "清空所有資料",
-        CLEAR_CONFIRM: "確定要清空嗎？這會刪除所有紀錄與設定，無法復原。",
-        CLEARED: "已清空",
-        ENV_OK: "HTTPS ✓",
-        ENV_BAD: "非 HTTPS",
-        WEBVIEW: "WebView",
-        BROWSER: "Browser",
-        TOAST_CAMERA_FALLBACK: "相機可能被內建瀏覽器限制 → 已改用相簿選擇",
-        TOAST_SAVED: "已存入紀錄",
-        TOAST_READ_FAIL: "讀取照片失敗，請重試"
-      },
-      en: {
-        APP_NAME: "Flux",
-        TODAY: "TODAY",
-        HELLO: "Good morning",
-        SUB: "Drop any photo. I’ll respond with gentle care + positive energy.",
-        CTA: "Upload a photo",
-        HINT: "If camera is blocked in WebView, I’ll auto-fallback to gallery.",
-        TAB_TODAY: "Today",
-        TAB_HISTORY: "History",
-        TAB_SETTINGS: "Settings",
-
-        PICK_TITLE: "Choose",
-        PICK_DESC: "Take a photo or pick from gallery. (Some in-app browsers block camera.)",
-        BTN_CAMERA: "Camera",
-        BTN_GALLERY: "Gallery",
-        BTN_BACK: "Back",
-        BTN_CLOSE: "Close",
-        BTN_DONE: "Done",
-
-        REPLY_TITLE: "AI Reply",
-        META_LIGHT: "Light",
-        META_COLOR: "Tone",
-        META_MOOD: "Mood",
-        META_ENV: "Env",
-        BTN_SAVE: "Save to history",
-        BTN_HOME: "Home",
-
-        HISTORY_TITLE: "History",
-        HISTORY_EMPTY: "No records yet.\nUpload a photo and I’ll reply like a supportive friend.",
-        SETTINGS_TITLE: "Settings",
-        NAME_TITLE: "Your name",
-        NAME_DESC: "How should I call you?",
-        NAME_PH: "e.g. Alex",
-        NAME_HINT: "Used for greetings. Optional.",
-        LANG_TITLE: "Language",
-        PRIV_TITLE: "Privacy & Data",
-        PRIV_DESC: "All data stays on your device (LocalStorage). No uploads.",
-        CLEAR: "Clear all data",
-        CLEAR_CONFIRM: "Clear everything? This cannot be undone.",
-        CLEARED: "Cleared",
-        ENV_OK: "HTTPS ✓",
-        ENV_BAD: "No HTTPS",
-        WEBVIEW: "WebView",
-        BROWSER: "Browser",
-        TOAST_CAMERA_FALLBACK: "Camera may be blocked → switched to gallery",
-        TOAST_SAVED: "Saved",
-        TOAST_READ_FAIL: "Failed to read image"
-      },
-      ja: {
-        APP_NAME: "Flux",
-        TODAY: "TODAY",
-        HELLO: "おはようございます",
-        SUB: "どんな写真でも大丈夫。やさしさ＋前向きさで返事します。",
-        CTA: "写真をアップロード",
-        HINT: "WebViewでカメラが制限されても、ギャラリーに自動切替します。",
-        TAB_TODAY: "今日",
-        TAB_HISTORY: "記録",
-        TAB_SETTINGS: "設定",
-
-        PICK_TITLE: "選択",
-        PICK_DESC: "撮影または写真を選択。（アプリ内ブラウザはカメラ制限がある場合があります）",
-        BTN_CAMERA: "撮影",
-        BTN_GALLERY: "写真",
-        BTN_BACK: "戻る",
-        BTN_CLOSE: "閉じる",
-        BTN_DONE: "完了",
-
-        REPLY_TITLE: "AI 返信",
-        META_LIGHT: "明るさ",
-        META_COLOR: "色味",
-        META_MOOD: "雰囲気",
-        META_ENV: "環境",
-        BTN_SAVE: "記録に保存",
-        BTN_HOME: "ホーム",
-
-        HISTORY_TITLE: "記録",
-        HISTORY_EMPTY: "まだ記録がありません。\n写真を選ぶと、寄り添う言葉で返事します。",
-        SETTINGS_TITLE: "設定",
-        NAME_TITLE: "お名前",
-        NAME_DESC: "何とお呼びしましょうか？",
-        NAME_PH: "例：りよう",
-        NAME_HINT: "挨拶に表示（省略可）",
-        LANG_TITLE: "言語 / Language",
-        PRIV_TITLE: "プライバシー",
-        PRIV_DESC: "データは端末内（LocalStorage）のみ。アップロードしません。",
-        CLEAR: "すべて削除",
-        CLEAR_CONFIRM: "本当に削除しますか？元に戻せません。",
-        CLEARED: "削除しました",
-        ENV_OK: "HTTPS ✓",
-        ENV_BAD: "HTTPS なし",
-        WEBVIEW: "WebView",
-        BROWSER: "Browser",
-        TOAST_CAMERA_FALLBACK: "カメラが制限 → 写真選択に切替",
-        TOAST_SAVED: "保存しました",
-        TOAST_READ_FAIL: "画像の読み込みに失敗しました"
-      }
-    };
-
-    function t(key){
-      const lang = state.lang;
-      return (I18N[lang] && I18N[lang][key]) || (I18N["zh-TW"][key]) || key;
-    }
-
-    function safeGet(key, fallback=""){
-      try{ return localStorage.getItem(key) ?? fallback; }catch{ return fallback; }
-    }
-    function safeSet(key, value){
-      try{ localStorage.setItem(key, value); }catch{}
-    }
-    function safeJsonGet(key, fallback){
-      try{
-        const raw = localStorage.getItem(key);
-        if (!raw) return fallback;
-        const v = JSON.parse(raw);
-        return v ?? fallback;
-      }catch{ return fallback; }
-    }
-    function safeJsonSet(key, value){
-      try{ localStorage.setItem(key, JSON.stringify(value)); }catch{}
-    }
-
-    function detectLang(){
-      const saved = safeGet(LS.LANG, "");
-      if (saved && I18N[saved]) return saved;
-      const sys = (navigator.language || "").toLowerCase();
-      if (sys.startsWith("en")) return "en";
-      if (sys.startsWith("ja")) return "ja";
-      return "zh-TW";
-    }
-
-    function isProbablyWebView(){
-      const ua = navigator.userAgent || "";
-      // common webview signals (best-effort)
-      const isAndroid = /Android/i.test(ua);
-      const hasWv = /\bwv\b/i.test(ua);
-      const isInstagram = /Instagram/i.test(ua);
-      const isLine = /Line/i.test(ua);
-      const isFB = /FBAN|FBAV/i.test(ua);
-      const isWebViewiOS = /(iPhone|iPad|iPod)/i.test(ua) && !/Safari/i.test(ua);
-      return hasWv || isInstagram || isLine || isFB || (isAndroid && hasWv) || isWebViewiOS;
-    }
-
-    function isHttps(){
-      return location.protocol === "https:" || location.hostname === "localhost";
-    }
-
-    function nowISO(){
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      const hh = String(d.getHours()).padStart(2,"0");
-      const mi = String(d.getMinutes()).padStart(2,"0");
-      return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
-    }
-
-    function toast(msg){
-      state.toast = msg;
-      render();
-      clearTimeout(state.toastTimer);
-      state.toastTimer = setTimeout(()=>{ state.toast=""; render(); }, 2200);
-    }
-
-    /* =========================
-       Image -> features (light/color)
-       Works offline; no upload
-    ========================= */
-
-    function loadImageFromBlob(blob){
-      return new Promise((resolve, reject)=>{
-        const url = URL.createObjectURL(blob);
-        const img = new Image();
-        img.onload = ()=>{ URL.revokeObjectURL(url); resolve(img); };
-        img.onerror = (e)=>{ URL.revokeObjectURL(url); reject(e); };
-        img.src = url;
-      });
-    }
-
-    async function extractFeatures(file){
-      // read & downscale for analysis only
-      const blob = file;
-      const img = await loadImageFromBlob(blob);
-
-      const maxEdge = 240; // small for speed
-      const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
-      const w = Math.max(1, Math.round(img.width * scale));
-      const h = Math.max(1, Math.round(img.height * scale));
-
-      const canvas = document.createElement("canvas");
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext("2d", { willReadFrequently:true });
-      if(!ctx) throw new Error("NO_CTX");
-      ctx.drawImage(img, 0, 0, w, h);
-
-      const data = ctx.getImageData(0,0,w,h).data;
-
-      let rSum=0,gSum=0,bSum=0, count=0;
-      let lumSum=0, lumSq=0;
-      for(let i=0;i<data.length;i+=4){
-        const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
-        if(a<16) continue;
-        count++;
-        rSum += r; gSum += g; bSum += b;
-        // relative luminance (approx)
-        const lum = 0.2126*r + 0.7152*g + 0.0722*b;
-        lumSum += lum;
-        lumSq += lum*lum;
-      }
-      if(count<50) throw new Error("TOO_EMPTY");
-
-      const rAvg = rSum/count;
-      const gAvg = gSum/count;
-      const bAvg = bSum/count;
-      const lumAvg = lumSum/count; // 0..255
-      const lumVar = Math.max(0, lumSq/count - lumAvg*lumAvg);
-      const contrast = Math.sqrt(lumVar); // 0..~128
-
-      // saturation approx
-      let satSum=0;
-      for(let i=0;i<data.length;i+=4){
-        const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
-        if(a<16) continue;
-        const max = Math.max(r,g,b);
-        const min = Math.min(r,g,b);
-        const sat = max === 0 ? 0 : (max-min)/max; // 0..1
-        satSum += sat;
-      }
-      const satAvg = satSum/count; // 0..1
-
-      // dominant tone
-      const tone = dominantTone(rAvg,gAvg,bAvg);
-      const lightLabel = labelLight(lumAvg);
-      const mood = labelMood({ lumAvg, contrast, satAvg, tone });
-
-      return {
-        w,h,
-        lumAvg,
-        contrast,
-        satAvg,
-        tone,
-        lightLabel,
-        mood
-      };
-    }
-
-    function dominantTone(r,g,b){
-      // simple hue-ish mapping
-      // return one of: warm/cool/neutral/greenish/purplish
-      const rg = r - g;
-      const rb = r - b;
-      const gb = g - b;
-
-      const max = Math.max(r,g,b);
-      const min = Math.min(r,g,b);
-      const spread = max - min;
-
-      if(spread < 18) return "neutral";
-
-      if(r > g && r > b){
-        // warm or pink
-        if(b > g) return "purplish";
-        return "warm";
-      }
-      if(b > r && b > g) return "cool";
-      if(g > r && g > b) return "greenish";
-      return "neutral";
-    }
-
-    function labelLight(lumAvg){
-      if(lumAvg < 70) return "dark";
-      if(lumAvg < 135) return "soft";
-      if(lumAvg < 200) return "bright";
-      return "verybright";
-    }
-
-    function labelMood({ lumAvg, contrast, satAvg, tone }){
-      // heuristic mood labels
-      const calm = (contrast < 40 && satAvg < 0.35);
-      const vivid = satAvg > 0.55;
-      const dramatic = contrast > 65 && lumAvg < 140;
-      const airy = lumAvg > 165 && contrast < 55;
-
-      if(dramatic) return "dramatic";
-      if(airy) return "airy";
-      if(vivid) return "vivid";
-      if(calm) return "calm";
-      return "balanced";
-    }
-
-    /* =========================
-       Generate A+B reply (no score)
-    ========================= */
-    function buildReply(lang, name, feat){
-      const who = name ? name : "";
-      const n = who ? (lang==="en" ? ` ${who}` : lang==="ja" ? `、${who}さん` : `，${who}`) : "";
-
-      const scene = describeScene(lang, feat);
-      const empathy = empathyLine(lang, feat);
-      const boost = boostLine(lang, feat);
-      const tinyAction = tinyActionLine(lang, feat);
-
-      // A (gentle) + B (positive)
-      if(lang==="en"){
-        return [
-          `I’m here${n}.`,
-          scene,
-          empathy,
-          boost,
-          tinyAction
-        ].join("\n\n");
-      }
-      if(lang==="ja"){
-        return [
-          `ここにいるよ${n}。`,
-          scene,
-          empathy,
-          boost,
-          tinyAction
-        ].join("\n\n");
-      }
-      // zh-TW
-      return [
-        `我在${n}。`,
-        scene,
-        empathy,
-        boost,
-        tinyAction
-      ].join("\n\n");
-    }
-
-    function describeScene(lang, feat){
-      const { tone, lightLabel, mood } = feat;
-
-      const toneText = {
-        "zh-TW": { warm:"偏暖", cool:"偏冷", neutral:"偏中性", greenish:"帶點綠意", purplish:"帶點紫粉" },
-        "en":    { warm:"warm", cool:"cool", neutral:"neutral", greenish:"a hint of green", purplish:"a hint of purple/pink" },
-        "ja":    { warm:"あたたかめ", cool:"ひんやり", neutral:"ニュートラル", greenish:"少し緑", purplish:"少し紫/ピンク" }
-      }[lang];
-
-      const lightText = {
-        "zh-TW": { dark:"光線偏暗", soft:"光線柔和", bright:"光線明亮", verybright:"光線非常明亮" },
-        "en":    { dark:"light feels dim", soft:"light feels soft", bright:"light feels bright", verybright:"light feels very bright" },
-        "ja":    { dark:"少し暗め", soft:"やわらかい光", bright:"明るい光", verybright:"とても明るい光" }
-      }[lang];
-
-      const moodText = {
-        "zh-TW": { calm:"整體很安靜", vivid:"色彩很有生命力", dramatic:"對比強烈、有電影感", airy:"很通透、像在呼吸", balanced:"狀態平衡、舒服" },
-        "en":    { calm:"it feels quiet and calm", vivid:"colors feel alive", dramatic:"high contrast, cinematic", airy:"airy, like breathing space", balanced:"balanced and comfortable" },
-        "ja":    { calm:"静かで落ち着く", vivid:"色がいきいき", dramatic:"コントラスト強めで映画っぽい", airy:"空気が通る感じ", balanced:"バランスが良くて心地いい" }
-      }[lang];
-
-      if(lang==="en"){
-        return `From this photo, the tone feels **${toneText[tone]}**, ${lightText[lightLabel]}, and ${moodText[mood]}.`;
-      }
-      if(lang==="ja"){
-        return `この写真は、色味が**${toneText[tone]}**で、${lightText[lightLabel]}。全体は${moodText[mood]}感じ。`;
-      }
-      return `我看這張照片：色調**${toneText[tone]}**、${lightText[lightLabel]}，而且${moodText[mood]}。`;
-    }
-
-    function empathyLine(lang, feat){
-      const { mood, lightLabel } = feat;
-
-      const zh = [
-        "你願意把這一刻交給我，代表你其實已經很努力了。",
-        "我不急著下結論，我們先一起把情緒放在桌上、慢慢看清楚。",
-        "就算今天有點亂，也沒關係，你不用一個人扛。"
-      ];
-
-      const en = [
-        "Thank you for sharing this moment with me. You’re already trying, and that matters.",
-        "We don’t need a verdict—let’s just hold the feeling gently and look at it together.",
-        "Even if today is messy, you don’t have to carry it alone."
-      ];
-
-      const ja = [
-        "この瞬間を見せてくれてありがとう。あなたは十分に頑張ってる。",
-        "結論を急がなくていいよ。気持ちをそっと置いて、一緒に眺めよう。",
-        "今日は少し乱れていても大丈夫。ひとりで抱えなくていい。"
-      ];
-
-      const pick = (arr)=>arr[(hashSeed(feat) % arr.length)];
-
-      // slight adaptation by mood
-      if(lang==="en"){
-        if(mood==="dramatic" || lightLabel==="dark") return pick(en);
-        return pick(en);
-      }
-      if(lang==="ja"){
-        return pick(ja);
-      }
-      return pick(zh);
-    }
-
-    function boostLine(lang, feat){
-      const { mood, tone } = feat;
-
-      const zhByMood = {
-        calm: [
-          "這種安靜不是空白，它是在幫你把心收回來。",
-          "你的節奏正在回到你自己身上，這很珍貴。"
-        ],
-        vivid: [
-          "你身上其實有很多能量，只是有時候被生活蓋住了。",
-          "這張照片的生命力很強，像是在提醒你：你也可以重新發亮。"
-        ],
-        dramatic: [
-          "有電影感不代表危險，反而像是一種『你正在蛻變』的信號。",
-          "你現在的內在張力很大，但那也是你走向更強的入口。"
-        ],
-        airy: [
-          "這種通透感很像：你開始允許自己呼吸、放鬆、被照顧。",
-          "你在往更輕的地方走，慢慢來就好。"
-        ],
-        balanced: [
-          "你其實比你以為的更穩，這就是你的底氣。",
-          "你正在把生活重新整理回可控的樣子。"
-        ]
-      };
-
-      const enByMood = {
-        calm: [
-          "Quiet doesn’t mean empty—it’s your mind coming back home.",
-          "Your pace is returning to you. That’s something to protect."
-        ],
-        vivid: [
-          "You have a lot of energy inside—sometimes life just covers it up.",
-          "This photo feels alive, like a reminder that you can shine again."
-        ],
-        dramatic: [
-          "Cinematic doesn’t mean dangerous. It can be a sign you’re transforming.",
-          "The tension you feel can be the doorway to your next stronger self."
-        ],
-        airy: [
-          "This openness feels like permission to breathe, soften, and be cared for.",
-          "You’re moving toward something lighter. Take it slow."
-        ],
-        balanced: [
-          "You’re steadier than you think—that’s your foundation.",
-          "You’re quietly putting life back into something you can hold."
-        ]
-      };
-
-      const jaByMood = {
-        calm: [
-          "静けさは空っぽじゃない。心が家に戻ってきてる。",
-          "あなたのペースがあなたに戻ってる。それは守る価値がある。"
-        ],
-        vivid: [
-          "あなたの中にはエネルギーがある。生活が隠してしまうだけ。",
-          "この写真は生き生きしてる。あなたもまた輝けるよ。"
-        ],
-        dramatic: [
-          "映画っぽさは危険じゃない。変化のサインかもしれない。",
-          "今の張りつめは、次の強さへの入口になれる。"
-        ],
-        airy: [
-          "この開放感は、息をしていいよっていう許可みたい。",
-          "軽いほうへ向かってる。ゆっくりで大丈夫。"
-        ],
-        balanced: [
-          "あなたは思ってる以上に安定してる。それが土台。",
-          "少しずつ生活を抱え直してる感じがする。"
-        ]
-      };
-
-      const table = (lang==="en") ? enByMood : (lang==="ja") ? jaByMood : zhByMood;
-      const arr = table[mood] || table.balanced;
-
-      // small tone nuance
-      const seed = hashSeed(feat) + (tone==="warm"?7:tone==="cool"?13:3);
-      return arr[Math.abs(seed)%arr.length];
-    }
-
-    function tinyActionLine(lang, feat){
-      const { lightLabel, mood } = feat;
-
-      const zh = [
-        "如果你願意：現在喝一口水、深呼吸三次，然後跟我說「我還在」。",
-        "你可以做一個很小的動作：把肩膀放鬆 3 秒，讓身體先安全。",
-        "今天不需要把一切解決，只要把自己照顧好就算贏。"
-      ];
-      const en = [
-        "If you want: take one sip of water, breathe three times, and tell me: “I’m still here.”",
-        "Try a tiny action: soften your shoulders for 3 seconds—let your body feel safe first.",
-        "You don’t have to solve everything today. Caring for yourself is already a win."
-      ];
-      const ja = [
-        "よかったら：水をひと口、深呼吸を3回して「私はここにいる」と言ってみて。",
-        "小さな行動：肩の力を3秒だけ抜いて、まず体を安心させよう。",
-        "今日は全部解決しなくていい。自分をケアできたら十分。"
-      ];
-
-      const seed = hashSeed(feat) + (lightLabel==="dark"?9:2) + (mood==="dramatic"?5:0);
-      const pick = (arr)=>arr[Math.abs(seed)%arr.length];
-
-      if(lang==="en") return pick(en);
-      if(lang==="ja") return pick(ja);
-      return pick(zh);
-    }
-
-    function hashSeed(feat){
-      // deterministic seed from numeric features (stable)
-      const a = Math.round(feat.lumAvg * 10);
-      const b = Math.round(feat.contrast * 10);
-      const c = Math.round(feat.satAvg * 1000);
-      const t = (feat.tone==="warm"?11:feat.tone==="cool"?23:feat.tone==="greenish"?37:feat.tone==="purplish"?41:7);
-      return (a*2654435761 ^ b*1597334677 ^ c*3812015801 ^ t) >>> 0;
-    }
-
-    /* =========================
-       State
-    ========================= */
-    const state = {
-      page: "home", // home | pick | reply | history | settings | name | language | privacy
-      lang: detectLang(),
-      name: safeGet(LS.NAME, ""),
-      history: safeJsonGet(LS.HISTORY, []),
-      analyzing: false,
-      lastReply: null, // { replyText, meta, at }
-      toast: "",
-      toastTimer: null,
-      env: {
-        https: isHttps(),
-        webview: isProbablyWebView()
-      }
-    };
-
-    function persist(){
-      safeSet(LS.LANG, state.lang);
-      safeSet(LS.NAME, state.name);
-      safeJsonSet(LS.HISTORY, state.history);
-    }
-
-    /* =========================
-       Hybrid input + Smart fallback
-    ========================= */
-    const cameraInput = document.getElementById("cameraInput");
-    const galleryInput = document.getElementById("galleryInput");
-
-    cameraInput.addEventListener("change", (e)=>{
-      const file = e.target.files && e.target.files[0];
-      e.target.value = "";
-      if(file) handleFile(file);
-    });
-
-    galleryInput.addEventListener("change", (e)=>{
-      const file = e.target.files && e.target.files[0];
-      e.target.value = "";
-      if(file) handleFile(file);
-    });
-
-    function openGallery(){
-      // always works
-      galleryInput.click();
-    }
-
-    function openCameraSmart(){
-      // We try camera first. If it doesn't open (common in in-app browsers),
-      // auto fallback to gallery after a short delay.
-      let opened = false;
-      const start = Date.now();
-
-      // When file picker opens, JS pauses in many browsers.
-      // We'll schedule a fallback check.
-      try{
-        cameraInput.click();
-        opened = true;
-      }catch{
-        opened = false;
-      }
-
-      // Fallback: if nothing happened after ~700ms, open gallery.
-      setTimeout(()=>{
-        // If user didn't pick anything and we are still on pick/home, fallback.
-        // This is best-effort: can't truly detect picker open; we ensure user has a path.
-        const elapsed = Date.now() - start;
-        const stillNoReply = !state.analyzing && state.page !== "reply";
-        if(stillNoReply && elapsed >= 650){
-          toast(t("TOAST_CAMERA_FALLBACK"));
-          openGallery();
-        }
-      }, 720);
-    }
-
-    async function handleFile(file){
-      state.analyzing = true;
-      state.page = "home";
-      render();
-
-      try{
-        // tiny delay for UX
-        await new Promise(r=>setTimeout(r, 220));
-        const feat = await extractFeatures(file);
-
-        const replyText = buildReply(state.lang, state.name, feat);
-        const meta = buildMeta(state.lang, feat);
-
-        state.lastReply = {
-          id: Date.now(),
-          at: nowISO(),
-          replyText,
-          meta
-        };
-        state.page = "reply";
-      }catch(err){
-        console.error(err);
-        toast(t("TOAST_READ_FAIL"));
-        state.page = "home";
-      }finally{
-        state.analyzing = false;
-        render();
-      }
-    }
-
-    function buildMeta(lang, feat){
-      const lightMap = {
-        "zh-TW": { dark:"偏暗", soft:"柔和", bright:"明亮", verybright:"很亮" },
-        "en":    { dark:"dim", soft:"soft", bright:"bright", verybright:"very bright" },
-        "ja":    { dark:"暗め", soft:"やわらかい", bright:"明るい", verybright:"かなり明るい" }
-      }[lang];
-
-      const toneMap = {
-        "zh-TW": { warm:"偏暖", cool:"偏冷", neutral:"中性", greenish:"綠意", purplish:"紫粉" },
-        "en":    { warm:"warm", cool:"cool", neutral:"neutral", greenish:"greenish", purplish:"purple/pink" },
-        "ja":    { warm:"あたたかめ", cool:"ひんやり", neutral:"ニュートラル", greenish:"緑っぽい", purplish:"紫/ピンク" }
-      }[lang];
-
-      const moodMap = {
-        "zh-TW": { calm:"安靜", vivid:"有生命力", dramatic:"電影感", airy:"通透", balanced:"舒服平衡" },
-        "en":    { calm:"calm", vivid:"vivid", dramatic:"cinematic", airy:"airy", balanced:"balanced" },
-        "ja":    { calm:"落ち着く", vivid:"いきいき", dramatic:"映画っぽい", airy:"通る感じ", balanced:"バランス良い" }
-      }[lang];
-
-      const envLabel = state.env.webview ? t("WEBVIEW") : t("BROWSER");
-      const httpsLabel = state.env.https ? t("ENV_OK") : t("ENV_BAD");
-
-      return {
-        light: lightMap[feat.lightLabel],
-        tone: toneMap[feat.tone],
-        mood: moodMap[feat.mood],
-        env: `${envLabel} · ${httpsLabel}`
-      };
-    }
-
-    function saveToHistory(){
-      if(!state.lastReply) return;
-      const rec = {
-        id: state.lastReply.id,
-        at: state.lastReply.at,
-        lang: state.lang,
-        replyText: state.lastReply.replyText,
-        meta: state.lastReply.meta
-      };
-      state.history = [rec, ...state.history].slice(0, 200);
-      persist();
-      toast(t("TOAST_SAVED"));
-      render();
-    }
-
-    function clearAll(){
-      const ok = confirm(t("CLEAR_CONFIRM"));
-      if(!ok) return;
-      try{
-        Object.keys(localStorage).forEach(k=>{
-          if(k.startsWith("flux.")) localStorage.removeItem(k);
-        });
-      }catch{}
-      state.name = "";
-      state.lang = detectLang();
-      state.history = [];
-      state.lastReply = null;
-      persist();
-      toast(t("CLEARED"));
-      state.page = "home";
-      render();
-    }
-
-    /* =========================
-       UI render
-    ========================= */
-    function icon(name){
-      // simple emoji icons (no external libs)
-      const map = {
-        gear:"⚙️",
-        back:"←",
-        close:"✕",
-        camera:"📸",
-        gallery:"🖼️",
-        spark:"✨",
-        user:"👤",
-        globe:"🌐",
-        shield:"🛡️",
-        trash:"🗑️",
-        history:"🗓️",
-        home:"🪄",
-        heart:"💛"
-      };
-      return map[name] || "•";
-    }
-
-    function setPage(p){ state.page = p; render(); }
-
-    function greeting(){
-      const base = t("HELLO");
-      if(!state.name) return base;
-      if(state.lang==="en") return `${base}, ${state.name}.`;
-      if(state.lang==="ja") return `${base}、${state.name}さん。`;
-      return `${base}，${state.name}。`;
-    }
-
-    function topPill(){
-      const env = state.env.webview ? t("WEBVIEW") : t("BROWSER");
-      const https = state.env.https ? t("ENV_OK") : t("ENV_BAD");
-      return `${env} · ${https}`;
-    }
-
-    function homeView(){
-      return `
-        <div class="page">
-          <div class="glowBg"></div>
-          <div class="topBar">
-            <div class="brand">
-              <span>${t("APP_NAME")}</span>
-              <span class="pill">${topPill()}</span>
-            </div>
-            <button class="iconBtn" id="goSettings" aria-label="settings">${icon("gear")}</button>
-          </div>
-
-          <div class="content">
-            <div class="center">
-              <div class="todayLabel">${t("TODAY")}</div>
-              <h1 class="greetingTitle">${escapeHtml(greeting())}</h1>
-              <p class="greetingSub">${escapeHtml(t("SUB"))}</p>
-
-              <div class="bigCircleBtn" id="bigCapture" aria-label="capture">
-                <div class="circleRing"></div>
-                <div class="camIcon">
-                  ${state.analyzing ? `<div class="spinner"></div>` : `${icon("camera")}`}
-                </div>
-              </div>
-
-              <div class="cta">${state.analyzing ? "..." : escapeHtml(t("CTA"))}</div>
-              <div class="homeHint">${escapeHtml(t("HINT"))}</div>
-            </div>
-          </div>
-
-          <div class="tabBar">
-            <div class="tabItem active" id="tabHome">
-              <div class="tabIcon">${icon("home")}</div>
-              <div class="tabLabel">${t("TAB_TODAY")}</div>
-            </div>
-            <div class="tabItem" id="tabHistory">
-              <div class="tabIcon">${icon("history")}</div>
-              <div class="tabLabel">${t("TAB_HISTORY")}</div>
-            </div>
-            <div class="tabItem" id="tabSettings">
-              <div class="tabIcon">${icon("spark")}</div>
-              <div class="tabLabel">${t("TAB_SETTINGS")}</div>
-            </div>
-          </div>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <h1 id="appName">Flux Companion</h1>
+          <div style="font-size:12px;color:rgba(255,255,255,.62);margin-top:2px" id="subtitle">Your Gentle AI Listener</div>
         </div>
-      `;
-    }
-
-    function pickView(){
-      return `
-        <div class="page">
-          <div class="pickWrap">
-            <div class="navBar" style="border-bottom:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.55);">
-              <button class="iconBtn" id="pickBack" aria-label="back" style="color:#fff">${icon("close")}</button>
-              <div class="navTitle" style="color:#fff">${t("PICK_TITLE")}</div>
-              <div style="width:40px;"></div>
-            </div>
-
-            <div class="pickHero">
-              <div class="pickDesc">
-                ${escapeHtml(t("PICK_DESC"))}
-              </div>
-            </div>
-
-            <div class="pickFooter">
-              <div class="pickRow">
-                <button class="pickAction" id="pickCamera" aria-label="camera">
-                  <div class="pickIconCircle">${icon("camera")}</div>
-                  <div style="font-weight:800">${t("BTN_CAMERA")}</div>
-                </button>
-
-                <button class="pickAction" id="pickGallery" aria-label="gallery">
-                  <div class="pickIconCircle">${icon("gallery")}</div>
-                  <div style="font-weight:800">${t("BTN_GALLERY")}</div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function replyView(){
-      if(!state.lastReply) return homeView();
-      const r = state.lastReply;
-
-      return `
-        <div class="page">
-          <div class="navBar">
-            <button class="iconBtn" id="replyBack" aria-label="back">${icon("back")}</button>
-            <div class="navTitle">${t("REPLY_TITLE")}</div>
-            <button class="iconBtn" id="replyClose" aria-label="close">${icon("close")}</button>
-          </div>
-
-          <div class="content">
-            <div class="card">
-              <div class="cardTitle">${icon("heart")} ${t("REPLY_TITLE")}</div>
-              <div class="replyText">${escapeHtml(r.replyText)}</div>
-
-              <div class="metaRow">
-                <span class="chip">${t("META_LIGHT")}: ${escapeHtml(r.meta.light)}</span>
-                <span class="chip">${t("META_COLOR")}: ${escapeHtml(r.meta.tone)}</span>
-                <span class="chip">${t("META_MOOD")}: ${escapeHtml(r.meta.mood)}</span>
-                <span class="chip">${t("META_ENV")}: ${escapeHtml(r.meta.env)}</span>
-              </div>
-
-              <div style="height:14px"></div>
-              <button class="primaryBtn" id="saveHistory">${t("BTN_SAVE")}</button>
-              <div style="height:10px"></div>
-              <button class="dangerBtn" id="goHome">${t("BTN_HOME")}</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function historyView(){
-      const list = state.history || [];
-      const body = list.length ? list.map(item=>{
-        return `
-          <div class="row">
-            <div style="flex:1">
-              <div class="rowDate">${escapeHtml(item.at)}</div>
-              <div class="rowText">${escapeHtml(item.replyText)}</div>
-            </div>
-            <div class="right">›</div>
-          </div>
-        `;
-      }).join("") : `<div class="empty">${escapeHtml(t("HISTORY_EMPTY"))}</div>`;
-
-      return `
-        <div class="page">
-          <div class="navBar">
-            <button class="iconBtn" id="histBack" aria-label="back">${icon("back")}</button>
-            <div class="navTitle">${t("HISTORY_TITLE")}</div>
-            <div style="width:40px"></div>
-          </div>
-
-          <div class="content">
-            <div class="card">${body}</div>
-          </div>
-        </div>
-      `;
-    }
-
-    function settingsView(){
-      return `
-        <div class="page">
-          <div class="navBar">
-            <button class="iconBtn" id="setBack" aria-label="back">${icon("back")}</button>
-            <div class="navTitle">${t("SETTINGS_TITLE")}</div>
-            <div style="width:40px"></div>
-          </div>
-
-          <div class="content">
-            <div class="card">
-              <button class="menuItem" id="goName">
-                <div class="menuLeft">
-                  <div class="menuIcon">${icon("user")}</div>
-                  <div>${t("NAME_TITLE")}</div>
-                </div>
-                <div class="right">›</div>
-              </button>
-
-              <button class="menuItem" id="goLang">
-                <div class="menuLeft">
-                  <div class="menuIcon">${icon("globe")}</div>
-                  <div>${t("LANG_TITLE")}</div>
-                </div>
-                <div class="right">›</div>
-              </button>
-
-              <button class="menuItem" id="goPrivacy">
-                <div class="menuLeft">
-                  <div class="menuIcon">${icon("shield")}</div>
-                  <div>${t("PRIV_TITLE")}</div>
-                </div>
-                <div class="right">›</div>
-              </button>
-            </div>
-
-            <div class="divider"></div>
-            <div class="sectionLabel">${t("PRIV_TITLE")}</div>
-
-            <div class="card">
-              <div style="color:var(--muted); line-height:1.7">${escapeHtml(t("PRIV_DESC"))}</div>
-              <div style="height:14px"></div>
-              <button class="dangerBtn" id="clearAll">${icon("trash")} ${t("CLEAR")}</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function nameView(){
-      return `
-        <div class="page">
-          <div class="navBar">
-            <button class="iconBtn" id="nameBack" aria-label="back">${icon("back")}</button>
-            <div class="navTitle">${t("NAME_TITLE")}</div>
-            <div style="width:40px"></div>
-          </div>
-
-          <div class="content">
-            <div class="card">
-              <div style="font-weight:900; margin-bottom:10px">${t("NAME_DESC")}</div>
-              <input class="text" id="nameInput" value="${escapeAttr(state.name)}" placeholder="${escapeAttr(t("NAME_PH"))}" />
-              <div class="inputHint">${escapeHtml(t("NAME_HINT"))}</div>
-              <div style="height:14px"></div>
-              <button class="primaryBtn" id="nameSave">${t("BTN_DONE")}</button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function languageView(){
-      const item = (code,label)=>`
-        <button class="menuItem" data-lang="${code}">
-          <div class="menuLeft">
-            <div class="menuIcon">${state.lang===code ? "✅" : "▫️"}</div>
-            <div>${label}</div>
-          </div>
-          <div class="right">›</div>
+      </div>
+      <div class="badgeRow">
+        <span class="pill" id="modePill"><span class="led"></span><span id="modeText">Stable v4.5</span></span>
+        <span class="pill" id="browserPill"><span class="led"></span><span id="browserText">Browser: Normal</span></span>
+        <span class="pill" id="httpsPill"><span class="led"></span><span id="httpsText">HTTPS: OK</span></span>
+        <button class="iconBtn" id="settingsBtn" title="設定">
+          <!-- gear -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 15.6a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M19.4 15a8.9 8.9 0 0 0 .1-1l2-1.5-2-3.5-2.4.8a8.5 8.5 0 0 0-.8-.7l-.2-2.5H10l-.2 2.5c-.3.2-.6.4-.8.7l-2.4-.8-2 3.5 2 1.5a8.9 8.9 0 0 0 .1 1l-2 1.5 2 3.5 2.4-.8c.2.3.5.5.8.7L10 22h4l.2-2.5c.3-.2.6-.4.8-.7l2.4.8 2-3.5-2-1.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
         </button>
-      `;
-      return `
-        <div class="page">
-          <div class="navBar">
-            <button class="iconBtn" id="langBack" aria-label="back">${icon("back")}</button>
-            <div class="navTitle">${t("LANG_TITLE")}</div>
-            <div style="width:40px"></div>
-          </div>
+      </div>
+    </div>
 
-          <div class="content">
-            <div class="card" id="langList">
-              ${item("zh-TW","繁體中文")}
-              ${item("en","English")}
-              ${item("ja","日本語")}
+    <div class="grid">
+      <!-- Main -->
+      <div class="card">
+        <div class="hero">
+          <div class="today">TODAY</div>
+          <h2 class="title" id="greeting">今天的你，還好嗎？</h2>
+          <p class="sub" id="greetingSub">把此刻交給我，我會溫柔理解。</p>
+        </div>
+
+        <div class="stage">
+          <div class="ring" id="dropZone">
+            <div class="camBtnBig" aria-hidden="true">
+              <!-- camera icon -->
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                <path d="M9 7 10.5 5h3L15 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="white" stroke-width="2"/>
+              </svg>
             </div>
           </div>
-        </div>
-      `;
-    }
 
-    function privacyView(){
-      return `
-        <div class="page">
-          <div class="navBar">
-            <button class="iconBtn" id="privBack" aria-label="back">${icon("back")}</button>
-            <div class="navTitle">${t("PRIV_TITLE")}</div>
-            <div style="width:40px"></div>
+          <div class="actions">
+            <button class="btn primary" id="cameraBtn">拍照</button>
+            <button class="btn" id="albumBtn">相簿</button>
           </div>
 
-          <div class="content">
-            <div class="card">
-              <div style="line-height:1.7; color:var(--muted)">${escapeHtml(t("PRIV_DESC"))}</div>
-              <div style="height:14px"></div>
-              <div class="metaRow">
-                <span class="chip">${escapeHtml(topPill())}</span>
-              </div>
-              <div style="height:14px"></div>
-              <button class="dangerBtn" id="clearAll2">${icon("trash")} ${t("CLEAR")}</button>
+          <div class="hint" id="inAppHint" style="display:none">
+            若在某些 App 內建瀏覽器受限，建議用 <strong>Chrome / Safari</strong> 開啟。本頁會自動改用相簿避免卡死。
+          </div>
+
+          <div class="drop" id="dropText">
+            <strong>你也可以把圖片拖進來</strong>（電腦測試很方便）<br/>
+            不做醫療診斷，只做「情境感受」陪伴回覆。
+          </div>
+
+          <div class="preview" id="preview" style="display:none">
+            <div class="thumb"><img id="previewImg" alt="預覽" /></div>
+            <div class="meta">
+              <div class="chips" id="chips"></div>
+              <div style="font-size:12px;color:rgba(255,255,255,.58)" id="imgMeta"></div>
             </div>
           </div>
+
+          <div class="replyCard" id="replyCard" style="display:none">
+            <div class="replyTitle">
+              <div class="heart">💛</div>
+              <div>AI 回覆</div>
+            </div>
+            <div class="replyText" id="replyText"></div>
+
+            <div class="footerBtns">
+              <button class="btn2" id="saveBtn">存成紀錄</button>
+              <button class="btn2 dark" id="backBtn">回首頁</button>
+              <button class="btn2 dark" id="copyBtn">複製文字</button>
+            </div>
+
+            <div class="note">
+              這是陪伴式回覆（A:共感傾聽 + B:溫柔正能量建議），不等於醫療或心理治療建議。
+            </div>
+          </div>
+
+          <!-- Inputs -->
+          <input id="cameraInput" type="file" accept="image/*" capture="environment" />
+          <input id="albumInput" type="file" accept="image/*" />
         </div>
-      `;
+      </div>
+
+      <!-- Side -->
+      <div class="card">
+        <div class="side">
+          <h2>你的紀錄</h2>
+          <p>每一筆都是一個「被理解的瞬間」。點開可回看，或刪除。</p>
+          <div class="list" id="list"></div>
+          <div class="note">
+            資料只存你手機/瀏覽器本機（localStorage）。更換裝置就不會同步。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modalWrap" id="modalWrap">
+    <div class="modal">
+      <div class="modalHead">
+        <h3>設定</h3>
+        <button class="iconBtn" id="closeModal" title="關閉">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modalBody">
+        <div class="row">
+          <label>模式顯示文字（右上角標籤）</label>
+          <input type="text" id="modeInput" placeholder="例如：Stable v4.5" />
+        </div>
+        <div class="row">
+          <label>副標（App 介紹）</label>
+          <input type="text" id="subtitleInput" placeholder="例如：Your Gentle AI Listener" />
+        </div>
+        <div class="row">
+          <div class="checkRow">
+            <input type="checkbox" id="hintToggle" />
+            <label for="hintToggle">顯示「內建瀏覽器可能限制相機」提示</label>
+          </div>
+        </div>
+      </div>
+      <div class="modalBtns">
+        <button class="btn primary" id="saveSettings">儲存</button>
+        <button class="btn" id="resetSettings">重置</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const STORAGE_KEY = "flux_companion_v45";
+  const SETTINGS_KEY = "flux_companion_settings_v45";
+
+  const $ = (id) => document.getElementById(id);
+
+  const state = {
+    settings: {
+      modeText: "Stable v4.5",
+      subtitle: "Your Gentle AI Listener",
+      showInAppHint: true,
+    },
+    env: {
+      isHttps: location.protocol === "https:",
+      isInApp: false,
+      browserLabel: "Normal",
+    },
+    current: {
+      imageDataURL: "",
+      thumbDataURL: "",
+      tags: [],
+      meta: "",
+      reply: "",
+      createdAt: 0,
+    },
+    records: [],
+  };
+
+  // ---------- Utilities ----------
+  const nowTs = () => Date.now();
+  const fmtTime = (ts) => {
+    const d = new Date(ts);
+    const pad = (n) => String(n).padStart(2,"0");
+    return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const toast = (msg) => {
+    const el = $("toast");
+    el.textContent = msg;
+    el.style.display = "block";
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => (el.style.display = "none"), 1700);
+  };
+
+  const safeJSONParse = (s, fallback) => {
+    try { return JSON.parse(s); } catch { return fallback; }
+  };
+
+  const persistRecords = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records));
+  };
+
+  const persistSettings = () => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+  };
+
+  const loadAll = () => {
+    state.records = safeJSONParse(localStorage.getItem(STORAGE_KEY), []);
+    const savedSettings = safeJSONParse(localStorage.getItem(SETTINGS_KEY), null);
+    if (savedSettings && typeof savedSettings === "object") {
+      state.settings = { ...state.settings, ...savedSettings };
+    }
+  };
+
+  // ---------- Environment Detection ----------
+  const detectInApp = () => {
+    const ua = navigator.userAgent || "";
+    const isFB = /FBAN|FBAV|FB_IAB/i.test(ua);
+    const isIG = /Instagram/i.test(ua);
+    const isLine = /Line|LIFF/i.test(ua);
+    const isWeChat = /MicroMessenger/i.test(ua);
+    const isTikTok = /TikTok/i.test(ua);
+    const isGSA = /\bGSA\b/i.test(ua); // Google App
+    const isWebView = /(wv|; wv\)|Version\/\d+\.\d+.*Chrome\/\d+.*Mobile Safari\/\d+)/i.test(ua);
+    return isFB || isIG || isLine || isWeChat || isTikTok || isGSA || isWebView;
+  };
+
+  const detectBrowserLabel = () => {
+    const ua = navigator.userAgent || "";
+    if (/CriOS/i.test(ua)) return "Chrome(iOS)";
+    if (/EdgA|EdgiOS|Edg/i.test(ua)) return "Edge";
+    if (/Chrome/i.test(ua) && !/OPR|Edg/i.test(ua)) return "Chrome";
+    if (/Safari/i.test(ua) && !/Chrome|CriOS/i.test(ua)) return "Safari";
+    return "Normal";
+  };
+
+  // ---------- UI Render ----------
+  const applySettingsToUI = () => {
+    $("modeText").textContent = state.settings.modeText;
+    $("subtitle").textContent = state.settings.subtitle;
+
+    $("modeInput").value = state.settings.modeText;
+    $("subtitleInput").value = state.settings.subtitle;
+    $("hintToggle").checked = !!state.settings.showInAppHint;
+
+    // In-app hint visibility
+    const shouldShow = state.settings.showInAppHint && state.env.isInApp;
+    $("inAppHint").style.display = shouldShow ? "block" : "none";
+  };
+
+  const applyEnvBadges = () => {
+    // Browser badge
+    $("browserText").textContent = `Browser: ${state.env.browserLabel}`;
+    $("browserPill").classList.remove("warn","bad");
+    $("browserPill").querySelector(".led").style.background = state.env.isInApp ? "var(--warn)" : "var(--good)";
+    if (state.env.isInApp) $("browserPill").classList.add("warn");
+
+    // HTTPS badge
+    $("httpsText").textContent = state.env.isHttps ? "HTTPS: OK" : "HTTPS: NO";
+    $("httpsPill").classList.remove("warn","bad");
+    $("httpsPill").querySelector(".led").style.background = state.env.isHttps ? "var(--good)" : "var(--bad)";
+    if (!state.env.isHttps) $("httpsPill").classList.add("bad");
+  };
+
+  const renderList = () => {
+    const list = $("list");
+    list.innerHTML = "";
+    if (!state.records.length) {
+      const empty = document.createElement("div");
+      empty.className = "note";
+      empty.textContent = "目前還沒有紀錄。上傳一張照片，讓我陪你說說當下。";
+      list.appendChild(empty);
+      return;
     }
 
-    function render(){
-      const app = document.getElementById("app");
-      let html = "";
-      switch(state.page){
-        case "home": html = homeView(); break;
-        case "pick": html = pickView(); break;
-        case "reply": html = replyView(); break;
-        case "history": html = historyView(); break;
-        case "settings": html = settingsView(); break;
-        case "name": html = nameView(); break;
-        case "language": html = languageView(); break;
-        case "privacy": html = privacyView(); break;
-        default: html = homeView();
-      }
-      app.innerHTML = html + (state.toast ? `<div class="toast">${escapeHtml(state.toast)}</div>` : "");
+    state.records
+      .slice()
+      .sort((a,b) => b.createdAt - a.createdAt)
+      .forEach((r) => {
+        const item = document.createElement("div");
+        item.className = "item";
 
-      bindEvents();
-    }
+        const th = document.createElement("div");
+        th.className = "itemThumb";
+        const img = document.createElement("img");
+        img.src = r.thumbDataURL || "";
+        img.alt = "thumb";
+        th.appendChild(img);
 
-    function bindEvents(){
-      // Home
-      const goSettings = document.getElementById("goSettings");
-      if(goSettings) goSettings.onclick = ()=>setPage("settings");
+        const meta = document.createElement("div");
+        meta.className = "itemMeta";
+        const t = document.createElement("div");
+        t.className = "t";
+        t.textContent = fmtTime(r.createdAt);
+        const d = document.createElement("div");
+        d.className = "d";
+        d.textContent = (r.tags || []).join(" · ") || "（無標籤）";
+        meta.appendChild(t);
+        meta.appendChild(d);
 
-      const bigCapture = document.getElementById("bigCapture");
-      if(bigCapture) bigCapture.onclick = ()=>setPage("pick");
+        const acts = document.createElement("div");
+        acts.className = "itemActions";
 
-      const tabHistory = document.getElementById("tabHistory");
-      if(tabHistory) tabHistory.onclick = ()=>setPage("history");
-
-      const tabSettings = document.getElementById("tabSettings");
-      if(tabSettings) tabSettings.onclick = ()=>setPage("settings");
-
-      // Pick
-      const pickBack = document.getElementById("pickBack");
-      if(pickBack) pickBack.onclick = ()=>setPage("home");
-
-      const pickCamera = document.getElementById("pickCamera");
-      if(pickCamera) pickCamera.onclick = ()=>openCameraSmart();
-
-      const pickGallery = document.getElementById("pickGallery");
-      if(pickGallery) pickGallery.onclick = ()=>openGallery();
-
-      // Reply
-      const replyBack = document.getElementById("replyBack");
-      if(replyBack) replyBack.onclick = ()=>setPage("home");
-
-      const replyClose = document.getElementById("replyClose");
-      if(replyClose) replyClose.onclick = ()=>setPage("home");
-
-      const saveHistoryBtn = document.getElementById("saveHistory");
-      if(saveHistoryBtn) saveHistoryBtn.onclick = ()=>saveToHistory();
-
-      const goHomeBtn = document.getElementById("goHome");
-      if(goHomeBtn) goHomeBtn.onclick = ()=>setPage("home");
-
-      // History
-      const histBack = document.getElementById("histBack");
-      if(histBack) histBack.onclick = ()=>setPage("home");
-
-      // Settings
-      const setBack = document.getElementById("setBack");
-      if(setBack) setBack.onclick = ()=>setPage("home");
-
-      const goName = document.getElementById("goName");
-      if(goName) goName.onclick = ()=>setPage("name");
-
-      const goLang = document.getElementById("goLang");
-      if(goLang) goLang.onclick = ()=>setPage("language");
-
-      const goPrivacy = document.getElementById("goPrivacy");
-      if(goPrivacy) goPrivacy.onclick = ()=>setPage("privacy");
-
-      const clearAllBtn = document.getElementById("clearAll");
-      if(clearAllBtn) clearAllBtn.onclick = ()=>clearAll();
-
-      // Name
-      const nameBack = document.getElementById("nameBack");
-      if(nameBack) nameBack.onclick = ()=>setPage("settings");
-
-      const nameSave = document.getElementById("nameSave");
-      if(nameSave){
-        nameSave.onclick = ()=>{
-          const input = document.getElementById("nameInput");
-          state.name = (input && input.value || "").trim();
-          persist();
-          setPage("settings");
+        const openBtn = document.createElement("button");
+        openBtn.className = "mini";
+        openBtn.title = "打開";
+        openBtn.innerHTML = "↗";
+        openBtn.onclick = (e) => {
+          e.stopPropagation();
+          openRecord(r.id);
         };
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "mini";
+        delBtn.title = "刪除";
+        delBtn.innerHTML = "🗑";
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          removeRecord(r.id);
+        };
+
+        acts.appendChild(openBtn);
+        acts.appendChild(delBtn);
+
+        item.appendChild(th);
+        item.appendChild(meta);
+        item.appendChild(acts);
+
+        item.onclick = () => openRecord(r.id);
+
+        list.appendChild(item);
+      });
+  };
+
+  const openRecord = (id) => {
+    const r = state.records.find(x => x.id === id);
+    if (!r) return;
+    state.current = {
+      imageDataURL: r.imageDataURL,
+      thumbDataURL: r.thumbDataURL,
+      tags: r.tags,
+      meta: r.meta,
+      reply: r.reply,
+      createdAt: r.createdAt,
+    };
+    showPreviewAndReply();
+    toast("已打開紀錄");
+  };
+
+  const removeRecord = (id) => {
+    state.records = state.records.filter(x => x.id !== id);
+    persistRecords();
+    renderList();
+    toast("已刪除");
+  };
+
+  const showPreviewAndReply = () => {
+    $("preview").style.display = "flex";
+    $("replyCard").style.display = "block";
+    $("previewImg").src = state.current.imageDataURL;
+
+    $("chips").innerHTML = "";
+    (state.current.tags || []).forEach(tag => {
+      const c = document.createElement("span");
+      c.className = "chip";
+      c.textContent = tag;
+      $("chips").appendChild(c);
+    });
+    $("imgMeta").textContent = state.current.meta || "";
+    $("replyText").textContent = state.current.reply || "";
+    $("dropText").style.display = "none";
+  };
+
+  const backHome = () => {
+    state.current = {
+      imageDataURL: "",
+      thumbDataURL: "",
+      tags: [],
+      meta: "",
+      reply: "",
+      createdAt: 0,
+    };
+    $("preview").style.display = "none";
+    $("replyCard").style.display = "none";
+    $("dropText").style.display = "block";
+  };
+
+  // ---------- Image Processing (simple + stable) ----------
+  const loadImageFromFile = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const imgFromDataURL = (dataURL) => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = dataURL;
+  });
+
+  const resizeToThumb = (img, maxSide=256) => {
+    const w = img.naturalWidth || img.width;
+    const h = img.naturalHeight || img.height;
+    const scale = Math.min(1, maxSide / Math.max(w,h));
+    const tw = Math.max(1, Math.round(w * scale));
+    const th = Math.max(1, Math.round(h * scale));
+    const c = document.createElement("canvas");
+    c.width = tw; c.height = th;
+    const ctx = c.getContext("2d", { willReadFrequently:true });
+    ctx.drawImage(img, 0, 0, tw, th);
+    return c.toDataURL("image/jpeg", 0.80);
+  };
+
+  const analyzeImage = async (dataURL) => {
+    const img = await imgFromDataURL(dataURL);
+
+    // sample down to 64x64 for quick stats
+    const c = document.createElement("canvas");
+    const sw = 64, sh = 64;
+    c.width = sw; c.height = sh;
+    const ctx = c.getContext("2d", { willReadFrequently:true });
+    ctx.drawImage(img, 0, 0, sw, sh);
+    const { data } = ctx.getImageData(0,0,sw,sh);
+
+    let sumL=0, sumR=0, sumG=0, sumB=0;
+    let sumL2=0;
+    let n=0;
+
+    // luminance & color means
+    for (let i=0;i<data.length;i+=4){
+      const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+      if (a < 10) continue;
+      const l = 0.2126*r + 0.7152*g + 0.0722*b;
+      sumL += l;
+      sumL2 += l*l;
+      sumR += r; sumG += g; sumB += b;
+      n++;
+    }
+    if (!n) n=1;
+    const meanL = sumL/n;
+    const varL = Math.max(0, (sumL2/n) - (meanL*meanL));
+    const stdL = Math.sqrt(varL);
+
+    const meanR = sumR/n, meanG = sumG/n, meanB = sumB/n;
+
+    // warmth approximation: (R - B) and (R+G - 2B) vibe
+    const warmth = (meanR - meanB);
+    const neutral = Math.abs(meanR-meanG) + Math.abs(meanG-meanB);
+    const contrast = stdL;
+
+    // tags (NO scoring)
+    const tags = [];
+
+    // brightness
+    if (meanL < 65) tags.push("明暗：偏暗");
+    else if (meanL > 175) tags.push("明暗：偏亮");
+    else tags.push("明暗：柔和");
+
+    // tone
+    if (warmth > 18) tags.push("色調：偏暖");
+    else if (warmth < -18) tags.push("色調：偏冷");
+    else tags.push("色調：中性");
+
+    // atmosphere
+    if (contrast < 28) tags.push("氛圍：溫柔平靜");
+    else if (contrast > 62) tags.push("氛圍：清晰有力");
+    else tags.push("氛圍：穩定自然");
+
+    // simple quality reminder (still allow)
+    let reminder = "";
+    if (meanL < 55) reminder = "照片偏暗；若可以，換到光線更足的地方會更舒服。";
+    else if (meanL > 190) reminder = "照片偏亮；稍微避開直射光，畫面會更柔和。";
+    else if (contrast < 22) reminder = "畫面對比偏低；靠近一點或對焦清楚會更有細節。";
+    else reminder = "照片狀態穩定，可以直接用這張來記錄當下。";
+
+    const meta = `${img.naturalWidth || img.width}×${img.naturalHeight || img.height} · ${state.env.browserLabel} · ${state.env.isHttps ? "HTTPS ✓" : "HTTPS ✗"}`;
+
+    return { tags, reminder, meta, img };
+  };
+
+  // ---------- A+B Companion Reply ----------
+  const pick = (arr, seed) => arr[Math.abs(seed) % arr.length];
+
+  const hashLite = (s) => { // deterministic, tiny hash
+    let h = 2166136261;
+    for (let i=0;i<s.length;i++){
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  };
+
+  const buildReplyAB = ({ tags, reminder, dataURL }) => {
+    const seed = hashLite((tags||[]).join("|") + "|" + (dataURL ? dataURL.slice(0,80) : ""));
+    const tone = (tags||[]).find(t=>t.includes("色調")) || "";
+    const light = (tags||[]).find(t=>t.includes("明暗")) || "";
+    const vibe = (tags||[]).find(t=>t.includes("氛圍")) || "";
+
+    // A: 傾聽/共感
+    const A = [
+      "我在。",
+      "我有聽見你。",
+      "你不用急著把一切講清楚，我會陪你慢慢來。",
+      "謝謝你把這一刻交給我。",
+      "你能來到這裡，本身就很勇敢。"
+    ];
+
+    // B: 正能量 + 小而可做的建議（不說教）
+    const B1 = [
+      "如果你願意，先做一件很小的事：深呼吸三次，讓肩膀放鬆一點。",
+      "今天不需要完美，只要把自己照顧好就算贏。",
+      "你不必一個人扛著；把感受放下來，我會接住。",
+      "把注意力拉回當下：喝一口水、看向遠方三秒，讓心慢一點。",
+      "你已經比你以為的更穩了。"
+    ];
+    const B2 = [
+      "你想把今天定義成「休息日」或「重新整理日」都可以。",
+      "你可以只完成一件事：把自己放回安全的位置。",
+      "如果腦袋很吵，先把最在意的一句話寫下來就好。",
+      "如果你想，我也可以當你的『正能量朋友』：你說，我聽。",
+      "我們把今天拆小：先撐過這一刻就好。"
+    ];
+
+    const a = pick(A, seed);
+    const b1 = pick(B1, seed + 11);
+    const b2 = pick(B2, seed + 29);
+
+    const describe = `我看這張照片：${light}、${tone}，而且${vibe}。`;
+    const gentleNote = `\n\n小提醒：${reminder}`;
+
+    // Final: A + describe + A bridge + B
+    return `${a}\n\n${describe}\n\n你願意把這一刻交給我，代表你其實已經很努力了。\n\n${b1}\n${b2}${gentleNote}`;
+  };
+
+  // ---------- Smart Fallback Camera ----------
+  const smartTriggerCamera = () => {
+    const camInput = $("cameraInput");
+    const albInput = $("albumInput");
+
+    // attempt camera
+    let didBlur = false;
+    let timeoutHit = false;
+
+    const onBlur = () => { didBlur = true; };
+    window.addEventListener("blur", onBlur, { once:true });
+
+    try { camInput.value = ""; } catch {}
+    camInput.click();
+
+    // If no blur within 650ms -> likely blocked; fall back to album
+    setTimeout(() => {
+      timeoutHit = true;
+      window.removeEventListener("blur", onBlur);
+      if (!didBlur) {
+        try { albInput.value = ""; } catch {}
+        albInput.click();
+        toast("相機受限，已改用相簿");
       }
+    }, 650);
 
-      // Language
-      const langBack = document.getElementById("langBack");
-      if(langBack) langBack.onclick = ()=>setPage("settings");
+    // If blur happened, user went to camera; no further action here
+    // If they cancel camera, we still won't know; but album button exists
+    void timeoutHit;
+  };
 
-      const langList = document.getElementById("langList");
-      if(langList){
-        langList.querySelectorAll("button[data-lang]").forEach(btn=>{
-          btn.onclick = ()=>{
-            const code = btn.getAttribute("data-lang");
-            if(I18N[code]){
-              state.lang = code;
-              persist();
-              render();
-            }
-          };
-        });
-      }
-
-      // Privacy
-      const privBack = document.getElementById("privBack");
-      if(privBack) privBack.onclick = ()=>setPage("settings");
-
-      const clearAll2 = document.getElementById("clearAll2");
-      if(clearAll2) clearAll2.onclick = ()=>clearAll();
+  // ---------- Handlers ----------
+  const handleFile = async (file) => {
+    if (!file) return;
+    if (!file.type || !file.type.startsWith("image/")) {
+      toast("請選擇圖片檔");
+      return;
     }
 
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-    function escapeAttr(str){ return escapeHtml(str).replaceAll("\n"," "); }
+    const dataURL = await loadImageFromFile(file);
+    const { tags, reminder, meta, img } = await analyzeImage(dataURL);
+    const thumb = resizeToThumb(img, 256);
+    const reply = buildReplyAB({ tags, reminder, dataURL });
 
-    // Initial render
-    persist();
-    render();
-  </script>
+    state.current = {
+      imageDataURL: dataURL,
+      thumbDataURL: thumb,
+      tags,
+      meta,
+      reply,
+      createdAt: nowTs(),
+    };
+
+    showPreviewAndReply();
+  };
+
+  const saveRecord = () => {
+    if (!state.current.imageDataURL) return;
+    const id = "r_" + state.current.createdAt + "_" + Math.random().toString(16).slice(2);
+    state.records.push({
+      id,
+      createdAt: state.current.createdAt,
+      imageDataURL: state.current.imageDataURL,
+      thumbDataURL: state.current.thumbDataURL,
+      tags: state.current.tags,
+      meta: state.current.meta,
+      reply: state.current.reply,
+    });
+    persistRecords();
+    renderList();
+    toast("已存成紀錄");
+  };
+
+  const copyReply = async () => {
+    const txt = state.current.reply || "";
+    if (!txt) return;
+    try{
+      await navigator.clipboard.writeText(txt);
+      toast("已複製");
+    }catch{
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = txt;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      toast("已複製");
+    }
+  };
+
+  // ---------- Settings Modal ----------
+  const openModal = () => $("modalWrap").style.display = "flex";
+  const closeModal = () => $("modalWrap").style.display = "none";
+
+  const saveSettings = () => {
+    const mode = $("modeInput").value.trim() || "Stable v4.5";
+    const sub = $("subtitleInput").value.trim() || "Your Gentle AI Listener";
+    const show = $("hintToggle").checked;
+
+    state.settings.modeText = mode;
+    state.settings.subtitle = sub;
+    state.settings.showInAppHint = show;
+
+    persistSettings();
+    applySettingsToUI();
+    toast("已儲存設定");
+    closeModal();
+  };
+
+  const resetSettings = () => {
+    state.settings = {
+      modeText: "Stable v4.5",
+      subtitle: "Your Gentle AI Listener",
+      showInAppHint: true,
+    };
+    persistSettings();
+    applySettingsToUI();
+    toast("已重置");
+  };
+
+  // ---------- Drag & Drop ----------
+  const bindDrop = () => {
+    const dz = $("dropZone");
+    const prevent = (e) => { e.preventDefault(); e.stopPropagation(); };
+
+    ["dragenter","dragover","dragleave","drop"].forEach(ev => {
+      dz.addEventListener(ev, prevent);
+    });
+
+    dz.addEventListener("drop", async (e) => {
+      const f = e.dataTransfer?.files?.[0];
+      if (f) await handleFile(f);
+    });
+  };
+
+  // ---------- Init ----------
+  const init = () => {
+    loadAll();
+
+    state.env.isInApp = detectInApp();
+    state.env.browserLabel = detectBrowserLabel();
+    applyEnvBadges();
+    applySettingsToUI();
+    renderList();
+    bindDrop();
+
+    // Buttons
+    $("settingsBtn").onclick = openModal;
+    $("closeModal").onclick = closeModal;
+    $("modalWrap").onclick = (e) => { if (e.target === $("modalWrap")) closeModal(); };
+    $("saveSettings").onclick = saveSettings;
+    $("resetSettings").onclick = resetSettings;
+
+    $("cameraBtn").onclick = smartTriggerCamera;
+    $("albumBtn").onclick = () => { try{ $("albumInput").value=""; }catch{} $("albumInput").click(); };
+
+    $("cameraInput").addEventListener("change", async (e) => {
+      const f = e.target.files && e.target.files[0];
+      await handleFile(f);
+    });
+    $("albumInput").addEventListener("change", async (e) => {
+      const f = e.target.files && e.target.files[0];
+      await handleFile(f);
+    });
+
+    $("saveBtn").onclick = saveRecord;
+    $("backBtn").onclick = backHome;
+    $("copyBtn").onclick = copyReply;
+
+    // Optional: click the ring opens album (safe)
+    $("dropZone").onclick = () => {
+      // Keep it gentle: open album (most compatible)
+      try{ $("albumInput").value=""; }catch{}
+      $("albumInput").click();
+    };
+  };
+
+  init();
+})();
+</script>
 </body>
 </html>

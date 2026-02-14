@@ -1,1070 +1,187 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0B1024" />
-  <title>Flux Companion</title>
-  <style>
-    :root{
-      --bg1:#070A16;
-      --bg2:#0B1024;
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.08);
-      --border:rgba(255,255,255,.10);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.66);
-      --muted2:rgba(255,255,255,.46);
-      --accent1:#6C63FF;
-      --accent2:#3A9DFF;
-      --good:#36d399;
-      --warn:#fbbf24;
-      --bad:#fb7185;
-      --shadow:0 18px 60px rgba(0,0,0,.55);
-      --radius:22px;
-      --radius2:16px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--font);
-      color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(108,99,255,.30), transparent 55%),
-        radial-gradient(900px 500px at 80% 20%, rgba(58,157,255,.22), transparent 55%),
-        linear-gradient(180deg, var(--bg2), var(--bg1));
-      min-height:100%;
-      overflow-x:hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flux Companion — Your Gentle AI Listener</title>
 
-    .wrap{max-width:980px;margin:0 auto;padding:18px 16px 42px}
-    .top{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:10px 6px 14px;
-    }
-    .brand{display:flex; align-items:center; gap:10px}
-    .dot{
-      width:12px;height:12px;border-radius:50%;
-      background:linear-gradient(135deg,var(--accent2),var(--accent1));
-      box-shadow:0 0 0 6px rgba(108,99,255,.14);
-    }
-    .brand h1{
-      font-size:18px; margin:0; letter-spacing:.2px; font-weight:750;
-    }
-    .badgeRow{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
-    .pill{
-      font-size:12px; padding:7px 10px; border-radius:999px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      color:rgba(255,255,255,.78);
-      display:inline-flex; align-items:center; gap:6px;
-      backdrop-filter: blur(10px);
-    }
-    .pill .led{width:8px;height:8px;border-radius:50%; background:var(--good)}
-    .pill.warn .led{background:var(--warn)}
-    .pill.bad .led{background:var(--bad)}
+<style>
+:root{
+  --bg1:#0f172a;
+  --bg2:#1e293b;
+  --accent:#7c8cff;
+  --text:#e6ecff;
+  --card:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.12);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+}
 
-    .iconBtn{
-      width:42px;height:42px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:rgba(255,255,255,.92);
-      display:grid; place-items:center;
-      cursor:pointer;
-      backdrop-filter: blur(10px);
-    }
-    .iconBtn:active{transform:scale(.98)}
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:14px;
-    }
-    @media(min-width:920px){
-      .grid{grid-template-columns: 1.15fr .85fr; align-items:start}
-    }
+*{box-sizing:border-box}
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .hero{
-      padding:22px 20px 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-    }
-    .hero .today{
-      font-size:12px; letter-spacing:.9px;
-      color:rgba(255,255,255,.50);
-      text-transform:uppercase;
-      margin-bottom:10px;
-    }
-    .hero .title{
-      font-size:40px; line-height:1.05; margin:0 0 10px; font-weight:820;
-      letter-spacing:.2px;
-    }
-    .hero .sub{
-      margin:0;
-      color:rgba(255,255,255,.74);
-      line-height:1.6;
-      font-size:15px;
-    }
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  background:
+  radial-gradient(1200px 600px at 20% 10%, rgba(108,99,255,.25), transparent 55%),
+  radial-gradient(900px 500px at 80% 20%, rgba(58,157,255,.18), transparent 55%),
+  linear-gradient(180deg,var(--bg2),var(--bg1));
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 
-    .stage{
-      padding:18px 20px 20px;
-    }
-    .ring{
-      height:240px;
-      display:grid; place-items:center;
-      border-radius:var(--radius);
-      position:relative;
-      overflow:hidden;
-      background:
-        radial-gradient(100px 100px at 50% 48%, rgba(255,255,255,.10), transparent 65%),
-        radial-gradient(260px 260px at 50% 60%, rgba(108,99,255,.20), transparent 60%),
-        radial-gradient(340px 340px at 50% 60%, rgba(58,157,255,.14), transparent 62%);
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .camBtnBig{
-      width:86px;height:86px;border-radius:26px;
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.16);
-      display:grid; place-items:center;
-    }
-    .camBtnBig svg{opacity:.92}
+.app{
+  width:100%;
+  max-width:420px;
+  padding:24px;
+}
 
-    .actions{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-top:14px;
-    }
-    .btn{
-      border:none;
-      border-radius:16px;
-      padding:14px 14px;
-      font-size:16px;
-      font-weight:750;
-      cursor:pointer;
-      color:rgba(255,255,255,.92);
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
-      backdrop-filter: blur(10px);
-    }
-    .btn.primary{
-      background:linear-gradient(135deg,var(--accent1),var(--accent2));
-      border:none;
-    }
-    .btn:active{transform:scale(.99)}
-    .hint{
-      margin-top:10px;
-      color:rgba(255,255,255,.62);
-      font-size:13px;
-      line-height:1.55;
-    }
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:24px;
+  backdrop-filter:blur(20px);
+}
 
-    .drop{
-      margin-top:14px;
-      border-radius:18px;
-      border:1px dashed rgba(255,255,255,.18);
-      padding:14px;
-      color:rgba(255,255,255,.60);
-      font-size:13px;
-      text-align:center;
-      background:rgba(0,0,0,.12);
-    }
-    .drop strong{color:rgba(255,255,255,.78)}
-    .preview{
-      margin-top:14px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
-    .thumb{
-      width:96px;height:96px;border-radius:18px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      overflow:hidden;
-      display:grid; place-items:center;
-    }
-    .thumb img{width:100%;height:100%;object-fit:cover}
-    .meta{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .chips{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{
-      font-size:12px;
-      padding:7px 10px;
-      border-radius:999px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      color:rgba(255,255,255,.76);
-    }
+.title{
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:8px;
+}
 
-    .replyCard{
-      margin-top:14px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:20px;
-      padding:16px 16px 14px;
-    }
-    .replyTitle{
-      display:flex; align-items:center; gap:10px;
-      font-weight:820;
-      margin-bottom:10px;
-    }
-    .heart{
-      width:22px;height:22px;border-radius:8px;
-      display:grid; place-items:center;
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .replyText{
-      color:rgba(255,255,255,.82);
-      line-height:1.75;
-      font-size:15px;
-      white-space:pre-wrap;
-    }
-    .footerBtns{
-      display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;
-    }
-    .btn2{
-      border-radius:14px;
-      padding:12px 14px;
-      font-size:15px;
-      font-weight:800;
-      cursor:pointer;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.07);
-      color:rgba(255,255,255,.92);
-    }
-    .btn2.dark{
-      background:rgba(0,0,0,.20);
-    }
+.subtitle{
+  opacity:.8;
+  margin-bottom:24px;
+}
 
-    .side{
-      padding:18px;
-    }
-    .side h2{margin:0 0 10px; font-size:16px; font-weight:850}
-    .side p{margin:0 0 14px; color:rgba(255,255,255,.70); line-height:1.6; font-size:13px}
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .item{
-      display:flex; gap:10px; align-items:center;
-      padding:10px;
-      border-radius:16px;
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.10);
-      cursor:pointer;
-    }
-    .item:active{transform:scale(.995)}
-    .itemThumb{
-      width:52px;height:52px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      overflow:hidden;
-      background:rgba(255,255,255,.06);
-      flex:0 0 auto;
-    }
-    .itemThumb img{width:100%;height:100%;object-fit:cover}
-    .itemMeta{flex:1; min-width:0}
-    .itemMeta .t{font-weight:820; font-size:13px; margin-bottom:2px}
-    .itemMeta .d{font-size:12px; color:rgba(255,255,255,.62); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-    .itemActions{display:flex; gap:8px}
-    .mini{
-      width:34px;height:34px;border-radius:12px;
-      display:grid;place-items:center;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      cursor:pointer;
-    }
+.camera-box{
+  height:220px;
+  border-radius:20px;
+  border:1px dashed var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:20px;
+}
 
-    .note{
-      margin-top:12px;
-      color:rgba(255,255,255,.42);
-      font-size:12px;
-      line-height:1.55;
-    }
+.buttons{
+  display:flex;
+  gap:12px;
+}
 
-    /* Modal */
-    .modalWrap{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:flex-end;
-      justify-content:center;
-      padding:18px 12px 22px;
-      z-index:50;
-    }
-    .modal{
-      width:min(640px, 100%);
-      border-radius:22px;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
-      border:1px solid rgba(255,255,255,.12);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .modalHead{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 14px 10px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-    }
-    .modalHead h3{margin:0; font-size:16px; font-weight:900}
-    .modalBody{padding:14px}
-    .row{display:flex; flex-direction:column; gap:8px; margin-bottom:12px}
-    label{font-size:12px; color:rgba(255,255,255,.70)}
-    input[type="text"]{
-      width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      background:rgba(0,0,0,.20);
-      border:1px solid rgba(255,255,255,.12);
-      color:rgba(255,255,255,.92);
-      outline:none;
-    }
-    .checkRow{display:flex; align-items:center; gap:10px}
-    .checkRow input{width:18px;height:18px}
-    .modalBtns{display:flex; gap:10px; padding:0 14px 14px}
-    .modalBtns .btn{flex:1}
+button{
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+}
 
-    /* small toast */
-    .toast{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:20px;
-      background:rgba(0,0,0,.65);
-      border:1px solid rgba(255,255,255,.12);
-      color:rgba(255,255,255,.92);
-      padding:10px 12px;
-      border-radius:14px;
-      font-size:13px;
-      display:none;
-      z-index:60;
-      backdrop-filter: blur(10px);
-      max-width:min(560px, calc(100vw - 24px));
-    }
+.primary{
+  background:linear-gradient(135deg,#7c8cff,#4cc9f0);
+  color:white;
+}
 
-    /* hidden inputs */
-    input[type="file"]{position:absolute; left:-9999px; width:1px; height:1px; opacity:0}
-  </style>
+.secondary{
+  background:rgba(255,255,255,0.08);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+.ai-box{
+  margin-top:20px;
+  background:rgba(255,255,255,0.05);
+  border-radius:18px;
+  padding:18px;
+  line-height:1.7;
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="brand">
-        <div class="dot"></div>
-        <div>
-          <h1 id="appName">Flux Companion</h1>
-          <div style="font-size:12px;color:rgba(255,255,255,.62);margin-top:2px" id="subtitle">Your Gentle AI Listener</div>
-        </div>
-      </div>
-      <div class="badgeRow">
-        <span class="pill" id="modePill"><span class="led"></span><span id="modeText">Stable v4.5</span></span>
-        <span class="pill" id="browserPill"><span class="led"></span><span id="browserText">Browser: Normal</span></span>
-        <span class="pill" id="httpsPill"><span class="led"></span><span id="httpsText">HTTPS: OK</span></span>
-        <button class="iconBtn" id="settingsBtn" title="設定">
-          <!-- gear -->
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 15.6a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2Z" stroke="currentColor" stroke-width="2"/>
-            <path d="M19.4 15a8.9 8.9 0 0 0 .1-1l2-1.5-2-3.5-2.4.8a8.5 8.5 0 0 0-.8-.7l-.2-2.5H10l-.2 2.5c-.3.2-.6.4-.8.7l-2.4-.8-2 3.5 2 1.5a8.9 8.9 0 0 0 .1 1l-2 1.5 2 3.5 2.4-.8c.2.3.5.5.8.7L10 22h4l.2-2.5c.3-.2.6-.4.8-.7l2.4.8 2-3.5-2-1.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
+<div class="app">
+  <div class="card">
+    <div class="title">今天的你，還好嗎？</div>
+    <div class="subtitle">我在這裡陪你。拍一張照片，我會溫柔回應你的情境。</div>
+
+    <div class="camera-box" id="preview">
+      📷 上傳一張照片
     </div>
 
-    <div class="grid">
-      <!-- Main -->
-      <div class="card">
-        <div class="hero">
-          <div class="today">TODAY</div>
-          <h2 class="title" id="greeting">今天的你，還好嗎？</h2>
-          <p class="sub" id="greetingSub">把此刻交給我，我會溫柔理解。</p>
-        </div>
-
-        <div class="stage">
-          <div class="ring" id="dropZone">
-            <div class="camBtnBig" aria-hidden="true">
-              <!-- camera icon -->
-              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                <path d="M9 7 10.5 5h3L15 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
-                <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="white" stroke-width="2"/>
-              </svg>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button class="btn primary" id="cameraBtn">拍照</button>
-            <button class="btn" id="albumBtn">相簿</button>
-          </div>
-
-          <div class="hint" id="inAppHint" style="display:none">
-            若在某些 App 內建瀏覽器受限，建議用 <strong>Chrome / Safari</strong> 開啟。本頁會自動改用相簿避免卡死。
-          </div>
-
-          <div class="drop" id="dropText">
-            <strong>你也可以把圖片拖進來</strong>（電腦測試很方便）<br/>
-            不做醫療診斷，只做「情境感受」陪伴回覆。
-          </div>
-
-          <div class="preview" id="preview" style="display:none">
-            <div class="thumb"><img id="previewImg" alt="預覽" /></div>
-            <div class="meta">
-              <div class="chips" id="chips"></div>
-              <div style="font-size:12px;color:rgba(255,255,255,.58)" id="imgMeta"></div>
-            </div>
-          </div>
-
-          <div class="replyCard" id="replyCard" style="display:none">
-            <div class="replyTitle">
-              <div class="heart">💛</div>
-              <div>AI 回覆</div>
-            </div>
-            <div class="replyText" id="replyText"></div>
-
-            <div class="footerBtns">
-              <button class="btn2" id="saveBtn">存成紀錄</button>
-              <button class="btn2 dark" id="backBtn">回首頁</button>
-              <button class="btn2 dark" id="copyBtn">複製文字</button>
-            </div>
-
-            <div class="note">
-              這是陪伴式回覆（A:共感傾聽 + B:溫柔正能量建議），不等於醫療或心理治療建議。
-            </div>
-          </div>
-
-          <!-- Inputs -->
-          <input id="cameraInput" type="file" accept="image/*" capture="environment" />
-          <input id="albumInput" type="file" accept="image/*" />
-        </div>
-      </div>
-
-      <!-- Side -->
-      <div class="card">
-        <div class="side">
-          <h2>你的紀錄</h2>
-          <p>每一筆都是一個「被理解的瞬間」。點開可回看，或刪除。</p>
-          <div class="list" id="list"></div>
-          <div class="note">
-            資料只存你手機/瀏覽器本機（localStorage）。更換裝置就不會同步。
-          </div>
-        </div>
-      </div>
+    <div class="buttons">
+      <button class="primary" id="cameraBtn">拍照</button>
+      <button class="secondary" id="galleryBtn">相簿</button>
     </div>
+
+    <div class="ai-box" id="aiReply" style="display:none;"></div>
   </div>
+</div>
 
-  <!-- Settings Modal -->
-  <div class="modalWrap" id="modalWrap">
-    <div class="modal">
-      <div class="modalHead">
-        <h3>設定</h3>
-        <button class="iconBtn" id="closeModal" title="關閉">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div class="modalBody">
-        <div class="row">
-          <label>模式顯示文字（右上角標籤）</label>
-          <input type="text" id="modeInput" placeholder="例如：Stable v4.5" />
-        </div>
-        <div class="row">
-          <label>副標（App 介紹）</label>
-          <input type="text" id="subtitleInput" placeholder="例如：Your Gentle AI Listener" />
-        </div>
-        <div class="row">
-          <div class="checkRow">
-            <input type="checkbox" id="hintToggle" />
-            <label for="hintToggle">顯示「內建瀏覽器可能限制相機」提示</label>
-          </div>
-        </div>
-      </div>
-      <div class="modalBtns">
-        <button class="btn primary" id="saveSettings">儲存</button>
-        <button class="btn" id="resetSettings">重置</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept="image/*" capture="environment" hidden>
 
 <script>
-(() => {
-  const STORAGE_KEY = "flux_companion_v45";
-  const SETTINGS_KEY = "flux_companion_settings_v45";
-
-  const $ = (id) => document.getElementById(id);
-
-  const state = {
-    settings: {
-      modeText: "Stable v4.5",
-      subtitle: "Your Gentle AI Listener",
-      showInAppHint: true,
-    },
-    env: {
-      isHttps: location.protocol === "https:",
-      isInApp: false,
-      browserLabel: "Normal",
-    },
-    current: {
-      imageDataURL: "",
-      thumbDataURL: "",
-      tags: [],
-      meta: "",
-      reply: "",
-      createdAt: 0,
-    },
-    records: [],
-  };
-
-  // ---------- Utilities ----------
-  const nowTs = () => Date.now();
-  const fmtTime = (ts) => {
-    const d = new Date(ts);
-    const pad = (n) => String(n).padStart(2,"0");
-    return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  };
-
-  const toast = (msg) => {
-    const el = $("toast");
-    el.textContent = msg;
-    el.style.display = "block";
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => (el.style.display = "none"), 1700);
-  };
-
-  const safeJSONParse = (s, fallback) => {
-    try { return JSON.parse(s); } catch { return fallback; }
-  };
-
-  const persistRecords = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.records));
-  };
-
-  const persistSettings = () => {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
-  };
-
-  const loadAll = () => {
-    state.records = safeJSONParse(localStorage.getItem(STORAGE_KEY), []);
-    const savedSettings = safeJSONParse(localStorage.getItem(SETTINGS_KEY), null);
-    if (savedSettings && typeof savedSettings === "object") {
-      state.settings = { ...state.settings, ...savedSettings };
-    }
-  };
-
-  // ---------- Environment Detection ----------
-  const detectInApp = () => {
-    const ua = navigator.userAgent || "";
-    const isFB = /FBAN|FBAV|FB_IAB/i.test(ua);
-    const isIG = /Instagram/i.test(ua);
-    const isLine = /Line|LIFF/i.test(ua);
-    const isWeChat = /MicroMessenger/i.test(ua);
-    const isTikTok = /TikTok/i.test(ua);
-    const isGSA = /\bGSA\b/i.test(ua); // Google App
-    const isWebView = /(wv|; wv\)|Version\/\d+\.\d+.*Chrome\/\d+.*Mobile Safari\/\d+)/i.test(ua);
-    return isFB || isIG || isLine || isWeChat || isTikTok || isGSA || isWebView;
-  };
-
-  const detectBrowserLabel = () => {
-    const ua = navigator.userAgent || "";
-    if (/CriOS/i.test(ua)) return "Chrome(iOS)";
-    if (/EdgA|EdgiOS|Edg/i.test(ua)) return "Edge";
-    if (/Chrome/i.test(ua) && !/OPR|Edg/i.test(ua)) return "Chrome";
-    if (/Safari/i.test(ua) && !/Chrome|CriOS/i.test(ua)) return "Safari";
-    return "Normal";
-  };
-
-  // ---------- UI Render ----------
-  const applySettingsToUI = () => {
-    $("modeText").textContent = state.settings.modeText;
-    $("subtitle").textContent = state.settings.subtitle;
-
-    $("modeInput").value = state.settings.modeText;
-    $("subtitleInput").value = state.settings.subtitle;
-    $("hintToggle").checked = !!state.settings.showInAppHint;
-
-    // In-app hint visibility
-    const shouldShow = state.settings.showInAppHint && state.env.isInApp;
-    $("inAppHint").style.display = shouldShow ? "block" : "none";
-  };
-
-  const applyEnvBadges = () => {
-    // Browser badge
-    $("browserText").textContent = `Browser: ${state.env.browserLabel}`;
-    $("browserPill").classList.remove("warn","bad");
-    $("browserPill").querySelector(".led").style.background = state.env.isInApp ? "var(--warn)" : "var(--good)";
-    if (state.env.isInApp) $("browserPill").classList.add("warn");
-
-    // HTTPS badge
-    $("httpsText").textContent = state.env.isHttps ? "HTTPS: OK" : "HTTPS: NO";
-    $("httpsPill").classList.remove("warn","bad");
-    $("httpsPill").querySelector(".led").style.background = state.env.isHttps ? "var(--good)" : "var(--bad)";
-    if (!state.env.isHttps) $("httpsPill").classList.add("bad");
-  };
-
-  const renderList = () => {
-    const list = $("list");
-    list.innerHTML = "";
-    if (!state.records.length) {
-      const empty = document.createElement("div");
-      empty.className = "note";
-      empty.textContent = "目前還沒有紀錄。上傳一張照片，讓我陪你說說當下。";
-      list.appendChild(empty);
-      return;
-    }
-
-    state.records
-      .slice()
-      .sort((a,b) => b.createdAt - a.createdAt)
-      .forEach((r) => {
-        const item = document.createElement("div");
-        item.className = "item";
-
-        const th = document.createElement("div");
-        th.className = "itemThumb";
-        const img = document.createElement("img");
-        img.src = r.thumbDataURL || "";
-        img.alt = "thumb";
-        th.appendChild(img);
-
-        const meta = document.createElement("div");
-        meta.className = "itemMeta";
-        const t = document.createElement("div");
-        t.className = "t";
-        t.textContent = fmtTime(r.createdAt);
-        const d = document.createElement("div");
-        d.className = "d";
-        d.textContent = (r.tags || []).join(" · ") || "（無標籤）";
-        meta.appendChild(t);
-        meta.appendChild(d);
-
-        const acts = document.createElement("div");
-        acts.className = "itemActions";
-
-        const openBtn = document.createElement("button");
-        openBtn.className = "mini";
-        openBtn.title = "打開";
-        openBtn.innerHTML = "↗";
-        openBtn.onclick = (e) => {
-          e.stopPropagation();
-          openRecord(r.id);
-        };
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "mini";
-        delBtn.title = "刪除";
-        delBtn.innerHTML = "🗑";
-        delBtn.onclick = (e) => {
-          e.stopPropagation();
-          removeRecord(r.id);
-        };
-
-        acts.appendChild(openBtn);
-        acts.appendChild(delBtn);
-
-        item.appendChild(th);
-        item.appendChild(meta);
-        item.appendChild(acts);
-
-        item.onclick = () => openRecord(r.id);
-
-        list.appendChild(item);
-      });
-  };
-
-  const openRecord = (id) => {
-    const r = state.records.find(x => x.id === id);
-    if (!r) return;
-    state.current = {
-      imageDataURL: r.imageDataURL,
-      thumbDataURL: r.thumbDataURL,
-      tags: r.tags,
-      meta: r.meta,
-      reply: r.reply,
-      createdAt: r.createdAt,
-    };
-    showPreviewAndReply();
-    toast("已打開紀錄");
-  };
-
-  const removeRecord = (id) => {
-    state.records = state.records.filter(x => x.id !== id);
-    persistRecords();
-    renderList();
-    toast("已刪除");
-  };
-
-  const showPreviewAndReply = () => {
-    $("preview").style.display = "flex";
-    $("replyCard").style.display = "block";
-    $("previewImg").src = state.current.imageDataURL;
-
-    $("chips").innerHTML = "";
-    (state.current.tags || []).forEach(tag => {
-      const c = document.createElement("span");
-      c.className = "chip";
-      c.textContent = tag;
-      $("chips").appendChild(c);
-    });
-    $("imgMeta").textContent = state.current.meta || "";
-    $("replyText").textContent = state.current.reply || "";
-    $("dropText").style.display = "none";
-  };
-
-  const backHome = () => {
-    state.current = {
-      imageDataURL: "",
-      thumbDataURL: "",
-      tags: [],
-      meta: "",
-      reply: "",
-      createdAt: 0,
-    };
-    $("preview").style.display = "none";
-    $("replyCard").style.display = "none";
-    $("dropText").style.display = "block";
-  };
-
-  // ---------- Image Processing (simple + stable) ----------
-  const loadImageFromFile = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result || ""));
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
-  const imgFromDataURL = (dataURL) => new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = dataURL;
-  });
-
-  const resizeToThumb = (img, maxSide=256) => {
-    const w = img.naturalWidth || img.width;
-    const h = img.naturalHeight || img.height;
-    const scale = Math.min(1, maxSide / Math.max(w,h));
-    const tw = Math.max(1, Math.round(w * scale));
-    const th = Math.max(1, Math.round(h * scale));
-    const c = document.createElement("canvas");
-    c.width = tw; c.height = th;
-    const ctx = c.getContext("2d", { willReadFrequently:true });
-    ctx.drawImage(img, 0, 0, tw, th);
-    return c.toDataURL("image/jpeg", 0.80);
-  };
-
-  const analyzeImage = async (dataURL) => {
-    const img = await imgFromDataURL(dataURL);
-
-    // sample down to 64x64 for quick stats
-    const c = document.createElement("canvas");
-    const sw = 64, sh = 64;
-    c.width = sw; c.height = sh;
-    const ctx = c.getContext("2d", { willReadFrequently:true });
-    ctx.drawImage(img, 0, 0, sw, sh);
-    const { data } = ctx.getImageData(0,0,sw,sh);
-
-    let sumL=0, sumR=0, sumG=0, sumB=0;
-    let sumL2=0;
-    let n=0;
-
-    // luminance & color means
-    for (let i=0;i<data.length;i+=4){
-      const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
-      if (a < 10) continue;
-      const l = 0.2126*r + 0.7152*g + 0.0722*b;
-      sumL += l;
-      sumL2 += l*l;
-      sumR += r; sumG += g; sumB += b;
-      n++;
-    }
-    if (!n) n=1;
-    const meanL = sumL/n;
-    const varL = Math.max(0, (sumL2/n) - (meanL*meanL));
-    const stdL = Math.sqrt(varL);
-
-    const meanR = sumR/n, meanG = sumG/n, meanB = sumB/n;
-
-    // warmth approximation: (R - B) and (R+G - 2B) vibe
-    const warmth = (meanR - meanB);
-    const neutral = Math.abs(meanR-meanG) + Math.abs(meanG-meanB);
-    const contrast = stdL;
-
-    // tags (NO scoring)
-    const tags = [];
-
-    // brightness
-    if (meanL < 65) tags.push("明暗：偏暗");
-    else if (meanL > 175) tags.push("明暗：偏亮");
-    else tags.push("明暗：柔和");
-
-    // tone
-    if (warmth > 18) tags.push("色調：偏暖");
-    else if (warmth < -18) tags.push("色調：偏冷");
-    else tags.push("色調：中性");
-
-    // atmosphere
-    if (contrast < 28) tags.push("氛圍：溫柔平靜");
-    else if (contrast > 62) tags.push("氛圍：清晰有力");
-    else tags.push("氛圍：穩定自然");
-
-    // simple quality reminder (still allow)
-    let reminder = "";
-    if (meanL < 55) reminder = "照片偏暗；若可以，換到光線更足的地方會更舒服。";
-    else if (meanL > 190) reminder = "照片偏亮；稍微避開直射光，畫面會更柔和。";
-    else if (contrast < 22) reminder = "畫面對比偏低；靠近一點或對焦清楚會更有細節。";
-    else reminder = "照片狀態穩定，可以直接用這張來記錄當下。";
-
-    const meta = `${img.naturalWidth || img.width}×${img.naturalHeight || img.height} · ${state.env.browserLabel} · ${state.env.isHttps ? "HTTPS ✓" : "HTTPS ✗"}`;
-
-    return { tags, reminder, meta, img };
-  };
-
-  // ---------- A+B Companion Reply ----------
-  const pick = (arr, seed) => arr[Math.abs(seed) % arr.length];
-
-  const hashLite = (s) => { // deterministic, tiny hash
-    let h = 2166136261;
-    for (let i=0;i<s.length;i++){
-      h ^= s.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return h >>> 0;
-  };
-
-  const buildReplyAB = ({ tags, reminder, dataURL }) => {
-    const seed = hashLite((tags||[]).join("|") + "|" + (dataURL ? dataURL.slice(0,80) : ""));
-    const tone = (tags||[]).find(t=>t.includes("色調")) || "";
-    const light = (tags||[]).find(t=>t.includes("明暗")) || "";
-    const vibe = (tags||[]).find(t=>t.includes("氛圍")) || "";
-
-    // A: 傾聽/共感
-    const A = [
-      "我在。",
-      "我有聽見你。",
-      "你不用急著把一切講清楚，我會陪你慢慢來。",
-      "謝謝你把這一刻交給我。",
-      "你能來到這裡，本身就很勇敢。"
-    ];
-
-    // B: 正能量 + 小而可做的建議（不說教）
-    const B1 = [
-      "如果你願意，先做一件很小的事：深呼吸三次，讓肩膀放鬆一點。",
-      "今天不需要完美，只要把自己照顧好就算贏。",
-      "你不必一個人扛著；把感受放下來，我會接住。",
-      "把注意力拉回當下：喝一口水、看向遠方三秒，讓心慢一點。",
-      "你已經比你以為的更穩了。"
-    ];
-    const B2 = [
-      "你想把今天定義成「休息日」或「重新整理日」都可以。",
-      "你可以只完成一件事：把自己放回安全的位置。",
-      "如果腦袋很吵，先把最在意的一句話寫下來就好。",
-      "如果你想，我也可以當你的『正能量朋友』：你說，我聽。",
-      "我們把今天拆小：先撐過這一刻就好。"
-    ];
-
-    const a = pick(A, seed);
-    const b1 = pick(B1, seed + 11);
-    const b2 = pick(B2, seed + 29);
-
-    const describe = `我看這張照片：${light}、${tone}，而且${vibe}。`;
-    const gentleNote = `\n\n小提醒：${reminder}`;
-
-    // Final: A + describe + A bridge + B
-    return `${a}\n\n${describe}\n\n你願意把這一刻交給我，代表你其實已經很努力了。\n\n${b1}\n${b2}${gentleNote}`;
-  };
-
-  // ---------- Smart Fallback Camera ----------
-  const smartTriggerCamera = () => {
-    const camInput = $("cameraInput");
-    const albInput = $("albumInput");
-
-    // attempt camera
-    let didBlur = false;
-    let timeoutHit = false;
-
-    const onBlur = () => { didBlur = true; };
-    window.addEventListener("blur", onBlur, { once:true });
-
-    try { camInput.value = ""; } catch {}
-    camInput.click();
-
-    // If no blur within 650ms -> likely blocked; fall back to album
-    setTimeout(() => {
-      timeoutHit = true;
-      window.removeEventListener("blur", onBlur);
-      if (!didBlur) {
-        try { albInput.value = ""; } catch {}
-        albInput.click();
-        toast("相機受限，已改用相簿");
-      }
-    }, 650);
-
-    // If blur happened, user went to camera; no further action here
-    // If they cancel camera, we still won't know; but album button exists
-    void timeoutHit;
-  };
-
-  // ---------- Handlers ----------
-  const handleFile = async (file) => {
-    if (!file) return;
-    if (!file.type || !file.type.startsWith("image/")) {
-      toast("請選擇圖片檔");
-      return;
-    }
-
-    const dataURL = await loadImageFromFile(file);
-    const { tags, reminder, meta, img } = await analyzeImage(dataURL);
-    const thumb = resizeToThumb(img, 256);
-    const reply = buildReplyAB({ tags, reminder, dataURL });
-
-    state.current = {
-      imageDataURL: dataURL,
-      thumbDataURL: thumb,
-      tags,
-      meta,
-      reply,
-      createdAt: nowTs(),
-    };
-
-    showPreviewAndReply();
-  };
-
-  const saveRecord = () => {
-    if (!state.current.imageDataURL) return;
-    const id = "r_" + state.current.createdAt + "_" + Math.random().toString(16).slice(2);
-    state.records.push({
-      id,
-      createdAt: state.current.createdAt,
-      imageDataURL: state.current.imageDataURL,
-      thumbDataURL: state.current.thumbDataURL,
-      tags: state.current.tags,
-      meta: state.current.meta,
-      reply: state.current.reply,
-    });
-    persistRecords();
-    renderList();
-    toast("已存成紀錄");
-  };
-
-  const copyReply = async () => {
-    const txt = state.current.reply || "";
-    if (!txt) return;
-    try{
-      await navigator.clipboard.writeText(txt);
-      toast("已複製");
-    }catch{
-      // fallback
-      const ta = document.createElement("textarea");
-      ta.value = txt;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      ta.remove();
-      toast("已複製");
-    }
-  };
-
-  // ---------- Settings Modal ----------
-  const openModal = () => $("modalWrap").style.display = "flex";
-  const closeModal = () => $("modalWrap").style.display = "none";
-
-  const saveSettings = () => {
-    const mode = $("modeInput").value.trim() || "Stable v4.5";
-    const sub = $("subtitleInput").value.trim() || "Your Gentle AI Listener";
-    const show = $("hintToggle").checked;
-
-    state.settings.modeText = mode;
-    state.settings.subtitle = sub;
-    state.settings.showInAppHint = show;
-
-    persistSettings();
-    applySettingsToUI();
-    toast("已儲存設定");
-    closeModal();
-  };
-
-  const resetSettings = () => {
-    state.settings = {
-      modeText: "Stable v4.5",
-      subtitle: "Your Gentle AI Listener",
-      showInAppHint: true,
-    };
-    persistSettings();
-    applySettingsToUI();
-    toast("已重置");
-  };
-
-  // ---------- Drag & Drop ----------
-  const bindDrop = () => {
-    const dz = $("dropZone");
-    const prevent = (e) => { e.preventDefault(); e.stopPropagation(); };
-
-    ["dragenter","dragover","dragleave","drop"].forEach(ev => {
-      dz.addEventListener(ev, prevent);
-    });
-
-    dz.addEventListener("drop", async (e) => {
-      const f = e.dataTransfer?.files?.[0];
-      if (f) await handleFile(f);
-    });
-  };
-
-  // ---------- Init ----------
-  const init = () => {
-    loadAll();
-
-    state.env.isInApp = detectInApp();
-    state.env.browserLabel = detectBrowserLabel();
-    applyEnvBadges();
-    applySettingsToUI();
-    renderList();
-    bindDrop();
-
-    // Buttons
-    $("settingsBtn").onclick = openModal;
-    $("closeModal").onclick = closeModal;
-    $("modalWrap").onclick = (e) => { if (e.target === $("modalWrap")) closeModal(); };
-    $("saveSettings").onclick = saveSettings;
-    $("resetSettings").onclick = resetSettings;
-
-    $("cameraBtn").onclick = smartTriggerCamera;
-    $("albumBtn").onclick = () => { try{ $("albumInput").value=""; }catch{} $("albumInput").click(); };
-
-    $("cameraInput").addEventListener("change", async (e) => {
-      const f = e.target.files && e.target.files[0];
-      await handleFile(f);
-    });
-    $("albumInput").addEventListener("change", async (e) => {
-      const f = e.target.files && e.target.files[0];
-      await handleFile(f);
-    });
-
-    $("saveBtn").onclick = saveRecord;
-    $("backBtn").onclick = backHome;
-    $("copyBtn").onclick = copyReply;
-
-    // Optional: click the ring opens album (safe)
-    $("dropZone").onclick = () => {
-      // Keep it gentle: open album (most compatible)
-      try{ $("albumInput").value=""; }catch{}
-      $("albumInput").click();
-    };
-  };
-
-  init();
-})();
+const fileInput = document.getElementById("fileInput");
+const cameraBtn = document.getElementById("cameraBtn");
+const galleryBtn = document.getElementById("galleryBtn");
+const preview = document.getElementById("preview");
+const aiReply = document.getElementById("aiReply");
+
+/* 防止任何 JS 崩潰影響按鈕 */
+window.addEventListener("error", e => {
+  console.log("已攔截錯誤:", e.message);
+});
+
+/* 拍照（智慧降級） */
+cameraBtn.onclick = () => {
+  try{
+    fileInput.setAttribute("capture","environment");
+    fileInput.click();
+  }catch{
+    fileInput.removeAttribute("capture");
+    fileInput.click();
+  }
+};
+
+/* 相簿 */
+galleryBtn.onclick = () => {
+  fileInput.removeAttribute("capture");
+  fileInput.click();
+};
+
+/* 上傳後 AI 回覆 */
+fileInput.onchange = e => {
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const url = URL.createObjectURL(file);
+  preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">`;
+
+  generateAIReply();
+};
+
+function generateAIReply(){
+  const repliesA = [
+    "我看見你正在記錄生活的一刻。",
+    "這張畫面帶著一種真實與存在感。",
+    "你願意拍下這一刻，本身就很有力量。"
+  ];
+
+  const repliesB = [
+    "不用完美，只要存在就已經很好。",
+    "慢慢來，你已經走在自己的節奏上。",
+    "今天不需要很厲害，只需要對自己溫柔。"
+  ];
+
+  const a = repliesA[Math.floor(Math.random()*repliesA.length)];
+  const b = repliesB[Math.floor(Math.random()*repliesB.length)];
+
+  aiReply.style.display = "block";
+  aiReply.innerHTML = `💛 AI 回覆<br><br>${a}<br><br>${b}`;
+}
 </script>
 </body>
 </html>

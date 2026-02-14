@@ -3,1173 +3,1520 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Flux v4.2 Stable (Poop Only Gate)</title>
-
+  <title>Flux</title>
+  <meta name="color-scheme" content="light dark" />
   <style>
     :root{
-      --bg1:#eaf0ff;
-      --bg2:#f7f7ff;
+      --bg:#fff;
       --text:#111;
-      --muted:#6b7280;
-      --card:#ffffffcc;
-      --border:#e5e7eb;
-      --shadow:0 20px 60px rgba(0,0,0,.08);
-      --primary:#111;
-      --primaryText:#fff;
-      --danger:#b91c1c;
-      --warn:#a16207;
-      --ok:#166534;
+      --muted:#666;
+      --line:rgba(0,0,0,.08);
+      --card:#fafafa;
+      --btn:#111;
+      --btnText:#fff;
+      --dangerBg:#fff0f0;
+      --danger:#c00;
+      --shadow:0 26px 60px rgba(0,0,0,.08);
     }
-    *{box-sizing:border-box;}
-    html,body{height:100%;}
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b0b0c;
+        --text:#f3f3f3;
+        --muted:#b6b6b6;
+        --line:rgba(255,255,255,.12);
+        --card:rgba(255,255,255,.06);
+        --btn:#f3f3f3;
+        --btnText:#111;
+        --dangerBg:rgba(255,0,0,.08);
+        --danger:#ff6b6b;
+        --shadow:0 26px 60px rgba(0,0,0,.35);
+      }
+    }
+
+    *{ box-sizing:border-box; }
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      background:var(--bg);
       color:var(--text);
+    }
+
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    .app{ min-height:100vh; position:relative; overflow:hidden; }
+    .page{
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      animation:fadeIn .18s ease-out;
+    }
+
+    /* Glow background */
+    .glowBg{
+      position:absolute; inset:0; pointer-events:none;
       background:
-        radial-gradient(1200px 700px at 30% 0%, #dfeaff 0%, transparent 60%),
-        radial-gradient(1200px 700px at 80% 70%, #e9fff6 0%, transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
+        radial-gradient(1200px 800px at 20% 10%, rgba(210,226,255,0.55), rgba(255,255,255,0) 60%),
+        radial-gradient(900px 700px at 80% 20%, rgba(255,220,210,0.45), rgba(255,255,255,0) 55%),
+        radial-gradient(900px 700px at 50% 80%, rgba(220,245,235,0.40), rgba(255,255,255,0) 60%);
+      opacity:.9;
+    }
+    @media (prefers-color-scheme: dark){
+      .glowBg{ opacity:.35; }
     }
 
-    .app{
-      width:min(460px, 100%);
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:24px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      backdrop-filter: blur(8px);
+    .topBar{
+      height:56px; padding:0 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      position:relative; z-index:2;
     }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:16px 18px;
-      border-bottom:1px solid var(--border);
-      background:#ffffffb3;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:800;
-      letter-spacing:.2px;
-    }
-    .brand .dot{
-      width:10px;height:10px;border-radius:50%;
-      background:linear-gradient(135deg,#111,#666);
-    }
-    .iconBtn{
-      width:40px;height:40px;border-radius:14px;
-      border:1px solid var(--border);
-      background:#fff;
-      display:grid;place-items:center;
-      cursor:pointer;
-    }
-    .iconBtn:active{transform:scale(.98);}
-    .content{padding:18px;}
-
-    .hero{
-      text-align:center;
-      padding:8px 8px 6px;
-    }
-    .hero .hello{
-      font-size:28px;
-      font-weight:900;
-      margin:6px 0 6px;
-    }
-    .hero .sub{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.5;
-      margin:0 0 14px;
-    }
-
-    .bigCircle{
-      margin:12px auto 14px;
-      width:220px;height:220px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:radial-gradient(circle at 50% 40%, #fff, #f4f6ff);
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      position:relative;
-      overflow:hidden;
-      user-select:none;
-    }
-    .bigCircle:active{transform:scale(.99);}
-    .bigCircle .ring{
-      position:absolute;
-      width:100%;
-      height:100%;
-      border-radius:999px;
-      box-shadow:inset 0 0 0 16px rgba(0,0,0,.03);
-    }
-    .bigCircle .cam{
-      font-size:52px;
-      opacity:.95;
-    }
-    .bigCircle .label{
-      position:absolute;
-      bottom:18px;
-      font-size:13px;
-      color:var(--muted);
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-    }
-    .btn{
-      flex:1;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--text);
-      font-size:15px;
-      font-weight:700;
-      cursor:pointer;
-    }
-    .btn.primary{
-      background:var(--primary);
-      color:var(--primaryText);
-      border-color:var(--primary);
-    }
-    .btn:active{transform:scale(.985);}
-    .hint{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:12px;
-      text-align:center;
-      line-height:1.5;
-    }
-
-    .nav{
-      display:flex;
-      gap:8px;
-      padding:10px 12px 14px;
-      border-top:1px solid var(--border);
-      background:#ffffffb3;
-    }
-    .tab{
-      flex:1;
-      padding:10px 10px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:#fff;
-      cursor:pointer;
-      font-weight:800;
-      font-size:13px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      color:#111;
-    }
-    .tab.active{
-      background:#111;
-      border-color:#111;
-      color:#fff;
-    }
-
-    .panelTitle{
-      font-size:18px;
-      font-weight:900;
-      margin:4px 0 12px;
-    }
-
-    .card{
-      border:1px solid var(--border);
-      background:#fff;
-      border-radius:20px;
-      padding:16px;
-    }
-
-    .resultWrap{
-      text-align:center;
-      padding:10px 8px 0;
-    }
-    .emoji{
-      font-size:56px;
-      margin-top:6px;
-    }
-    .score{
-      font-size:72px;
-      font-weight:900;
-      margin:8px 0 6px;
-      letter-spacing:.5px;
-    }
-    .msg{
-      font-size:15px;
-      color:#111;
-      font-weight:800;
-      margin:0 0 6px;
-    }
-    .desc{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.5;
-      margin:0;
-    }
-    .disclaimer{
-      margin-top:14px;
-      font-size:12px;
-      color:#9ca3af;
-      text-align:center;
-      line-height:1.5;
-    }
-
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .item{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:12px 14px;
-      border:1px solid var(--border);
-      border-radius:16px;
-      background:#fff;
-    }
-    .item .left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:900;
-    }
+    .brand{ font-size:18px; font-weight:700; letter-spacing:.3px; display:flex; align-items:center; gap:10px; }
     .pill{
-      font-size:12px;
-      font-weight:900;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:#fafafa;
-      color:#111;
+      font-size:11px; font-weight:700;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:rgba(255,255,255,.6);
+    }
+    @media (prefers-color-scheme: dark){
+      .pill{ background:rgba(0,0,0,.35); }
     }
 
-    .field{
+    .iconBtn{
+      width:40px;height:40px;border-radius:999px;
+      border:1px solid transparent;
+      background:transparent;color:var(--text);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-size:18px;
+    }
+    .iconBtn:active{ transform:scale(.98); }
+
+    .content{ flex:1; overflow:auto; padding:24px; padding-bottom:110px; position:relative; z-index:2; }
+
+    /* Home center */
+    .center{
+      flex:1; display:flex; flex-direction:column; align-items:center;
+      padding-top:32px; padding-bottom:24px;
+    }
+    .todayLabel{ font-size:12px; letter-spacing:1.5px; font-weight:800; color:var(--muted); margin-bottom:8px; }
+    .greetingTitle{ font-size:26px; font-weight:800; margin:0 0 6px; text-align:center; padding:0 18px; line-height:1.2; }
+    .greetingSub{ font-size:15px; color:var(--muted); margin:0 0 28px; text-align:center; padding:0 18px; line-height:1.6; }
+
+    .bigCircleBtn{
+      width:220px;height:220px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.75);
+      background:rgba(255,255,255,.35);
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (prefers-color-scheme: dark){
+      .bigCircleBtn{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); }
+    }
+    .circleRing{ position:absolute; inset:16px; border-radius:999px; border:1px solid var(--line); pointer-events:none; }
+    .camIcon{ opacity:.9; display:flex; align-items:center; justify-content:center; font-size:52px; }
+    .spinner{ width:26px;height:26px;border:2px solid rgba(0,0,0,.2); border-top-color:rgba(0,0,0,.7); border-radius:50%; animation:spin 1s linear infinite; }
+    @media (prefers-color-scheme: dark){
+      .spinner{ border:2px solid rgba(255,255,255,.25); border-top-color:rgba(255,255,255,.85); }
+    }
+    .cta{ margin-top:18px; font-size:16px; font-weight:800; opacity:.95; }
+    .homeHint{ margin-top:8px; font-size:13px; color:var(--muted); opacity:.9; text-align:center; padding:0 18px; line-height:1.5; }
+
+    /* Tabs */
+    .tabBar{
+      position:absolute; left:0; right:0; bottom:0; height:90px;
+      background:rgba(255,255,255,.82);
+      border-top:1px solid var(--line);
+      backdrop-filter: blur(12px);
+      display:flex; align-items:center; justify-content:space-around;
+      z-index:3; padding-bottom:22px;
+    }
+    @media (prefers-color-scheme: dark){
+      .tabBar{ background:rgba(0,0,0,.45); }
+    }
+    .tabItem{
+      display:flex; flex-direction:column; align-items:center; gap:4px;
+      color:var(--muted); cursor:pointer;
+      font-size:10px; font-weight:700; user-select:none;
+      padding:8px 10px; border-radius:12px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tabItem.active{ color:var(--text); }
+    .tabIcon{ font-size:18px; opacity:.95; }
+    .tabLabel{ font-size:11px; font-weight:800; }
+
+    /* Nav */
+    .navBar{
+      height:56px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 8px; border-bottom:1px solid var(--line);
+      position:relative; z-index:2;
+      background:rgba(255,255,255,.85);
+      backdrop-filter: blur(12px);
+    }
+    @media (prefers-color-scheme: dark){
+      .navBar{ background:rgba(0,0,0,.45); }
+    }
+    .navTitle{ font-size:16px; font-weight:800; }
+
+    /* Cards */
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+    }
+    .cardTitle{
+      font-size:12px; font-weight:900; letter-spacing:1px;
+      color:var(--muted);
+      text-transform:uppercase;
+      display:flex; align-items:center; gap:8px;
+      margin-bottom:10px;
+    }
+    .replyText{
+      font-size:16px;
+      line-height:1.75;
+      white-space:pre-wrap;
+    }
+    .metaRow{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;
+      color:var(--muted); font-size:12px;
+    }
+    .chip{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 10px;
+      background:rgba(255,255,255,.55);
+    }
+    @media (prefers-color-scheme: dark){
+      .chip{ background:rgba(0,0,0,.25); }
+    }
+
+    .primaryBtn{
+      width:100%; padding:16px; border-radius:16px;
+      background:var(--btn); color:var(--btnText);
+      font-size:16px; font-weight:800;
+      border:none; cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .primaryBtn:active{ transform:scale(.99); }
+
+    .dangerBtn{
+      width:100%; padding:14px; border-radius:14px;
+      background:var(--dangerBg); color:var(--danger);
+      border:1px solid rgba(255,0,0,.18);
+      font-size:15px; font-weight:800;
+      cursor:pointer;
+    }
+
+    .menuItem{
+      width:100%;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:16px 8px; border:none; background:transparent;
+      border-bottom:1px solid rgba(0,0,0,.04);
+      color:var(--text);
+      cursor:pointer;
+      font-size:16px; font-weight:700;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (prefers-color-scheme: dark){
+      .menuItem{ border-bottom:1px solid rgba(255,255,255,.06); }
+    }
+    .menuLeft{ display:flex; gap:12px; align-items:center; }
+    .menuIcon{ width:26px; text-align:center; opacity:.9; }
+    .right{ color:var(--muted); font-weight:900; }
+
+    .divider{ height:10px; background:transparent; }
+    .sectionLabel{
+      font-size:12px; font-weight:900; color:var(--muted);
+      margin:10px 0 6px 8px; letter-spacing:1px;
+      text-transform:uppercase;
+    }
+
+    input.text{
+      width:100%; padding:14px; border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.65);
+      color:var(--text);
+      font-size:16px; outline:none;
+    }
+    @media (prefers-color-scheme: dark){
+      input.text{ background:rgba(0,0,0,.25); }
+    }
+    .inputHint{ font-size:12px; color:var(--muted); margin-top:8px; line-height:1.5; }
+
+    /* Pick page */
+    .pickWrap{
+      background:#000;
+      color:#fff;
+      height:100%;
       display:flex;
       flex-direction:column;
-      gap:8px;
     }
-    .input{
-      width:100%;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid var(--border);
-      font-size:16px;
-      background:#fff;
-      outline:none;
-    }
-    .small{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
-    }
-
-    .modalMask{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:flex-end;
-      justify-content:center;
-      padding:14px;
-      z-index:9999;
-    }
-    .modal{
-      width:min(460px, 100%);
-      background:#0b0b0bcc;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:22px;
-      padding:18px;
-      color:#fff;
-      backdrop-filter: blur(10px);
-    }
-    .modalTitle{
-      text-align:center;
-      font-weight:900;
-      font-size:18px;
-      margin:4px 0 14px;
-    }
-    .modalText{
-      text-align:center;
-      color:rgba(255,255,255,.75);
-      font-size:13px;
-      line-height:1.6;
-      margin:0 0 16px;
-    }
-    .modalRow{
-      display:flex;
-      gap:12px;
-      margin-top:10px;
-    }
-    .mBtn{
+    .pickHero{
       flex:1;
-      padding:14px 12px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.08);
-      color:#fff;
-      font-size:15px;
-      font-weight:900;
-      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
     }
-    .mBtn:active{transform:scale(.985);}
-    .closeX{
-      position:absolute;
-      left:18px;
-      top:18px;
-      width:40px;height:40px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:#fff;
-      display:grid;place-items:center;
-      cursor:pointer;
+    .pickDesc{
+      color:rgba(255,255,255,.72);
+      text-align:center;
+      padding:0 22px;
+      line-height:1.6;
+      font-size:14px;
+      max-width:520px;
+    }
+    .pickFooter{
+      height:170px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#000;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .pickRow{ display:flex; gap:24px; }
+    .pickAction{
+      display:flex; flex-direction:column; align-items:center; gap:12px;
+      background:none; border:none; color:#fff; cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pickIconCircle{
+      width:76px; height:76px; border-radius:50%;
+      background:#1b1b1b; border:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:center;
+      font-size:28px;
     }
 
-    .hidden{display:none !important;}
+    /* Toast */
+    .toast{
+      position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
+      background:rgba(0,0,0,.85); color:#fff;
+      padding:10px 18px; border-radius:30px;
+      font-size:14px; z-index:99;
+      max-width:min(520px, 92vw);
+      text-align:center;
+    }
+
+    /* History */
+    .row{
+      display:flex; justify-content:space-between; gap:14px;
+      padding:14px 0; border-bottom:1px solid var(--line);
+      align-items:flex-start;
+    }
+    .row:last-child{ border-bottom:none; }
+    .rowDate{ font-size:13px; color:var(--muted); margin-bottom:6px; }
+    .rowText{
+      font-size:14px; line-height:1.55;
+      color:var(--text);
+      max-width:72ch;
+      display:-webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow:hidden;
+    }
+    .empty{ text-align:center; color:var(--muted); padding:60px 0; line-height:1.6; }
+
+    /* Footer bar */
+    .footer{
+      padding:24px;
+      border-top:1px solid var(--line);
+      background:rgba(255,255,255,.85);
+      backdrop-filter: blur(12px);
+    }
+    @media (prefers-color-scheme: dark){
+      .footer{ background:rgba(0,0,0,.45); }
+    }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <div class="topbar">
-      <div class="brand"><span class="dot"></span> Flux</div>
-      <button class="iconBtn" id="gearBtn" title="設定">⚙️</button>
-    </div>
+  <div id="app" class="app"></div>
 
-    <div class="content">
-
-      <!-- TODAY -->
-      <section id="pageToday">
-        <div class="hero">
-          <div class="hello" id="helloText">早安，利蓉。</div>
-          <p class="sub" id="todaySubtitle">最近整體狀態很穩定。</p>
-
-          <div class="bigCircle" id="bigCircle">
-            <div class="ring"></div>
-            <div class="cam">📷</div>
-            <div class="label" id="circleHint">拍下今天的狀態</div>
-          </div>
-
-          <div class="row">
-            <button class="btn primary" id="btnChoose">選擇方式</button>
-            <button class="btn" id="btnGallery">從相簿選擇</button>
-          </div>
-
-          <div class="hint" id="hintText">
-            第一次需要允許相機權限。<br/>
-            ⚠️ 僅接受「目標物照片」，非目標物會顯示「樣本無效」。
-          </div>
-        </div>
-      </section>
-
-      <!-- RESULT -->
-      <section id="pageResult" class="hidden">
-        <div class="panelTitle">今日狀態</div>
-        <div class="card">
-          <div class="resultWrap">
-            <div class="emoji" id="resEmoji">🥺</div>
-            <div class="score" id="resScore">--</div>
-            <div class="msg" id="resMsg">樣本無效</div>
-            <p class="desc" id="resDesc">請拍攝目標物（光線充足、清晰）。</p>
-
-            <div class="row" style="margin-top:14px;">
-              <button class="btn primary" id="btnAgain">再測一次</button>
-              <button class="btn" id="btnHome">返回</button>
-            </div>
-
-            <div class="disclaimer">
-              此 App 僅用於日常觀察與記錄，不代表健康或醫療判斷。
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- RECORDS -->
-      <section id="pageRecords" class="hidden">
-        <div class="panelTitle">我的紀錄</div>
-        <div class="list" id="recordList"></div>
-        <div class="hint">（本機儲存，不上傳伺服器）</div>
-      </section>
-
-      <!-- INSIGHTS -->
-      <section id="pageInsights" class="hidden">
-        <div class="panelTitle">洞察</div>
-        <div class="card">
-          <div style="font-weight:900;font-size:16px;margin-bottom:6px;" id="insTitle">本週洞察</div>
-          <div style="color:var(--muted);font-size:13px;line-height:1.6;" id="insBody">
-            每 7 天最多生成一次洞察，避免過度解讀。
-          </div>
-          <div class="row" style="margin-top:14px;">
-            <button class="btn primary" id="btnInsight">產生洞察</button>
-            <button class="btn" id="btnClear">清除資料</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- SETTINGS -->
-      <section id="pageSettings" class="hidden">
-        <div class="panelTitle">設定</div>
-
-        <div class="card">
-          <div class="field">
-            <div style="font-weight:900;">稱呼方式</div>
-            <input class="input" id="nameInput" placeholder="例如：利蓉 / Lily" />
-            <div class="small">用於首頁問候，可留空。</div>
-            <button class="btn primary" id="btnSaveName">保存</button>
-          </div>
-        </div>
-
-        <div style="height:12px;"></div>
-
-        <div class="card">
-          <div style="font-weight:900;margin-bottom:6px;">隱私與資料</div>
-          <div class="small">
-            本 App 不會上傳照片。僅使用「檔案特徵（aHash）」生成穩定分數並寫入本機紀錄。
-          </div>
-        </div>
-
-        <div style="height:12px;"></div>
-
-        <div class="card">
-          <div style="font-weight:900;margin-bottom:6px;">語言 / Language</div>
-          <div class="row">
-            <button class="btn" data-lang="zh">中文</button>
-            <button class="btn" data-lang="en">English</button>
-            <button class="btn" data-lang="ja">日本語</button>
-          </div>
-        </div>
-
-        <div style="height:12px;"></div>
-
-        <div class="card">
-          <div style="font-weight:900;margin-bottom:6px;">關於 Flux</div>
-          <div class="small" id="aboutText">
-            Flux v4.2 Stable（Poop-only Gate）<br/>
-            Hybrid Input Only：使用系統相機 / 相簿，避免 WebView 黑屏問題。
-          </div>
-        </div>
-      </section>
-
-      <!-- Hidden Inputs -->
-      <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
-      <input id="galleryInput" type="file" accept="image/*" class="hidden" />
-
-    </div>
-
-    <div class="nav">
-      <button class="tab active" id="tabToday">● 今天</button>
-      <button class="tab" id="tabRecords">📅 紀錄</button>
-      <button class="tab" id="tabInsights">✨ 洞察</button>
-    </div>
-  </div>
-
-  <!-- Choose Modal -->
-  <div class="modalMask" id="modalMask">
-    <div class="modal" style="position:relative;">
-      <button class="closeX" id="modalClose">✕</button>
-      <div class="modalTitle" id="modalTitle">選擇方式</div>
-      <div class="modalText" id="modalText">你要拍照，還是從相簿選一張？</div>
-      <div class="modalRow">
-        <button class="mBtn" id="modalCamera">📷 拍照</button>
-        <button class="mBtn" id="modalGallery">🖼️ 相簿</button>
-      </div>
-    </div>
-  </div>
+  <!-- hidden inputs -->
+  <input id="cameraInput" type="file" accept="image/*" capture="environment" style="display:none" />
+  <input id="galleryInput" type="file" accept="image/*" style="display:none" />
 
   <script>
-    // =========================
-    // i18n
-    // =========================
+    /* =========================
+       Flux v5 — Companion Edition (Single File)
+       - Hybrid Input + Smart Fallback
+       - No score; AI-like A+B replies for any photo
+       - Local history, settings, i18n
+    ========================= */
+
+    const LS = {
+      LANG: "flux.lang_v5",
+      NAME: "flux.name_v5",
+      HISTORY: "flux.history_v5",
+    };
+
     const I18N = {
-      zh: {
-        today: "今天",
-        records: "紀錄",
-        insights: "洞察",
-        settings: "設定",
-        hello: (name)=> `早安，${name || "你"}。`,
-        stable: "最近整體狀態很穩定。",
-        takeToday: "拍下今天的狀態",
-        needPerm: "第一次需要允許相機權限。",
-        onlyTarget: "⚠️ 僅接受「目標物照片」，非目標物會顯示「樣本無效」。",
-        choose: "選擇方式",
-        fromGallery: "從相簿選擇",
-        modalQ: "你要拍照，還是從相簿選一張？",
-        camera: "拍照",
-        gallery: "相簿",
-        todayState: "今日狀態",
-        again: "再測一次",
-        back: "返回",
-        invalid: "樣本無效",
-        invalidDesc: "請拍攝目標物（光線充足、清晰）。",
-        disclaimer: "此 App 僅用於日常觀察與記錄，不代表健康或醫療判斷。",
-        recTitle: "我的紀錄",
-        recEmpty: "目前沒有紀錄",
-        weekTitle: "本週洞察",
-        weekBody: "每 7 天最多生成一次洞察，避免過度解讀。",
-        genInsight: "產生洞察",
-        clear: "清除資料",
-        cleared: "已清除資料",
-        nameLabel: "稱呼方式",
-        nameHint: "用於首頁問候，可留空。",
-        save: "保存",
-        saved: "已保存",
-        privacyTitle: "隱私與資料",
-        privacyBody: "本 App 不會上傳照片。僅使用「檔案特徵（aHash）」生成穩定分數並寫入本機紀錄。",
-        about: "關於 Flux",
-        aboutBody: "Flux v4.2 Stable（Poop-only Gate）\nHybrid Input Only：使用系統相機 / 相簿，避免 WebView 黑屏問題。",
-        nonImage: "請上傳有效照片",
-        lowSample: "樣本無效（請拍攝目標物）",
-        scoreLow: "目前狀態偏低，建議持續觀察變化。",
-        scoreMid: "目前狀態正常。",
-        scoreHigh: "目前狀態良好。"
+      "zh-TW": {
+        APP_NAME: "Flux",
+        TODAY: "TODAY",
+        HELLO: "早安",
+        SUB: "把任何照片丟給我，我會用溫柔 + 正能量陪你走一段。",
+        CTA: "上傳一張照片",
+        HINT: "如果相機被 WebView 限制，我會自動改用相簿，不會卡住。",
+        TAB_TODAY: "今天",
+        TAB_HISTORY: "紀錄",
+        TAB_SETTINGS: "設定",
+
+        PICK_TITLE: "選擇方式",
+        PICK_DESC: "你想拍照，還是從相簿選一張？（有些內建瀏覽器會限制相機，這是正常的）",
+        BTN_CAMERA: "拍照",
+        BTN_GALLERY: "相簿",
+        BTN_BACK: "返回",
+        BTN_CLOSE: "關閉",
+        BTN_DONE: "完成",
+
+        REPLY_TITLE: "AI 回覆",
+        META_LIGHT: "明暗",
+        META_COLOR: "色調",
+        META_MOOD: "氛圍",
+        META_ENV: "環境",
+        BTN_SAVE: "存成紀錄",
+        BTN_HOME: "回首頁",
+
+        HISTORY_TITLE: "我的紀錄",
+        HISTORY_EMPTY: "目前還沒有紀錄。\n你可以拍一張照片，我會回覆一段陪伴文字。",
+        SETTINGS_TITLE: "設定",
+        NAME_TITLE: "稱呼方式",
+        NAME_DESC: "你希望我怎麼稱呼你？",
+        NAME_PH: "例如：利蓉",
+        NAME_HINT: "用於首頁問候，可留空。",
+        LANG_TITLE: "語言 / Language",
+        PRIV_TITLE: "隱私與資料",
+        PRIV_DESC: "所有資料只存在你的手機（LocalStorage）。我們不會上傳任何照片或紀錄。",
+        CLEAR: "清空所有資料",
+        CLEAR_CONFIRM: "確定要清空嗎？這會刪除所有紀錄與設定，無法復原。",
+        CLEARED: "已清空",
+        ENV_OK: "HTTPS ✓",
+        ENV_BAD: "非 HTTPS",
+        WEBVIEW: "WebView",
+        BROWSER: "Browser",
+        TOAST_CAMERA_FALLBACK: "相機可能被內建瀏覽器限制 → 已改用相簿選擇",
+        TOAST_SAVED: "已存入紀錄",
+        TOAST_READ_FAIL: "讀取照片失敗，請重試"
       },
       en: {
-        today: "Today",
-        records: "Records",
-        insights: "Insights",
-        settings: "Settings",
-        hello: (name)=> `Good day, ${name || "there"}.`,
-        stable: "Overall state looks stable recently.",
-        takeToday: "Capture today's state",
-        needPerm: "First time requires camera permission.",
-        onlyTarget: "⚠️ Target-only: non-target photos will show “Invalid sample”.",
-        choose: "Choose",
-        fromGallery: "From gallery",
-        modalQ: "Take a photo or pick one from your gallery?",
-        camera: "Camera",
-        gallery: "Gallery",
-        todayState: "Today's Result",
-        again: "Try again",
-        back: "Back",
-        invalid: "Invalid sample",
-        invalidDesc: "Please capture the target clearly with good lighting.",
-        disclaimer: "This app is for daily observation/recording only. Not medical advice.",
-        recTitle: "My Records",
-        recEmpty: "No records yet",
-        weekTitle: "Weekly Insight",
-        weekBody: "At most once every 7 days to avoid over-interpretation.",
-        genInsight: "Generate insight",
-        clear: "Clear data",
-        cleared: "Data cleared",
-        nameLabel: "Display name",
-        nameHint: "Shown on the home greeting. Optional.",
-        save: "Save",
-        saved: "Saved",
-        privacyTitle: "Privacy",
-        privacyBody: "No photo uploads. We generate a stable score from file hash (aHash) and store records locally.",
-        about: "About Flux",
-        aboutBody: "Flux v4.2 Stable (Poop-only Gate)\nHybrid Input Only: system camera/gallery to avoid WebView black screen.",
-        nonImage: "Please choose a valid image",
-        lowSample: "Invalid sample (please capture the target)",
-        scoreLow: "State is low. Keep observing.",
-        scoreMid: "State looks normal.",
-        scoreHigh: "State is good."
+        APP_NAME: "Flux",
+        TODAY: "TODAY",
+        HELLO: "Good morning",
+        SUB: "Drop any photo. I’ll respond with gentle care + positive energy.",
+        CTA: "Upload a photo",
+        HINT: "If camera is blocked in WebView, I’ll auto-fallback to gallery.",
+        TAB_TODAY: "Today",
+        TAB_HISTORY: "History",
+        TAB_SETTINGS: "Settings",
+
+        PICK_TITLE: "Choose",
+        PICK_DESC: "Take a photo or pick from gallery. (Some in-app browsers block camera.)",
+        BTN_CAMERA: "Camera",
+        BTN_GALLERY: "Gallery",
+        BTN_BACK: "Back",
+        BTN_CLOSE: "Close",
+        BTN_DONE: "Done",
+
+        REPLY_TITLE: "AI Reply",
+        META_LIGHT: "Light",
+        META_COLOR: "Tone",
+        META_MOOD: "Mood",
+        META_ENV: "Env",
+        BTN_SAVE: "Save to history",
+        BTN_HOME: "Home",
+
+        HISTORY_TITLE: "History",
+        HISTORY_EMPTY: "No records yet.\nUpload a photo and I’ll reply like a supportive friend.",
+        SETTINGS_TITLE: "Settings",
+        NAME_TITLE: "Your name",
+        NAME_DESC: "How should I call you?",
+        NAME_PH: "e.g. Alex",
+        NAME_HINT: "Used for greetings. Optional.",
+        LANG_TITLE: "Language",
+        PRIV_TITLE: "Privacy & Data",
+        PRIV_DESC: "All data stays on your device (LocalStorage). No uploads.",
+        CLEAR: "Clear all data",
+        CLEAR_CONFIRM: "Clear everything? This cannot be undone.",
+        CLEARED: "Cleared",
+        ENV_OK: "HTTPS ✓",
+        ENV_BAD: "No HTTPS",
+        WEBVIEW: "WebView",
+        BROWSER: "Browser",
+        TOAST_CAMERA_FALLBACK: "Camera may be blocked → switched to gallery",
+        TOAST_SAVED: "Saved",
+        TOAST_READ_FAIL: "Failed to read image"
       },
       ja: {
-        today: "今日",
-        records: "記録",
-        insights: "洞察",
-        settings: "設定",
-        hello: (name)=> `おはよう、${name || "あなた"}。`,
-        stable: "最近の状態は安定しています。",
-        takeToday: "今日の状態を撮影",
-        needPerm: "初回はカメラ許可が必要です。",
-        onlyTarget: "⚠️ 対象物のみ：対象外写真は「無効」と表示します。",
-        choose: "選択",
-        fromGallery: "アルバムから",
-        modalQ: "撮影しますか？アルバムから選びますか？",
-        camera: "撮影",
-        gallery: "アルバム",
-        todayState: "今日の結果",
-        again: "もう一度",
-        back: "戻る",
-        invalid: "無効",
-        invalidDesc: "対象物を明るく、はっきり撮影してください。",
-        disclaimer: "本アプリは日常観察・記録用であり、医療判断ではありません。",
-        recTitle: "私の記録",
-        recEmpty: "記録はまだありません",
-        weekTitle: "週間洞察",
-        weekBody: "7日ごとに最大1回まで（過度解釈を防ぐ）。",
-        genInsight: "洞察を生成",
-        clear: "データ削除",
-        cleared: "削除しました",
-        nameLabel: "呼び名",
-        nameHint: "ホームの挨拶に表示（任意）。",
-        save: "保存",
-        saved: "保存しました",
-        privacyTitle: "プライバシー",
-        privacyBody: "写真はアップロードしません。aHashで安定スコアを生成し、端末内に保存します。",
-        about: "Fluxについて",
-        aboutBody: "Flux v4.2 Stable（Poop-only Gate）\nHybrid Input Only：WebView黒画面回避のためシステムカメラ/アルバムを使用。",
-        nonImage: "有効な画像を選択してください",
-        lowSample: "無効（対象物を撮影してください）",
-        scoreLow: "状態が低めです。観察を続けましょう。",
-        scoreMid: "状態は正常です。",
-        scoreHigh: "状態は良好です。"
+        APP_NAME: "Flux",
+        TODAY: "TODAY",
+        HELLO: "おはようございます",
+        SUB: "どんな写真でも大丈夫。やさしさ＋前向きさで返事します。",
+        CTA: "写真をアップロード",
+        HINT: "WebViewでカメラが制限されても、ギャラリーに自動切替します。",
+        TAB_TODAY: "今日",
+        TAB_HISTORY: "記録",
+        TAB_SETTINGS: "設定",
+
+        PICK_TITLE: "選択",
+        PICK_DESC: "撮影または写真を選択。（アプリ内ブラウザはカメラ制限がある場合があります）",
+        BTN_CAMERA: "撮影",
+        BTN_GALLERY: "写真",
+        BTN_BACK: "戻る",
+        BTN_CLOSE: "閉じる",
+        BTN_DONE: "完了",
+
+        REPLY_TITLE: "AI 返信",
+        META_LIGHT: "明るさ",
+        META_COLOR: "色味",
+        META_MOOD: "雰囲気",
+        META_ENV: "環境",
+        BTN_SAVE: "記録に保存",
+        BTN_HOME: "ホーム",
+
+        HISTORY_TITLE: "記録",
+        HISTORY_EMPTY: "まだ記録がありません。\n写真を選ぶと、寄り添う言葉で返事します。",
+        SETTINGS_TITLE: "設定",
+        NAME_TITLE: "お名前",
+        NAME_DESC: "何とお呼びしましょうか？",
+        NAME_PH: "例：りよう",
+        NAME_HINT: "挨拶に表示（省略可）",
+        LANG_TITLE: "言語 / Language",
+        PRIV_TITLE: "プライバシー",
+        PRIV_DESC: "データは端末内（LocalStorage）のみ。アップロードしません。",
+        CLEAR: "すべて削除",
+        CLEAR_CONFIRM: "本当に削除しますか？元に戻せません。",
+        CLEARED: "削除しました",
+        ENV_OK: "HTTPS ✓",
+        ENV_BAD: "HTTPS なし",
+        WEBVIEW: "WebView",
+        BROWSER: "Browser",
+        TOAST_CAMERA_FALLBACK: "カメラが制限 → 写真選択に切替",
+        TOAST_SAVED: "保存しました",
+        TOAST_READ_FAIL: "画像の読み込みに失敗しました"
       }
     };
 
-    // =========================
-    // State + Storage
-    // =========================
-    const LS = {
-      lang: "flux_lang",
-      name: "flux_name",
-      records: "flux_records_v1",
-      insightTs: "flux_insight_ts"
-    };
+    function t(key){
+      const lang = state.lang;
+      return (I18N[lang] && I18N[lang][key]) || (I18N["zh-TW"][key]) || key;
+    }
 
-    const state = {
-      lang: localStorage.getItem(LS.lang) || "zh",
-      name: localStorage.getItem(LS.name) || "利蓉"
-    };
-
-    function t(){ return I18N[state.lang] || I18N.zh; }
-
-    function loadRecords(){
+    function safeGet(key, fallback=""){
+      try{ return localStorage.getItem(key) ?? fallback; }catch{ return fallback; }
+    }
+    function safeSet(key, value){
+      try{ localStorage.setItem(key, value); }catch{}
+    }
+    function safeJsonGet(key, fallback){
       try{
-        return JSON.parse(localStorage.getItem(LS.records) || "[]");
-      }catch(e){
-        return [];
-      }
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallback;
+        const v = JSON.parse(raw);
+        return v ?? fallback;
+      }catch{ return fallback; }
     }
-    function saveRecords(arr){
-      localStorage.setItem(LS.records, JSON.stringify(arr));
-    }
-
-    // =========================
-    // UI Helpers
-    // =========================
-    const $ = (id)=> document.getElementById(id);
-
-    function setActiveTab(tab){
-      ["tabToday","tabRecords","tabInsights"].forEach(id=>$(id).classList.remove("active"));
-      $(tab).classList.add("active");
-    }
-    function showPage(pageId){
-      ["pageToday","pageRecords","pageInsights","pageSettings","pageResult"].forEach(id=>$(id).classList.add("hidden"));
-      $(pageId).classList.remove("hidden");
+    function safeJsonSet(key, value){
+      try{ localStorage.setItem(key, JSON.stringify(value)); }catch{}
     }
 
-    function renderTexts(){
-      const i = t();
-      $("tabToday").innerText = "● " + i.today;
-      $("tabRecords").innerText = "📅 " + i.records;
-      $("tabInsights").innerText = "✨ " + i.insights;
-
-      $("helloText").innerText = i.hello(state.name);
-      $("todaySubtitle").innerText = i.stable;
-      $("circleHint").innerText = i.takeToday;
-
-      $("btnChoose").innerText = i.choose;
-      $("btnGallery").innerText = i.fromGallery;
-
-      $("hintText").innerHTML = `${i.needPerm}<br/>${i.onlyTarget}`;
-
-      $("modalTitle").innerText = i.choose;
-      $("modalText").innerText = i.modalQ;
-      $("modalCamera").innerText = "📷 " + i.camera;
-      $("modalGallery").innerText = "🖼️ " + i.gallery;
-
-      $("btnAgain").innerText = i.again;
-      $("btnHome").innerText = i.back;
-
-      // Settings page texts
-      // (labels are inside markup; we only update about text)
-      $("aboutText").innerHTML = i.aboutBody.replaceAll("\n","<br/>");
-
-      // Insights page
-      $("insTitle").innerText = i.weekTitle;
-      $("insBody").innerText = i.weekBody;
-      $("btnInsight").innerText = i.genInsight;
-      $("btnClear").innerText = i.clear;
+    function detectLang(){
+      const saved = safeGet(LS.LANG, "");
+      if (saved && I18N[saved]) return saved;
+      const sys = (navigator.language || "").toLowerCase();
+      if (sys.startsWith("en")) return "en";
+      if (sys.startsWith("ja")) return "ja";
+      return "zh-TW";
     }
 
-    // =========================
-    // Modal
-    // =========================
-    function openModal(){ $("modalMask").style.display = "flex"; }
-    function closeModal(){ $("modalMask").style.display = "none"; }
-
-    // =========================
-    // Poop-only Gate (Lightweight)
-    // =========================
-    // NOTE: Pure client-side, no real ML. We add guardrails so random photos won't be "analyzed".
-    // Strategy:
-    // 1) Reject non-image.
-    // 2) Reject too-small files (often icons/screenshots/random).
-    // 3) Quick visual heuristic: detect large low-saturation "scene" photos by downsampling and measuring color variance.
-    //    If it looks like scenery/pet/indoor scene -> mark invalid.
-    //    If it looks like close-up with strong chroma/contrast -> allow.
-    //
-    // This is NOT medical. It's just a "target-only gate" to stop obvious misuse.
-
-    function loadImageFromFile(file){
-      return new Promise((resolve,reject)=>{
-        const url = URL.createObjectURL(file);
-        const img = new Image();
-        img.onload = ()=>{
-          URL.revokeObjectURL(url);
-          resolve(img);
-        };
-        img.onerror = (e)=>{
-          URL.revokeObjectURL(url);
-          reject(e);
-        };
-        img.src = url;
-      });
+    function isProbablyWebView(){
+      const ua = navigator.userAgent || "";
+      // common webview signals (best-effort)
+      const isAndroid = /Android/i.test(ua);
+      const hasWv = /\bwv\b/i.test(ua);
+      const isInstagram = /Instagram/i.test(ua);
+      const isLine = /Line/i.test(ua);
+      const isFB = /FBAN|FBAV/i.test(ua);
+      const isWebViewiOS = /(iPhone|iPad|iPod)/i.test(ua) && !/Safari/i.test(ua);
+      return hasWv || isInstagram || isLine || isFB || (isAndroid && hasWv) || isWebViewiOS;
     }
 
-    function downsampleToCanvas(img, maxW=96, maxH=96){
-      const c = document.createElement("canvas");
-      const ctx = c.getContext("2d", { willReadFrequently: true });
-      const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
-      const w = Math.max(1, Math.round(img.width * ratio));
-      const h = Math.max(1, Math.round(img.height * ratio));
-      c.width = w; c.height = h;
-      ctx.drawImage(img, 0, 0, w, h);
-      return { c, ctx, w, h };
+    function isHttps(){
+      return location.protocol === "https:" || location.hostname === "localhost";
     }
 
-    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
-
-    function rgbToHsv(r,g,b){
-      r/=255; g/=255; b/=255;
-      const max = Math.max(r,g,b), min = Math.min(r,g,b);
-      const d = max - min;
-      let h = 0;
-      if(d !== 0){
-        if(max === r) h = ((g - b) / d) % 6;
-        else if(max === g) h = (b - r) / d + 2;
-        else h = (r - g) / d + 4;
-        h *= 60;
-        if(h < 0) h += 360;
-      }
-      const s = max === 0 ? 0 : d / max;
-      const v = max;
-      return {h,s,v};
-    }
-
-    // returns {ok:boolean, reason:string}
-    async function targetGate(file){
-      const i = t();
-
-      if(!file || !file.type || !file.type.startsWith("image/")){
-        return { ok:false, reason:i.nonImage };
-      }
-
-      // Size guard: reject tiny images (icons/screenshots/exports)
-      if(file.size < 90_000){
-        return { ok:false, reason:i.lowSample };
-      }
-
-      // Dimension / color heuristic
-      let img;
-      try{
-        img = await loadImageFromFile(file);
-      }catch(e){
-        return { ok:false, reason:i.lowSample };
-      }
-
-      // extremely small dimensions are suspicious
-      if(img.width < 400 || img.height < 400){
-        return { ok:false, reason:i.lowSample };
-      }
-
-      const { ctx, w, h } = downsampleToCanvas(img, 96, 96);
-      const data = ctx.getImageData(0,0,w,h).data;
-
-      let satSum=0, valSum=0;
-      let valSq=0;
-      let edgeLike=0;
-      let prevV=null;
-
-      // sample stride for speed
-      const stride = 4 * 2; // every 2 pixels roughly
-      for(let p=0; p<data.length; p+=stride){
-        const r = data[p], g = data[p+1], b = data[p+2];
-        const {s,v} = rgbToHsv(r,g,b);
-        satSum += s;
-        valSum += v;
-        valSq += v*v;
-        if(prevV !== null){
-          const dv = Math.abs(v - prevV);
-          if(dv > 0.22) edgeLike += 1;
-        }
-        prevV = v;
-      }
-      const n = Math.max(1, Math.floor(data.length / stride));
-      const satAvg = satSum / n;
-      const valAvg = valSum / n;
-      const valVar = (valSq / n) - (valAvg*valAvg);
-      const edgeRate = edgeLike / n;
-
-      // Heuristic intuition:
-      // - Close-up target shots tend to have: higher contrast variance (valVar), noticeable edges (edgeRate),
-      //   and not too low saturation (satAvg).
-      // - Scene photos/pets often have smoother gradients / broader composition -> lower edgeRate in downsample.
-      //
-      // We tune for "stop obvious random photos", not perfect classification.
-
-      const scoreLike = 0.45*clamp01((valVar - 0.02)/0.08) + 0.35*clamp01((edgeRate - 0.10)/0.20) + 0.20*clamp01((satAvg - 0.10)/0.35);
-
-      // If it looks like a generic scene, reject.
-      if(scoreLike < 0.38){
-        return { ok:false, reason:i.lowSample };
-      }
-
-      return { ok:true, reason:"ok" };
-    }
-
-    // =========================
-    // aHash (stable) for score
-    // =========================
-    function aHashFromCanvas(ctx, w, h){
-      // grayscale -> 8x8 -> average -> bitstring
-      const size = 8;
-      const c = document.createElement("canvas");
-      const cctx = c.getContext("2d", { willReadFrequently: true });
-      c.width = size; c.height = size;
-      cctx.drawImage(ctx.canvas, 0,0,w,h, 0,0,size,size);
-      const d = cctx.getImageData(0,0,size,size).data;
-
-      let gray = new Array(size*size);
-      let sum = 0;
-      for(let i=0;i<size*size;i++){
-        const r=d[i*4], g=d[i*4+1], b=d[i*4+2];
-        const y = (r*0.299 + g*0.587 + b*0.114);
-        gray[i]=y; sum+=y;
-      }
-      const avg = sum/(size*size);
-
-      // build bits
-      let bits = "";
-      for(let i=0;i<gray.length;i++){
-        bits += (gray[i] >= avg) ? "1" : "0";
-      }
-
-      // convert bits to int-like rolling hash
-      let hash = 0;
-      for(let i=0;i<bits.length;i++){
-        hash = (hash*31 + (bits[i]==="1"?1:0)) >>> 0;
-      }
-      return hash;
-    }
-
-    async function stableScoreFromFile(file){
-      const img = await loadImageFromFile(file);
-      const { ctx, w, h } = downsampleToCanvas(img, 256, 256);
-      const h32 = aHashFromCanvas(ctx, w, h);
-      // map to 0..100
-      const score = (h32 % 101); // 0-100
-      return score;
-    }
-
-    // =========================
-    // Result mapping + record
-    // =========================
-    function mapScore(score){
-      const i = t();
-      let emoji="😀", msg=i.scoreMid, desc="";
-
-      if(score <= 30){
-        emoji="🥺"; msg=i.scoreLow;
-      }else if(score <= 60){
-        emoji="😀"; msg=i.scoreMid;
-      }else{
-        emoji="😆"; msg=i.scoreHigh;
-      }
-      desc = "";
-      return {emoji, msg, desc};
-    }
-
-    function showResult({emoji, scoreText, msg, desc}){
-      $("resEmoji").innerText = emoji;
-      $("resScore").innerText = scoreText;
-      $("resMsg").innerText = msg;
-      $("resDesc").innerText = desc;
-
-      showPage("pageResult");
-      // keep bottom nav selection on Today for result
-      setActiveTab("tabToday");
-    }
-
-    function addRecord(entry){
-      const records = loadRecords();
-      records.unshift(entry);
-      saveRecords(records.slice(0, 120)); // cap
-    }
-
-    function renderRecords(){
-      const i = t();
-      const list = $("recordList");
-      list.innerHTML = "";
-      const records = loadRecords();
-
-      if(!records.length){
-        const empty = document.createElement("div");
-        empty.className = "card";
-        empty.style.textAlign = "center";
-        empty.style.color = "var(--muted)";
-        empty.style.fontWeight = "800";
-        empty.innerText = i.recEmpty;
-        list.appendChild(empty);
-        return;
-      }
-
-      records.forEach(r=>{
-        const row = document.createElement("div");
-        row.className = "item";
-        const left = document.createElement("div");
-        left.className = "left";
-        left.innerHTML = `<span style="font-size:20px;">${r.emoji}</span><span>${r.date}</span>`;
-        const pill = document.createElement("div");
-        pill.className = "pill";
-        pill.innerText = (typeof r.score === "number") ? String(r.score) : "--";
-        row.appendChild(left);
-        row.appendChild(pill);
-        list.appendChild(row);
-      });
-    }
-
-    // =========================
-    // Analyze pipeline (with Gate)
-    // =========================
-    async function analyzeFile(file){
-      const i = t();
-      if(!file) return;
-
-      // Show "loading" quick
-      showResult({
-        emoji:"⏳",
-        scoreText:"--",
-        msg:"分析中…",
-        desc:""
-      });
-
-      // 1) Gate
-      const gate = await targetGate(file);
-      if(!gate.ok){
-        showResult({
-          emoji:"⚠️",
-          scoreText:"--",
-          msg:i.invalid,
-          desc:gate.reason
-        });
-        return;
-      }
-
-      // 2) Stable score
-      let score;
-      try{
-        score = await stableScoreFromFile(file);
-      }catch(e){
-        showResult({
-          emoji:"⚠️",
-          scoreText:"--",
-          msg:i.invalid,
-          desc:i.lowSample
-        });
-        return;
-      }
-
-      // 3) Map
-      const mapped = mapScore(score);
-
-      // 4) Save record (date)
+    function nowISO(){
       const d = new Date();
       const yyyy = d.getFullYear();
       const mm = String(d.getMonth()+1).padStart(2,"0");
       const dd = String(d.getDate()).padStart(2,"0");
-      const dateStr = `${yyyy}-${mm}-${dd}`;
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mi = String(d.getMinutes()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+    }
 
-      addRecord({
-        date: dateStr,
-        score,
-        emoji: mapped.emoji,
-        ts: Date.now()
+    function toast(msg){
+      state.toast = msg;
+      render();
+      clearTimeout(state.toastTimer);
+      state.toastTimer = setTimeout(()=>{ state.toast=""; render(); }, 2200);
+    }
+
+    /* =========================
+       Image -> features (light/color)
+       Works offline; no upload
+    ========================= */
+
+    function loadImageFromBlob(blob){
+      return new Promise((resolve, reject)=>{
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = ()=>{ URL.revokeObjectURL(url); resolve(img); };
+        img.onerror = (e)=>{ URL.revokeObjectURL(url); reject(e); };
+        img.src = url;
       });
-
-      // 5) Render and show
-      renderRecords();
-      showResult({
-        emoji: mapped.emoji,
-        scoreText: `${score}`,
-        msg: mapped.msg,
-        desc: mapped.desc || ""
-      });
     }
 
-    // =========================
-    // Weekly insight cooldown
-    // =========================
-    function canGenerateInsight(){
-      const last = Number(localStorage.getItem(LS.insightTs) || "0");
-      const now = Date.now();
-      const sevenDays = 7 * 24 * 60 * 60 * 1000;
-      return (now - last) >= sevenDays;
-    }
+    async function extractFeatures(file){
+      // read & downscale for analysis only
+      const blob = file;
+      const img = await loadImageFromBlob(blob);
 
-    function setInsightTs(){
-      localStorage.setItem(LS.insightTs, String(Date.now()));
-    }
+      const maxEdge = 240; // small for speed
+      const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
 
-    function generateInsightText(){
-      const i = t();
-      const records = loadRecords();
-      if(!records.length) return i.weekBody;
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d", { willReadFrequently:true });
+      if(!ctx) throw new Error("NO_CTX");
+      ctx.drawImage(img, 0, 0, w, h);
 
-      // last 7 days
-      const now = Date.now();
-      const seven = 7*24*60*60*1000;
-      const recent = records.filter(r => (now - (r.ts||0)) <= seven).slice(0, 30);
+      const data = ctx.getImageData(0,0,w,h).data;
 
-      if(!recent.length) return i.weekBody;
-
-      const avg = recent.reduce((a,b)=>a+(b.score||0),0)/recent.length;
-      const rounded = Math.round(avg);
-
-      if(rounded <= 35) return `${i.weekTitle}：平均約 ${rounded}。建議規律作息、持續觀察趨勢。`;
-      if(rounded <= 65) return `${i.weekTitle}：平均約 ${rounded}。狀態穩定，維持目前節奏。`;
-      return `${i.weekTitle}：平均約 ${rounded}。狀態良好，注意不要過度解讀單次波動。`;
-    }
-
-    // =========================
-    // Events
-    // =========================
-    function openCamera(){
-      // IMPORTANT: must be triggered by user gesture
-      $("cameraInput").value = "";
-      $("cameraInput").click();
-    }
-    function openGallery(){
-      $("galleryInput").value = "";
-      $("galleryInput").click();
-    }
-
-    // Bottom tabs
-    $("tabToday").addEventListener("click", ()=>{
-      setActiveTab("tabToday");
-      showPage("pageToday");
-    });
-    $("tabRecords").addEventListener("click", ()=>{
-      setActiveTab("tabRecords");
-      showPage("pageRecords");
-      renderRecords();
-    });
-    $("tabInsights").addEventListener("click", ()=>{
-      setActiveTab("tabInsights");
-      showPage("pageInsights");
-    });
-
-    // Gear -> settings
-    $("gearBtn").addEventListener("click", ()=>{
-      showPage("pageSettings");
-      // deactivate all tabs
-      ["tabToday","tabRecords","tabInsights"].forEach(id=>$(id).classList.remove("active"));
-      // fill input
-      $("nameInput").value = state.name || "";
-    });
-
-    // Today interactions
-    $("bigCircle").addEventListener("click", ()=>{
-      // open camera directly for fastest
-      openCamera();
-    });
-    $("btnChoose").addEventListener("click", openModal);
-    $("btnGallery").addEventListener("click", openGallery);
-
-    // Modal actions
-    $("modalClose").addEventListener("click", closeModal);
-    $("modalMask").addEventListener("click", (e)=>{
-      if(e.target === $("modalMask")) closeModal();
-    });
-    $("modalCamera").addEventListener("click", ()=>{
-      closeModal();
-      openCamera();
-    });
-    $("modalGallery").addEventListener("click", ()=>{
-      closeModal();
-      openGallery();
-    });
-
-    // File inputs
-    $("cameraInput").addEventListener("change", (e)=>{
-      const file = e.target.files && e.target.files[0];
-      analyzeFile(file);
-    });
-    $("galleryInput").addEventListener("change", (e)=>{
-      const file = e.target.files && e.target.files[0];
-      analyzeFile(file);
-    });
-
-    // Result buttons
-    $("btnAgain").addEventListener("click", ()=>{
-      // choose again
-      openModal();
-    });
-    $("btnHome").addEventListener("click", ()=>{
-      showPage("pageToday");
-    });
-
-    // Insights
-    $("btnInsight").addEventListener("click", ()=>{
-      const i = t();
-      if(!canGenerateInsight()){
-        $("insBody").innerText = "本週洞察已生成，請 7 天後再試。";
-        return;
+      let rSum=0,gSum=0,bSum=0, count=0;
+      let lumSum=0, lumSq=0;
+      for(let i=0;i<data.length;i+=4){
+        const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+        if(a<16) continue;
+        count++;
+        rSum += r; gSum += g; bSum += b;
+        // relative luminance (approx)
+        const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+        lumSum += lum;
+        lumSq += lum*lum;
       }
-      $("insBody").innerText = generateInsightText();
-      setInsightTs();
+      if(count<50) throw new Error("TOO_EMPTY");
+
+      const rAvg = rSum/count;
+      const gAvg = gSum/count;
+      const bAvg = bSum/count;
+      const lumAvg = lumSum/count; // 0..255
+      const lumVar = Math.max(0, lumSq/count - lumAvg*lumAvg);
+      const contrast = Math.sqrt(lumVar); // 0..~128
+
+      // saturation approx
+      let satSum=0;
+      for(let i=0;i<data.length;i+=4){
+        const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+        if(a<16) continue;
+        const max = Math.max(r,g,b);
+        const min = Math.min(r,g,b);
+        const sat = max === 0 ? 0 : (max-min)/max; // 0..1
+        satSum += sat;
+      }
+      const satAvg = satSum/count; // 0..1
+
+      // dominant tone
+      const tone = dominantTone(rAvg,gAvg,bAvg);
+      const lightLabel = labelLight(lumAvg);
+      const mood = labelMood({ lumAvg, contrast, satAvg, tone });
+
+      return {
+        w,h,
+        lumAvg,
+        contrast,
+        satAvg,
+        tone,
+        lightLabel,
+        mood
+      };
+    }
+
+    function dominantTone(r,g,b){
+      // simple hue-ish mapping
+      // return one of: warm/cool/neutral/greenish/purplish
+      const rg = r - g;
+      const rb = r - b;
+      const gb = g - b;
+
+      const max = Math.max(r,g,b);
+      const min = Math.min(r,g,b);
+      const spread = max - min;
+
+      if(spread < 18) return "neutral";
+
+      if(r > g && r > b){
+        // warm or pink
+        if(b > g) return "purplish";
+        return "warm";
+      }
+      if(b > r && b > g) return "cool";
+      if(g > r && g > b) return "greenish";
+      return "neutral";
+    }
+
+    function labelLight(lumAvg){
+      if(lumAvg < 70) return "dark";
+      if(lumAvg < 135) return "soft";
+      if(lumAvg < 200) return "bright";
+      return "verybright";
+    }
+
+    function labelMood({ lumAvg, contrast, satAvg, tone }){
+      // heuristic mood labels
+      const calm = (contrast < 40 && satAvg < 0.35);
+      const vivid = satAvg > 0.55;
+      const dramatic = contrast > 65 && lumAvg < 140;
+      const airy = lumAvg > 165 && contrast < 55;
+
+      if(dramatic) return "dramatic";
+      if(airy) return "airy";
+      if(vivid) return "vivid";
+      if(calm) return "calm";
+      return "balanced";
+    }
+
+    /* =========================
+       Generate A+B reply (no score)
+    ========================= */
+    function buildReply(lang, name, feat){
+      const who = name ? name : "";
+      const n = who ? (lang==="en" ? ` ${who}` : lang==="ja" ? `、${who}さん` : `，${who}`) : "";
+
+      const scene = describeScene(lang, feat);
+      const empathy = empathyLine(lang, feat);
+      const boost = boostLine(lang, feat);
+      const tinyAction = tinyActionLine(lang, feat);
+
+      // A (gentle) + B (positive)
+      if(lang==="en"){
+        return [
+          `I’m here${n}.`,
+          scene,
+          empathy,
+          boost,
+          tinyAction
+        ].join("\n\n");
+      }
+      if(lang==="ja"){
+        return [
+          `ここにいるよ${n}。`,
+          scene,
+          empathy,
+          boost,
+          tinyAction
+        ].join("\n\n");
+      }
+      // zh-TW
+      return [
+        `我在${n}。`,
+        scene,
+        empathy,
+        boost,
+        tinyAction
+      ].join("\n\n");
+    }
+
+    function describeScene(lang, feat){
+      const { tone, lightLabel, mood } = feat;
+
+      const toneText = {
+        "zh-TW": { warm:"偏暖", cool:"偏冷", neutral:"偏中性", greenish:"帶點綠意", purplish:"帶點紫粉" },
+        "en":    { warm:"warm", cool:"cool", neutral:"neutral", greenish:"a hint of green", purplish:"a hint of purple/pink" },
+        "ja":    { warm:"あたたかめ", cool:"ひんやり", neutral:"ニュートラル", greenish:"少し緑", purplish:"少し紫/ピンク" }
+      }[lang];
+
+      const lightText = {
+        "zh-TW": { dark:"光線偏暗", soft:"光線柔和", bright:"光線明亮", verybright:"光線非常明亮" },
+        "en":    { dark:"light feels dim", soft:"light feels soft", bright:"light feels bright", verybright:"light feels very bright" },
+        "ja":    { dark:"少し暗め", soft:"やわらかい光", bright:"明るい光", verybright:"とても明るい光" }
+      }[lang];
+
+      const moodText = {
+        "zh-TW": { calm:"整體很安靜", vivid:"色彩很有生命力", dramatic:"對比強烈、有電影感", airy:"很通透、像在呼吸", balanced:"狀態平衡、舒服" },
+        "en":    { calm:"it feels quiet and calm", vivid:"colors feel alive", dramatic:"high contrast, cinematic", airy:"airy, like breathing space", balanced:"balanced and comfortable" },
+        "ja":    { calm:"静かで落ち着く", vivid:"色がいきいき", dramatic:"コントラスト強めで映画っぽい", airy:"空気が通る感じ", balanced:"バランスが良くて心地いい" }
+      }[lang];
+
+      if(lang==="en"){
+        return `From this photo, the tone feels **${toneText[tone]}**, ${lightText[lightLabel]}, and ${moodText[mood]}.`;
+      }
+      if(lang==="ja"){
+        return `この写真は、色味が**${toneText[tone]}**で、${lightText[lightLabel]}。全体は${moodText[mood]}感じ。`;
+      }
+      return `我看這張照片：色調**${toneText[tone]}**、${lightText[lightLabel]}，而且${moodText[mood]}。`;
+    }
+
+    function empathyLine(lang, feat){
+      const { mood, lightLabel } = feat;
+
+      const zh = [
+        "你願意把這一刻交給我，代表你其實已經很努力了。",
+        "我不急著下結論，我們先一起把情緒放在桌上、慢慢看清楚。",
+        "就算今天有點亂，也沒關係，你不用一個人扛。"
+      ];
+
+      const en = [
+        "Thank you for sharing this moment with me. You’re already trying, and that matters.",
+        "We don’t need a verdict—let’s just hold the feeling gently and look at it together.",
+        "Even if today is messy, you don’t have to carry it alone."
+      ];
+
+      const ja = [
+        "この瞬間を見せてくれてありがとう。あなたは十分に頑張ってる。",
+        "結論を急がなくていいよ。気持ちをそっと置いて、一緒に眺めよう。",
+        "今日は少し乱れていても大丈夫。ひとりで抱えなくていい。"
+      ];
+
+      const pick = (arr)=>arr[(hashSeed(feat) % arr.length)];
+
+      // slight adaptation by mood
+      if(lang==="en"){
+        if(mood==="dramatic" || lightLabel==="dark") return pick(en);
+        return pick(en);
+      }
+      if(lang==="ja"){
+        return pick(ja);
+      }
+      return pick(zh);
+    }
+
+    function boostLine(lang, feat){
+      const { mood, tone } = feat;
+
+      const zhByMood = {
+        calm: [
+          "這種安靜不是空白，它是在幫你把心收回來。",
+          "你的節奏正在回到你自己身上，這很珍貴。"
+        ],
+        vivid: [
+          "你身上其實有很多能量，只是有時候被生活蓋住了。",
+          "這張照片的生命力很強，像是在提醒你：你也可以重新發亮。"
+        ],
+        dramatic: [
+          "有電影感不代表危險，反而像是一種『你正在蛻變』的信號。",
+          "你現在的內在張力很大，但那也是你走向更強的入口。"
+        ],
+        airy: [
+          "這種通透感很像：你開始允許自己呼吸、放鬆、被照顧。",
+          "你在往更輕的地方走，慢慢來就好。"
+        ],
+        balanced: [
+          "你其實比你以為的更穩，這就是你的底氣。",
+          "你正在把生活重新整理回可控的樣子。"
+        ]
+      };
+
+      const enByMood = {
+        calm: [
+          "Quiet doesn’t mean empty—it’s your mind coming back home.",
+          "Your pace is returning to you. That’s something to protect."
+        ],
+        vivid: [
+          "You have a lot of energy inside—sometimes life just covers it up.",
+          "This photo feels alive, like a reminder that you can shine again."
+        ],
+        dramatic: [
+          "Cinematic doesn’t mean dangerous. It can be a sign you’re transforming.",
+          "The tension you feel can be the doorway to your next stronger self."
+        ],
+        airy: [
+          "This openness feels like permission to breathe, soften, and be cared for.",
+          "You’re moving toward something lighter. Take it slow."
+        ],
+        balanced: [
+          "You’re steadier than you think—that’s your foundation.",
+          "You’re quietly putting life back into something you can hold."
+        ]
+      };
+
+      const jaByMood = {
+        calm: [
+          "静けさは空っぽじゃない。心が家に戻ってきてる。",
+          "あなたのペースがあなたに戻ってる。それは守る価値がある。"
+        ],
+        vivid: [
+          "あなたの中にはエネルギーがある。生活が隠してしまうだけ。",
+          "この写真は生き生きしてる。あなたもまた輝けるよ。"
+        ],
+        dramatic: [
+          "映画っぽさは危険じゃない。変化のサインかもしれない。",
+          "今の張りつめは、次の強さへの入口になれる。"
+        ],
+        airy: [
+          "この開放感は、息をしていいよっていう許可みたい。",
+          "軽いほうへ向かってる。ゆっくりで大丈夫。"
+        ],
+        balanced: [
+          "あなたは思ってる以上に安定してる。それが土台。",
+          "少しずつ生活を抱え直してる感じがする。"
+        ]
+      };
+
+      const table = (lang==="en") ? enByMood : (lang==="ja") ? jaByMood : zhByMood;
+      const arr = table[mood] || table.balanced;
+
+      // small tone nuance
+      const seed = hashSeed(feat) + (tone==="warm"?7:tone==="cool"?13:3);
+      return arr[Math.abs(seed)%arr.length];
+    }
+
+    function tinyActionLine(lang, feat){
+      const { lightLabel, mood } = feat;
+
+      const zh = [
+        "如果你願意：現在喝一口水、深呼吸三次，然後跟我說「我還在」。",
+        "你可以做一個很小的動作：把肩膀放鬆 3 秒，讓身體先安全。",
+        "今天不需要把一切解決，只要把自己照顧好就算贏。"
+      ];
+      const en = [
+        "If you want: take one sip of water, breathe three times, and tell me: “I’m still here.”",
+        "Try a tiny action: soften your shoulders for 3 seconds—let your body feel safe first.",
+        "You don’t have to solve everything today. Caring for yourself is already a win."
+      ];
+      const ja = [
+        "よかったら：水をひと口、深呼吸を3回して「私はここにいる」と言ってみて。",
+        "小さな行動：肩の力を3秒だけ抜いて、まず体を安心させよう。",
+        "今日は全部解決しなくていい。自分をケアできたら十分。"
+      ];
+
+      const seed = hashSeed(feat) + (lightLabel==="dark"?9:2) + (mood==="dramatic"?5:0);
+      const pick = (arr)=>arr[Math.abs(seed)%arr.length];
+
+      if(lang==="en") return pick(en);
+      if(lang==="ja") return pick(ja);
+      return pick(zh);
+    }
+
+    function hashSeed(feat){
+      // deterministic seed from numeric features (stable)
+      const a = Math.round(feat.lumAvg * 10);
+      const b = Math.round(feat.contrast * 10);
+      const c = Math.round(feat.satAvg * 1000);
+      const t = (feat.tone==="warm"?11:feat.tone==="cool"?23:feat.tone==="greenish"?37:feat.tone==="purplish"?41:7);
+      return (a*2654435761 ^ b*1597334677 ^ c*3812015801 ^ t) >>> 0;
+    }
+
+    /* =========================
+       State
+    ========================= */
+    const state = {
+      page: "home", // home | pick | reply | history | settings | name | language | privacy
+      lang: detectLang(),
+      name: safeGet(LS.NAME, ""),
+      history: safeJsonGet(LS.HISTORY, []),
+      analyzing: false,
+      lastReply: null, // { replyText, meta, at }
+      toast: "",
+      toastTimer: null,
+      env: {
+        https: isHttps(),
+        webview: isProbablyWebView()
+      }
+    };
+
+    function persist(){
+      safeSet(LS.LANG, state.lang);
+      safeSet(LS.NAME, state.name);
+      safeJsonSet(LS.HISTORY, state.history);
+    }
+
+    /* =========================
+       Hybrid input + Smart fallback
+    ========================= */
+    const cameraInput = document.getElementById("cameraInput");
+    const galleryInput = document.getElementById("galleryInput");
+
+    cameraInput.addEventListener("change", (e)=>{
+      const file = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if(file) handleFile(file);
     });
 
-    $("btnClear").addEventListener("click", ()=>{
-      const i = t();
-      localStorage.removeItem(LS.records);
-      localStorage.removeItem(LS.insightTs);
-      renderRecords();
-      $("insBody").innerText = i.cleared;
-      alert(i.cleared);
+    galleryInput.addEventListener("change", (e)=>{
+      const file = e.target.files && e.target.files[0];
+      e.target.value = "";
+      if(file) handleFile(file);
     });
 
-    // Settings: save name
-    $("btnSaveName").addEventListener("click", ()=>{
-      const i = t();
-      state.name = ($("nameInput").value || "").trim() || "";
-      localStorage.setItem(LS.name, state.name);
-      $("helloText").innerText = i.hello(state.name);
-      alert(i.saved);
-    });
+    function openGallery(){
+      // always works
+      galleryInput.click();
+    }
 
-    // Settings: language
-    document.querySelectorAll('[data-lang]').forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const lang = btn.getAttribute("data-lang");
-        state.lang = lang;
-        localStorage.setItem(LS.lang, lang);
-        renderTexts();
-        renderRecords();
-      });
-    });
+    function openCameraSmart(){
+      // We try camera first. If it doesn't open (common in in-app browsers),
+      // auto fallback to gallery after a short delay.
+      let opened = false;
+      const start = Date.now();
 
-    // Init
-    renderTexts();
-    renderRecords();
-    showPage("pageToday");
+      // When file picker opens, JS pauses in many browsers.
+      // We'll schedule a fallback check.
+      try{
+        cameraInput.click();
+        opened = true;
+      }catch{
+        opened = false;
+      }
+
+      // Fallback: if nothing happened after ~700ms, open gallery.
+      setTimeout(()=>{
+        // If user didn't pick anything and we are still on pick/home, fallback.
+        // This is best-effort: can't truly detect picker open; we ensure user has a path.
+        const elapsed = Date.now() - start;
+        const stillNoReply = !state.analyzing && state.page !== "reply";
+        if(stillNoReply && elapsed >= 650){
+          toast(t("TOAST_CAMERA_FALLBACK"));
+          openGallery();
+        }
+      }, 720);
+    }
+
+    async function handleFile(file){
+      state.analyzing = true;
+      state.page = "home";
+      render();
+
+      try{
+        // tiny delay for UX
+        await new Promise(r=>setTimeout(r, 220));
+        const feat = await extractFeatures(file);
+
+        const replyText = buildReply(state.lang, state.name, feat);
+        const meta = buildMeta(state.lang, feat);
+
+        state.lastReply = {
+          id: Date.now(),
+          at: nowISO(),
+          replyText,
+          meta
+        };
+        state.page = "reply";
+      }catch(err){
+        console.error(err);
+        toast(t("TOAST_READ_FAIL"));
+        state.page = "home";
+      }finally{
+        state.analyzing = false;
+        render();
+      }
+    }
+
+    function buildMeta(lang, feat){
+      const lightMap = {
+        "zh-TW": { dark:"偏暗", soft:"柔和", bright:"明亮", verybright:"很亮" },
+        "en":    { dark:"dim", soft:"soft", bright:"bright", verybright:"very bright" },
+        "ja":    { dark:"暗め", soft:"やわらかい", bright:"明るい", verybright:"かなり明るい" }
+      }[lang];
+
+      const toneMap = {
+        "zh-TW": { warm:"偏暖", cool:"偏冷", neutral:"中性", greenish:"綠意", purplish:"紫粉" },
+        "en":    { warm:"warm", cool:"cool", neutral:"neutral", greenish:"greenish", purplish:"purple/pink" },
+        "ja":    { warm:"あたたかめ", cool:"ひんやり", neutral:"ニュートラル", greenish:"緑っぽい", purplish:"紫/ピンク" }
+      }[lang];
+
+      const moodMap = {
+        "zh-TW": { calm:"安靜", vivid:"有生命力", dramatic:"電影感", airy:"通透", balanced:"舒服平衡" },
+        "en":    { calm:"calm", vivid:"vivid", dramatic:"cinematic", airy:"airy", balanced:"balanced" },
+        "ja":    { calm:"落ち着く", vivid:"いきいき", dramatic:"映画っぽい", airy:"通る感じ", balanced:"バランス良い" }
+      }[lang];
+
+      const envLabel = state.env.webview ? t("WEBVIEW") : t("BROWSER");
+      const httpsLabel = state.env.https ? t("ENV_OK") : t("ENV_BAD");
+
+      return {
+        light: lightMap[feat.lightLabel],
+        tone: toneMap[feat.tone],
+        mood: moodMap[feat.mood],
+        env: `${envLabel} · ${httpsLabel}`
+      };
+    }
+
+    function saveToHistory(){
+      if(!state.lastReply) return;
+      const rec = {
+        id: state.lastReply.id,
+        at: state.lastReply.at,
+        lang: state.lang,
+        replyText: state.lastReply.replyText,
+        meta: state.lastReply.meta
+      };
+      state.history = [rec, ...state.history].slice(0, 200);
+      persist();
+      toast(t("TOAST_SAVED"));
+      render();
+    }
+
+    function clearAll(){
+      const ok = confirm(t("CLEAR_CONFIRM"));
+      if(!ok) return;
+      try{
+        Object.keys(localStorage).forEach(k=>{
+          if(k.startsWith("flux.")) localStorage.removeItem(k);
+        });
+      }catch{}
+      state.name = "";
+      state.lang = detectLang();
+      state.history = [];
+      state.lastReply = null;
+      persist();
+      toast(t("CLEARED"));
+      state.page = "home";
+      render();
+    }
+
+    /* =========================
+       UI render
+    ========================= */
+    function icon(name){
+      // simple emoji icons (no external libs)
+      const map = {
+        gear:"⚙️",
+        back:"←",
+        close:"✕",
+        camera:"📸",
+        gallery:"🖼️",
+        spark:"✨",
+        user:"👤",
+        globe:"🌐",
+        shield:"🛡️",
+        trash:"🗑️",
+        history:"🗓️",
+        home:"🪄",
+        heart:"💛"
+      };
+      return map[name] || "•";
+    }
+
+    function setPage(p){ state.page = p; render(); }
+
+    function greeting(){
+      const base = t("HELLO");
+      if(!state.name) return base;
+      if(state.lang==="en") return `${base}, ${state.name}.`;
+      if(state.lang==="ja") return `${base}、${state.name}さん。`;
+      return `${base}，${state.name}。`;
+    }
+
+    function topPill(){
+      const env = state.env.webview ? t("WEBVIEW") : t("BROWSER");
+      const https = state.env.https ? t("ENV_OK") : t("ENV_BAD");
+      return `${env} · ${https}`;
+    }
+
+    function homeView(){
+      return `
+        <div class="page">
+          <div class="glowBg"></div>
+          <div class="topBar">
+            <div class="brand">
+              <span>${t("APP_NAME")}</span>
+              <span class="pill">${topPill()}</span>
+            </div>
+            <button class="iconBtn" id="goSettings" aria-label="settings">${icon("gear")}</button>
+          </div>
+
+          <div class="content">
+            <div class="center">
+              <div class="todayLabel">${t("TODAY")}</div>
+              <h1 class="greetingTitle">${escapeHtml(greeting())}</h1>
+              <p class="greetingSub">${escapeHtml(t("SUB"))}</p>
+
+              <div class="bigCircleBtn" id="bigCapture" aria-label="capture">
+                <div class="circleRing"></div>
+                <div class="camIcon">
+                  ${state.analyzing ? `<div class="spinner"></div>` : `${icon("camera")}`}
+                </div>
+              </div>
+
+              <div class="cta">${state.analyzing ? "..." : escapeHtml(t("CTA"))}</div>
+              <div class="homeHint">${escapeHtml(t("HINT"))}</div>
+            </div>
+          </div>
+
+          <div class="tabBar">
+            <div class="tabItem active" id="tabHome">
+              <div class="tabIcon">${icon("home")}</div>
+              <div class="tabLabel">${t("TAB_TODAY")}</div>
+            </div>
+            <div class="tabItem" id="tabHistory">
+              <div class="tabIcon">${icon("history")}</div>
+              <div class="tabLabel">${t("TAB_HISTORY")}</div>
+            </div>
+            <div class="tabItem" id="tabSettings">
+              <div class="tabIcon">${icon("spark")}</div>
+              <div class="tabLabel">${t("TAB_SETTINGS")}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function pickView(){
+      return `
+        <div class="page">
+          <div class="pickWrap">
+            <div class="navBar" style="border-bottom:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.55);">
+              <button class="iconBtn" id="pickBack" aria-label="back" style="color:#fff">${icon("close")}</button>
+              <div class="navTitle" style="color:#fff">${t("PICK_TITLE")}</div>
+              <div style="width:40px;"></div>
+            </div>
+
+            <div class="pickHero">
+              <div class="pickDesc">
+                ${escapeHtml(t("PICK_DESC"))}
+              </div>
+            </div>
+
+            <div class="pickFooter">
+              <div class="pickRow">
+                <button class="pickAction" id="pickCamera" aria-label="camera">
+                  <div class="pickIconCircle">${icon("camera")}</div>
+                  <div style="font-weight:800">${t("BTN_CAMERA")}</div>
+                </button>
+
+                <button class="pickAction" id="pickGallery" aria-label="gallery">
+                  <div class="pickIconCircle">${icon("gallery")}</div>
+                  <div style="font-weight:800">${t("BTN_GALLERY")}</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function replyView(){
+      if(!state.lastReply) return homeView();
+      const r = state.lastReply;
+
+      return `
+        <div class="page">
+          <div class="navBar">
+            <button class="iconBtn" id="replyBack" aria-label="back">${icon("back")}</button>
+            <div class="navTitle">${t("REPLY_TITLE")}</div>
+            <button class="iconBtn" id="replyClose" aria-label="close">${icon("close")}</button>
+          </div>
+
+          <div class="content">
+            <div class="card">
+              <div class="cardTitle">${icon("heart")} ${t("REPLY_TITLE")}</div>
+              <div class="replyText">${escapeHtml(r.replyText)}</div>
+
+              <div class="metaRow">
+                <span class="chip">${t("META_LIGHT")}: ${escapeHtml(r.meta.light)}</span>
+                <span class="chip">${t("META_COLOR")}: ${escapeHtml(r.meta.tone)}</span>
+                <span class="chip">${t("META_MOOD")}: ${escapeHtml(r.meta.mood)}</span>
+                <span class="chip">${t("META_ENV")}: ${escapeHtml(r.meta.env)}</span>
+              </div>
+
+              <div style="height:14px"></div>
+              <button class="primaryBtn" id="saveHistory">${t("BTN_SAVE")}</button>
+              <div style="height:10px"></div>
+              <button class="dangerBtn" id="goHome">${t("BTN_HOME")}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function historyView(){
+      const list = state.history || [];
+      const body = list.length ? list.map(item=>{
+        return `
+          <div class="row">
+            <div style="flex:1">
+              <div class="rowDate">${escapeHtml(item.at)}</div>
+              <div class="rowText">${escapeHtml(item.replyText)}</div>
+            </div>
+            <div class="right">›</div>
+          </div>
+        `;
+      }).join("") : `<div class="empty">${escapeHtml(t("HISTORY_EMPTY"))}</div>`;
+
+      return `
+        <div class="page">
+          <div class="navBar">
+            <button class="iconBtn" id="histBack" aria-label="back">${icon("back")}</button>
+            <div class="navTitle">${t("HISTORY_TITLE")}</div>
+            <div style="width:40px"></div>
+          </div>
+
+          <div class="content">
+            <div class="card">${body}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function settingsView(){
+      return `
+        <div class="page">
+          <div class="navBar">
+            <button class="iconBtn" id="setBack" aria-label="back">${icon("back")}</button>
+            <div class="navTitle">${t("SETTINGS_TITLE")}</div>
+            <div style="width:40px"></div>
+          </div>
+
+          <div class="content">
+            <div class="card">
+              <button class="menuItem" id="goName">
+                <div class="menuLeft">
+                  <div class="menuIcon">${icon("user")}</div>
+                  <div>${t("NAME_TITLE")}</div>
+                </div>
+                <div class="right">›</div>
+              </button>
+
+              <button class="menuItem" id="goLang">
+                <div class="menuLeft">
+                  <div class="menuIcon">${icon("globe")}</div>
+                  <div>${t("LANG_TITLE")}</div>
+                </div>
+                <div class="right">›</div>
+              </button>
+
+              <button class="menuItem" id="goPrivacy">
+                <div class="menuLeft">
+                  <div class="menuIcon">${icon("shield")}</div>
+                  <div>${t("PRIV_TITLE")}</div>
+                </div>
+                <div class="right">›</div>
+              </button>
+            </div>
+
+            <div class="divider"></div>
+            <div class="sectionLabel">${t("PRIV_TITLE")}</div>
+
+            <div class="card">
+              <div style="color:var(--muted); line-height:1.7">${escapeHtml(t("PRIV_DESC"))}</div>
+              <div style="height:14px"></div>
+              <button class="dangerBtn" id="clearAll">${icon("trash")} ${t("CLEAR")}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function nameView(){
+      return `
+        <div class="page">
+          <div class="navBar">
+            <button class="iconBtn" id="nameBack" aria-label="back">${icon("back")}</button>
+            <div class="navTitle">${t("NAME_TITLE")}</div>
+            <div style="width:40px"></div>
+          </div>
+
+          <div class="content">
+            <div class="card">
+              <div style="font-weight:900; margin-bottom:10px">${t("NAME_DESC")}</div>
+              <input class="text" id="nameInput" value="${escapeAttr(state.name)}" placeholder="${escapeAttr(t("NAME_PH"))}" />
+              <div class="inputHint">${escapeHtml(t("NAME_HINT"))}</div>
+              <div style="height:14px"></div>
+              <button class="primaryBtn" id="nameSave">${t("BTN_DONE")}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function languageView(){
+      const item = (code,label)=>`
+        <button class="menuItem" data-lang="${code}">
+          <div class="menuLeft">
+            <div class="menuIcon">${state.lang===code ? "✅" : "▫️"}</div>
+            <div>${label}</div>
+          </div>
+          <div class="right">›</div>
+        </button>
+      `;
+      return `
+        <div class="page">
+          <div class="navBar">
+            <button class="iconBtn" id="langBack" aria-label="back">${icon("back")}</button>
+            <div class="navTitle">${t("LANG_TITLE")}</div>
+            <div style="width:40px"></div>
+          </div>
+
+          <div class="content">
+            <div class="card" id="langList">
+              ${item("zh-TW","繁體中文")}
+              ${item("en","English")}
+              ${item("ja","日本語")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function privacyView(){
+      return `
+        <div class="page">
+          <div class="navBar">
+            <button class="iconBtn" id="privBack" aria-label="back">${icon("back")}</button>
+            <div class="navTitle">${t("PRIV_TITLE")}</div>
+            <div style="width:40px"></div>
+          </div>
+
+          <div class="content">
+            <div class="card">
+              <div style="line-height:1.7; color:var(--muted)">${escapeHtml(t("PRIV_DESC"))}</div>
+              <div style="height:14px"></div>
+              <div class="metaRow">
+                <span class="chip">${escapeHtml(topPill())}</span>
+              </div>
+              <div style="height:14px"></div>
+              <button class="dangerBtn" id="clearAll2">${icon("trash")} ${t("CLEAR")}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function render(){
+      const app = document.getElementById("app");
+      let html = "";
+      switch(state.page){
+        case "home": html = homeView(); break;
+        case "pick": html = pickView(); break;
+        case "reply": html = replyView(); break;
+        case "history": html = historyView(); break;
+        case "settings": html = settingsView(); break;
+        case "name": html = nameView(); break;
+        case "language": html = languageView(); break;
+        case "privacy": html = privacyView(); break;
+        default: html = homeView();
+      }
+      app.innerHTML = html + (state.toast ? `<div class="toast">${escapeHtml(state.toast)}</div>` : "");
+
+      bindEvents();
+    }
+
+    function bindEvents(){
+      // Home
+      const goSettings = document.getElementById("goSettings");
+      if(goSettings) goSettings.onclick = ()=>setPage("settings");
+
+      const bigCapture = document.getElementById("bigCapture");
+      if(bigCapture) bigCapture.onclick = ()=>setPage("pick");
+
+      const tabHistory = document.getElementById("tabHistory");
+      if(tabHistory) tabHistory.onclick = ()=>setPage("history");
+
+      const tabSettings = document.getElementById("tabSettings");
+      if(tabSettings) tabSettings.onclick = ()=>setPage("settings");
+
+      // Pick
+      const pickBack = document.getElementById("pickBack");
+      if(pickBack) pickBack.onclick = ()=>setPage("home");
+
+      const pickCamera = document.getElementById("pickCamera");
+      if(pickCamera) pickCamera.onclick = ()=>openCameraSmart();
+
+      const pickGallery = document.getElementById("pickGallery");
+      if(pickGallery) pickGallery.onclick = ()=>openGallery();
+
+      // Reply
+      const replyBack = document.getElementById("replyBack");
+      if(replyBack) replyBack.onclick = ()=>setPage("home");
+
+      const replyClose = document.getElementById("replyClose");
+      if(replyClose) replyClose.onclick = ()=>setPage("home");
+
+      const saveHistoryBtn = document.getElementById("saveHistory");
+      if(saveHistoryBtn) saveHistoryBtn.onclick = ()=>saveToHistory();
+
+      const goHomeBtn = document.getElementById("goHome");
+      if(goHomeBtn) goHomeBtn.onclick = ()=>setPage("home");
+
+      // History
+      const histBack = document.getElementById("histBack");
+      if(histBack) histBack.onclick = ()=>setPage("home");
+
+      // Settings
+      const setBack = document.getElementById("setBack");
+      if(setBack) setBack.onclick = ()=>setPage("home");
+
+      const goName = document.getElementById("goName");
+      if(goName) goName.onclick = ()=>setPage("name");
+
+      const goLang = document.getElementById("goLang");
+      if(goLang) goLang.onclick = ()=>setPage("language");
+
+      const goPrivacy = document.getElementById("goPrivacy");
+      if(goPrivacy) goPrivacy.onclick = ()=>setPage("privacy");
+
+      const clearAllBtn = document.getElementById("clearAll");
+      if(clearAllBtn) clearAllBtn.onclick = ()=>clearAll();
+
+      // Name
+      const nameBack = document.getElementById("nameBack");
+      if(nameBack) nameBack.onclick = ()=>setPage("settings");
+
+      const nameSave = document.getElementById("nameSave");
+      if(nameSave){
+        nameSave.onclick = ()=>{
+          const input = document.getElementById("nameInput");
+          state.name = (input && input.value || "").trim();
+          persist();
+          setPage("settings");
+        };
+      }
+
+      // Language
+      const langBack = document.getElementById("langBack");
+      if(langBack) langBack.onclick = ()=>setPage("settings");
+
+      const langList = document.getElementById("langList");
+      if(langList){
+        langList.querySelectorAll("button[data-lang]").forEach(btn=>{
+          btn.onclick = ()=>{
+            const code = btn.getAttribute("data-lang");
+            if(I18N[code]){
+              state.lang = code;
+              persist();
+              render();
+            }
+          };
+        });
+      }
+
+      // Privacy
+      const privBack = document.getElementById("privBack");
+      if(privBack) privBack.onclick = ()=>setPage("settings");
+
+      const clearAll2 = document.getElementById("clearAll2");
+      if(clearAll2) clearAll2.onclick = ()=>clearAll();
+    }
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){ return escapeHtml(str).replaceAll("\n"," "); }
+
+    // Initial render
+    persist();
+    render();
   </script>
 </body>
 </html>

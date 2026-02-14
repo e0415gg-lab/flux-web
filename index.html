@@ -1,184 +1,1175 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Flux v4.1 Final Stable</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Flux v4.2 Stable (Poop Only Gate)</title>
 
-<style>
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:linear-gradient(180deg,#f5f7fb,#e9edf5);
-display:flex;
-align-items:center;
-justify-content:center;
-height:100vh;
-text-align:center;
-color:#111;
-}
+  <style>
+    :root{
+      --bg1:#eaf0ff;
+      --bg2:#f7f7ff;
+      --text:#111;
+      --muted:#6b7280;
+      --card:#ffffffcc;
+      --border:#e5e7eb;
+      --shadow:0 20px 60px rgba(0,0,0,.08);
+      --primary:#111;
+      --primaryText:#fff;
+      --danger:#b91c1c;
+      --warn:#a16207;
+      --ok:#166534;
+    }
+    *{box-sizing:border-box;}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 30% 0%, #dfeaff 0%, transparent 60%),
+        radial-gradient(1200px 700px at 80% 70%, #e9fff6 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
 
-.container{
-width:100%;
-max-width:420px;
-padding:24px;
-}
+    .app{
+      width:min(460px, 100%);
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(8px);
+    }
 
-.circle{
-width:220px;
-height:220px;
-border-radius:50%;
-background:white;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
-display:flex;
-align-items:center;
-justify-content:center;
-margin:40px auto;
-cursor:pointer;
-}
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      background:#ffffffb3;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .brand .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:linear-gradient(135deg,#111,#666);
+    }
+    .iconBtn{
+      width:40px;height:40px;border-radius:14px;
+      border:1px solid var(--border);
+      background:#fff;
+      display:grid;place-items:center;
+      cursor:pointer;
+    }
+    .iconBtn:active{transform:scale(.98);}
+    .content{padding:18px;}
 
-.circle:active{
-transform:scale(0.97);
-}
+    .hero{
+      text-align:center;
+      padding:8px 8px 6px;
+    }
+    .hero .hello{
+      font-size:28px;
+      font-weight:900;
+      margin:6px 0 6px;
+    }
+    .hero .sub{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+      margin:0 0 14px;
+    }
 
-.title{
-font-size:28px;
-font-weight:700;
-}
+    .bigCircle{
+      margin:12px auto 14px;
+      width:220px;height:220px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:radial-gradient(circle at 50% 40%, #fff, #f4f6ff);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      user-select:none;
+    }
+    .bigCircle:active{transform:scale(.99);}
+    .bigCircle .ring{
+      position:absolute;
+      width:100%;
+      height:100%;
+      border-radius:999px;
+      box-shadow:inset 0 0 0 16px rgba(0,0,0,.03);
+    }
+    .bigCircle .cam{
+      font-size:52px;
+      opacity:.95;
+    }
+    .bigCircle .label{
+      position:absolute;
+      bottom:18px;
+      font-size:13px;
+      color:var(--muted);
+    }
 
-.subtitle{
-color:#666;
-margin-top:8px;
-}
+    .row{
+      display:flex;
+      gap:10px;
+    }
+    .btn{
+      flex:1;
+      padding:14px 14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn.primary{
+      background:var(--primary);
+      color:var(--primaryText);
+      border-color:var(--primary);
+    }
+    .btn:active{transform:scale(.985);}
+    .hint{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
+      line-height:1.5;
+    }
 
-.btn{
-width:100%;
-padding:16px;
-border-radius:16px;
-border:none;
-background:#111;
-color:white;
-font-size:18px;
-margin-top:12px;
-}
+    .nav{
+      display:flex;
+      gap:8px;
+      padding:10px 12px 14px;
+      border-top:1px solid var(--border);
+      background:#ffffffb3;
+    }
+    .tab{
+      flex:1;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+      font-weight:800;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      color:#111;
+    }
+    .tab.active{
+      background:#111;
+      border-color:#111;
+      color:#fff;
+    }
 
-.secondary{
-background:#ddd;
-color:#111;
-}
+    .panelTitle{
+      font-size:18px;
+      font-weight:900;
+      margin:4px 0 12px;
+    }
 
-.hidden{
-display:none;
-}
+    .card{
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:20px;
+      padding:16px;
+    }
 
-.score{
-font-size:72px;
-font-weight:bold;
-margin:20px 0;
-}
-</style>
+    .resultWrap{
+      text-align:center;
+      padding:10px 8px 0;
+    }
+    .emoji{
+      font-size:56px;
+      margin-top:6px;
+    }
+    .score{
+      font-size:72px;
+      font-weight:900;
+      margin:8px 0 6px;
+      letter-spacing:.5px;
+    }
+    .msg{
+      font-size:15px;
+      color:#111;
+      font-weight:800;
+      margin:0 0 6px;
+    }
+    .desc{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      margin:0;
+    }
+    .disclaimer{
+      margin-top:14px;
+      font-size:12px;
+      color:#9ca3af;
+      text-align:center;
+      line-height:1.5;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#fff;
+    }
+    .item .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+    }
+    .pill{
+      font-size:12px;
+      font-weight:900;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fafafa;
+      color:#111;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .input{
+      width:100%;
+      padding:14px 14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      font-size:16px;
+      background:#fff;
+      outline:none;
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .modalMask{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding:14px;
+      z-index:9999;
+    }
+    .modal{
+      width:min(460px, 100%);
+      background:#0b0b0bcc;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:22px;
+      padding:18px;
+      color:#fff;
+      backdrop-filter: blur(10px);
+    }
+    .modalTitle{
+      text-align:center;
+      font-weight:900;
+      font-size:18px;
+      margin:4px 0 14px;
+    }
+    .modalText{
+      text-align:center;
+      color:rgba(255,255,255,.75);
+      font-size:13px;
+      line-height:1.6;
+      margin:0 0 16px;
+    }
+    .modalRow{
+      display:flex;
+      gap:12px;
+      margin-top:10px;
+    }
+    .mBtn{
+      flex:1;
+      padding:14px 12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font-size:15px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .mBtn:active{transform:scale(.985);}
+    .closeX{
+      position:absolute;
+      left:18px;
+      top:18px;
+      width:40px;height:40px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      display:grid;place-items:center;
+      cursor:pointer;
+    }
+
+    .hidden{display:none !important;}
+  </style>
 </head>
 
 <body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span> Flux</div>
+      <button class="iconBtn" id="gearBtn" title="設定">⚙️</button>
+    </div>
 
-<div class="container" id="home">
-<div class="title">Flux</div>
-<div class="subtitle">拍下今天的狀態</div>
+    <div class="content">
 
-<div class="circle" onclick="openCamera()">
-📷
-</div>
+      <!-- TODAY -->
+      <section id="pageToday">
+        <div class="hero">
+          <div class="hello" id="helloText">早安，利蓉。</div>
+          <p class="sub" id="todaySubtitle">最近整體狀態很穩定。</p>
 
-<button class="btn secondary" onclick="openGallery()">從相簿選擇</button>
+          <div class="bigCircle" id="bigCircle">
+            <div class="ring"></div>
+            <div class="cam">📷</div>
+            <div class="label" id="circleHint">拍下今天的狀態</div>
+          </div>
 
-<button class="btn secondary" onclick="openExternal()">🌐 用瀏覽器開啟（避免相機被限制）</button>
+          <div class="row">
+            <button class="btn primary" id="btnChoose">選擇方式</button>
+            <button class="btn" id="btnGallery">從相簿選擇</button>
+          </div>
 
-<div id="webviewHint" class="subtitle" style="display:none;margin-top:12px;">
-目前為內建瀏覽器，拍照可能被限制為相簿模式
-</div>
-</div>
+          <div class="hint" id="hintText">
+            第一次需要允許相機權限。<br/>
+            ⚠️ 僅接受「目標物照片」，非目標物會顯示「樣本無效」。
+          </div>
+        </div>
+      </section>
 
-<div id="result" class="container hidden">
-<div id="emoji" style="font-size:56px;">😀</div>
-<div id="score" class="score">0</div>
-<div id="message" class="subtitle">分析完成</div>
-<button class="btn" onclick="goHome()">返回首頁</button>
-</div>
+      <!-- RESULT -->
+      <section id="pageResult" class="hidden">
+        <div class="panelTitle">今日狀態</div>
+        <div class="card">
+          <div class="resultWrap">
+            <div class="emoji" id="resEmoji">🥺</div>
+            <div class="score" id="resScore">--</div>
+            <div class="msg" id="resMsg">樣本無效</div>
+            <p class="desc" id="resDesc">請拍攝目標物（光線充足、清晰）。</p>
 
-<input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden">
-<input id="galleryInput" type="file" accept="image/*" class="hidden">
+            <div class="row" style="margin-top:14px;">
+              <button class="btn primary" id="btnAgain">再測一次</button>
+              <button class="btn" id="btnHome">返回</button>
+            </div>
 
-<script>
-function isInAppBrowser(){
-const ua=navigator.userAgent||"";
-return /Line|FBAN|FBAV|Instagram|Messenger|MicroMessenger/i.test(ua);
-}
+            <div class="disclaimer">
+              此 App 僅用於日常觀察與記錄，不代表健康或醫療判斷。
+            </div>
+          </div>
+        </div>
+      </section>
 
-function openExternal(){
-window.open(location.href,"_blank");
-alert("請用 Chrome 或 Safari 開啟以使用完整相機功能");
-}
+      <!-- RECORDS -->
+      <section id="pageRecords" class="hidden">
+        <div class="panelTitle">我的紀錄</div>
+        <div class="list" id="recordList"></div>
+        <div class="hint">（本機儲存，不上傳伺服器）</div>
+      </section>
 
-function openCamera(){
-document.getElementById("cameraInput").click();
-}
+      <!-- INSIGHTS -->
+      <section id="pageInsights" class="hidden">
+        <div class="panelTitle">洞察</div>
+        <div class="card">
+          <div style="font-weight:900;font-size:16px;margin-bottom:6px;" id="insTitle">本週洞察</div>
+          <div style="color:var(--muted);font-size:13px;line-height:1.6;" id="insBody">
+            每 7 天最多生成一次洞察，避免過度解讀。
+          </div>
+          <div class="row" style="margin-top:14px;">
+            <button class="btn primary" id="btnInsight">產生洞察</button>
+            <button class="btn" id="btnClear">清除資料</button>
+          </div>
+        </div>
+      </section>
 
-function openGallery(){
-document.getElementById("galleryInput").click();
-}
+      <!-- SETTINGS -->
+      <section id="pageSettings" class="hidden">
+        <div class="panelTitle">設定</div>
 
-function isValidTargetImage(file){
-if(!file.type.startsWith("image/")) return false;
-if(file.size<5000) return false; // 太小圖片過濾
-return true;
-}
+        <div class="card">
+          <div class="field">
+            <div style="font-weight:900;">稱呼方式</div>
+            <input class="input" id="nameInput" placeholder="例如：利蓉 / Lily" />
+            <div class="small">用於首頁問候，可留空。</div>
+            <button class="btn primary" id="btnSaveName">保存</button>
+          </div>
+        </div>
 
-function analyzeFile(file){
-if(!file) return;
+        <div style="height:12px;"></div>
 
-if(!isValidTargetImage(file)){
-alert("請上傳有效的目標照片");
-return;
-}
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:6px;">隱私與資料</div>
+          <div class="small">
+            本 App 不會上傳照片。僅使用「檔案特徵（aHash）」生成穩定分數並寫入本機紀錄。
+          </div>
+        </div>
 
-// 穩定分數（同圖同分）
-const seed=file.size%97;
-const score=(seed*7+31)%100;
+        <div style="height:12px;"></div>
 
-let emoji="😀";
-let message="狀態正常";
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:6px;">語言 / Language</div>
+          <div class="row">
+            <button class="btn" data-lang="zh">中文</button>
+            <button class="btn" data-lang="en">English</button>
+            <button class="btn" data-lang="ja">日本語</button>
+          </div>
+        </div>
 
-if(score<=30){
-emoji="🥺";
-message="今日狀態偏低，建議觀察";
-}else if(score<=60){
-emoji="😀";
-message="今日狀態穩定";
-}else{
-emoji="😆";
-message="今日狀態良好";
-}
+        <div style="height:12px;"></div>
 
-document.getElementById("score").innerText=score;
-document.getElementById("emoji").innerText=emoji;
-document.getElementById("message").innerText=message;
+        <div class="card">
+          <div style="font-weight:900;margin-bottom:6px;">關於 Flux</div>
+          <div class="small" id="aboutText">
+            Flux v4.2 Stable（Poop-only Gate）<br/>
+            Hybrid Input Only：使用系統相機 / 相簿，避免 WebView 黑屏問題。
+          </div>
+        </div>
+      </section>
 
-document.getElementById("home").classList.add("hidden");
-document.getElementById("result").classList.remove("hidden");
-}
+      <!-- Hidden Inputs -->
+      <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
+      <input id="galleryInput" type="file" accept="image/*" class="hidden" />
 
-document.getElementById("cameraInput").addEventListener("change",(e)=>{
-analyzeFile(e.target.files[0]);
-});
+    </div>
 
-document.getElementById("galleryInput").addEventListener("change",(e)=>{
-analyzeFile(e.target.files[0]);
-});
+    <div class="nav">
+      <button class="tab active" id="tabToday">● 今天</button>
+      <button class="tab" id="tabRecords">📅 紀錄</button>
+      <button class="tab" id="tabInsights">✨ 洞察</button>
+    </div>
+  </div>
 
-if(isInAppBrowser()){
-document.getElementById("webviewHint").style.display="block";
-}
-</script>
+  <!-- Choose Modal -->
+  <div class="modalMask" id="modalMask">
+    <div class="modal" style="position:relative;">
+      <button class="closeX" id="modalClose">✕</button>
+      <div class="modalTitle" id="modalTitle">選擇方式</div>
+      <div class="modalText" id="modalText">你要拍照，還是從相簿選一張？</div>
+      <div class="modalRow">
+        <button class="mBtn" id="modalCamera">📷 拍照</button>
+        <button class="mBtn" id="modalGallery">🖼️ 相簿</button>
+      </div>
+    </div>
+  </div>
 
+  <script>
+    // =========================
+    // i18n
+    // =========================
+    const I18N = {
+      zh: {
+        today: "今天",
+        records: "紀錄",
+        insights: "洞察",
+        settings: "設定",
+        hello: (name)=> `早安，${name || "你"}。`,
+        stable: "最近整體狀態很穩定。",
+        takeToday: "拍下今天的狀態",
+        needPerm: "第一次需要允許相機權限。",
+        onlyTarget: "⚠️ 僅接受「目標物照片」，非目標物會顯示「樣本無效」。",
+        choose: "選擇方式",
+        fromGallery: "從相簿選擇",
+        modalQ: "你要拍照，還是從相簿選一張？",
+        camera: "拍照",
+        gallery: "相簿",
+        todayState: "今日狀態",
+        again: "再測一次",
+        back: "返回",
+        invalid: "樣本無效",
+        invalidDesc: "請拍攝目標物（光線充足、清晰）。",
+        disclaimer: "此 App 僅用於日常觀察與記錄，不代表健康或醫療判斷。",
+        recTitle: "我的紀錄",
+        recEmpty: "目前沒有紀錄",
+        weekTitle: "本週洞察",
+        weekBody: "每 7 天最多生成一次洞察，避免過度解讀。",
+        genInsight: "產生洞察",
+        clear: "清除資料",
+        cleared: "已清除資料",
+        nameLabel: "稱呼方式",
+        nameHint: "用於首頁問候，可留空。",
+        save: "保存",
+        saved: "已保存",
+        privacyTitle: "隱私與資料",
+        privacyBody: "本 App 不會上傳照片。僅使用「檔案特徵（aHash）」生成穩定分數並寫入本機紀錄。",
+        about: "關於 Flux",
+        aboutBody: "Flux v4.2 Stable（Poop-only Gate）\nHybrid Input Only：使用系統相機 / 相簿，避免 WebView 黑屏問題。",
+        nonImage: "請上傳有效照片",
+        lowSample: "樣本無效（請拍攝目標物）",
+        scoreLow: "目前狀態偏低，建議持續觀察變化。",
+        scoreMid: "目前狀態正常。",
+        scoreHigh: "目前狀態良好。"
+      },
+      en: {
+        today: "Today",
+        records: "Records",
+        insights: "Insights",
+        settings: "Settings",
+        hello: (name)=> `Good day, ${name || "there"}.`,
+        stable: "Overall state looks stable recently.",
+        takeToday: "Capture today's state",
+        needPerm: "First time requires camera permission.",
+        onlyTarget: "⚠️ Target-only: non-target photos will show “Invalid sample”.",
+        choose: "Choose",
+        fromGallery: "From gallery",
+        modalQ: "Take a photo or pick one from your gallery?",
+        camera: "Camera",
+        gallery: "Gallery",
+        todayState: "Today's Result",
+        again: "Try again",
+        back: "Back",
+        invalid: "Invalid sample",
+        invalidDesc: "Please capture the target clearly with good lighting.",
+        disclaimer: "This app is for daily observation/recording only. Not medical advice.",
+        recTitle: "My Records",
+        recEmpty: "No records yet",
+        weekTitle: "Weekly Insight",
+        weekBody: "At most once every 7 days to avoid over-interpretation.",
+        genInsight: "Generate insight",
+        clear: "Clear data",
+        cleared: "Data cleared",
+        nameLabel: "Display name",
+        nameHint: "Shown on the home greeting. Optional.",
+        save: "Save",
+        saved: "Saved",
+        privacyTitle: "Privacy",
+        privacyBody: "No photo uploads. We generate a stable score from file hash (aHash) and store records locally.",
+        about: "About Flux",
+        aboutBody: "Flux v4.2 Stable (Poop-only Gate)\nHybrid Input Only: system camera/gallery to avoid WebView black screen.",
+        nonImage: "Please choose a valid image",
+        lowSample: "Invalid sample (please capture the target)",
+        scoreLow: "State is low. Keep observing.",
+        scoreMid: "State looks normal.",
+        scoreHigh: "State is good."
+      },
+      ja: {
+        today: "今日",
+        records: "記録",
+        insights: "洞察",
+        settings: "設定",
+        hello: (name)=> `おはよう、${name || "あなた"}。`,
+        stable: "最近の状態は安定しています。",
+        takeToday: "今日の状態を撮影",
+        needPerm: "初回はカメラ許可が必要です。",
+        onlyTarget: "⚠️ 対象物のみ：対象外写真は「無効」と表示します。",
+        choose: "選択",
+        fromGallery: "アルバムから",
+        modalQ: "撮影しますか？アルバムから選びますか？",
+        camera: "撮影",
+        gallery: "アルバム",
+        todayState: "今日の結果",
+        again: "もう一度",
+        back: "戻る",
+        invalid: "無効",
+        invalidDesc: "対象物を明るく、はっきり撮影してください。",
+        disclaimer: "本アプリは日常観察・記録用であり、医療判断ではありません。",
+        recTitle: "私の記録",
+        recEmpty: "記録はまだありません",
+        weekTitle: "週間洞察",
+        weekBody: "7日ごとに最大1回まで（過度解釈を防ぐ）。",
+        genInsight: "洞察を生成",
+        clear: "データ削除",
+        cleared: "削除しました",
+        nameLabel: "呼び名",
+        nameHint: "ホームの挨拶に表示（任意）。",
+        save: "保存",
+        saved: "保存しました",
+        privacyTitle: "プライバシー",
+        privacyBody: "写真はアップロードしません。aHashで安定スコアを生成し、端末内に保存します。",
+        about: "Fluxについて",
+        aboutBody: "Flux v4.2 Stable（Poop-only Gate）\nHybrid Input Only：WebView黒画面回避のためシステムカメラ/アルバムを使用。",
+        nonImage: "有効な画像を選択してください",
+        lowSample: "無効（対象物を撮影してください）",
+        scoreLow: "状態が低めです。観察を続けましょう。",
+        scoreMid: "状態は正常です。",
+        scoreHigh: "状態は良好です。"
+      }
+    };
+
+    // =========================
+    // State + Storage
+    // =========================
+    const LS = {
+      lang: "flux_lang",
+      name: "flux_name",
+      records: "flux_records_v1",
+      insightTs: "flux_insight_ts"
+    };
+
+    const state = {
+      lang: localStorage.getItem(LS.lang) || "zh",
+      name: localStorage.getItem(LS.name) || "利蓉"
+    };
+
+    function t(){ return I18N[state.lang] || I18N.zh; }
+
+    function loadRecords(){
+      try{
+        return JSON.parse(localStorage.getItem(LS.records) || "[]");
+      }catch(e){
+        return [];
+      }
+    }
+    function saveRecords(arr){
+      localStorage.setItem(LS.records, JSON.stringify(arr));
+    }
+
+    // =========================
+    // UI Helpers
+    // =========================
+    const $ = (id)=> document.getElementById(id);
+
+    function setActiveTab(tab){
+      ["tabToday","tabRecords","tabInsights"].forEach(id=>$(id).classList.remove("active"));
+      $(tab).classList.add("active");
+    }
+    function showPage(pageId){
+      ["pageToday","pageRecords","pageInsights","pageSettings","pageResult"].forEach(id=>$(id).classList.add("hidden"));
+      $(pageId).classList.remove("hidden");
+    }
+
+    function renderTexts(){
+      const i = t();
+      $("tabToday").innerText = "● " + i.today;
+      $("tabRecords").innerText = "📅 " + i.records;
+      $("tabInsights").innerText = "✨ " + i.insights;
+
+      $("helloText").innerText = i.hello(state.name);
+      $("todaySubtitle").innerText = i.stable;
+      $("circleHint").innerText = i.takeToday;
+
+      $("btnChoose").innerText = i.choose;
+      $("btnGallery").innerText = i.fromGallery;
+
+      $("hintText").innerHTML = `${i.needPerm}<br/>${i.onlyTarget}`;
+
+      $("modalTitle").innerText = i.choose;
+      $("modalText").innerText = i.modalQ;
+      $("modalCamera").innerText = "📷 " + i.camera;
+      $("modalGallery").innerText = "🖼️ " + i.gallery;
+
+      $("btnAgain").innerText = i.again;
+      $("btnHome").innerText = i.back;
+
+      // Settings page texts
+      // (labels are inside markup; we only update about text)
+      $("aboutText").innerHTML = i.aboutBody.replaceAll("\n","<br/>");
+
+      // Insights page
+      $("insTitle").innerText = i.weekTitle;
+      $("insBody").innerText = i.weekBody;
+      $("btnInsight").innerText = i.genInsight;
+      $("btnClear").innerText = i.clear;
+    }
+
+    // =========================
+    // Modal
+    // =========================
+    function openModal(){ $("modalMask").style.display = "flex"; }
+    function closeModal(){ $("modalMask").style.display = "none"; }
+
+    // =========================
+    // Poop-only Gate (Lightweight)
+    // =========================
+    // NOTE: Pure client-side, no real ML. We add guardrails so random photos won't be "analyzed".
+    // Strategy:
+    // 1) Reject non-image.
+    // 2) Reject too-small files (often icons/screenshots/random).
+    // 3) Quick visual heuristic: detect large low-saturation "scene" photos by downsampling and measuring color variance.
+    //    If it looks like scenery/pet/indoor scene -> mark invalid.
+    //    If it looks like close-up with strong chroma/contrast -> allow.
+    //
+    // This is NOT medical. It's just a "target-only gate" to stop obvious misuse.
+
+    function loadImageFromFile(file){
+      return new Promise((resolve,reject)=>{
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = ()=>{
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = (e)=>{
+          URL.revokeObjectURL(url);
+          reject(e);
+        };
+        img.src = url;
+      });
+    }
+
+    function downsampleToCanvas(img, maxW=96, maxH=96){
+      const c = document.createElement("canvas");
+      const ctx = c.getContext("2d", { willReadFrequently: true });
+      const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+      const w = Math.max(1, Math.round(img.width * ratio));
+      const h = Math.max(1, Math.round(img.height * ratio));
+      c.width = w; c.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      return { c, ctx, w, h };
+    }
+
+    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+    function rgbToHsv(r,g,b){
+      r/=255; g/=255; b/=255;
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+      const d = max - min;
+      let h = 0;
+      if(d !== 0){
+        if(max === r) h = ((g - b) / d) % 6;
+        else if(max === g) h = (b - r) / d + 2;
+        else h = (r - g) / d + 4;
+        h *= 60;
+        if(h < 0) h += 360;
+      }
+      const s = max === 0 ? 0 : d / max;
+      const v = max;
+      return {h,s,v};
+    }
+
+    // returns {ok:boolean, reason:string}
+    async function targetGate(file){
+      const i = t();
+
+      if(!file || !file.type || !file.type.startsWith("image/")){
+        return { ok:false, reason:i.nonImage };
+      }
+
+      // Size guard: reject tiny images (icons/screenshots/exports)
+      if(file.size < 90_000){
+        return { ok:false, reason:i.lowSample };
+      }
+
+      // Dimension / color heuristic
+      let img;
+      try{
+        img = await loadImageFromFile(file);
+      }catch(e){
+        return { ok:false, reason:i.lowSample };
+      }
+
+      // extremely small dimensions are suspicious
+      if(img.width < 400 || img.height < 400){
+        return { ok:false, reason:i.lowSample };
+      }
+
+      const { ctx, w, h } = downsampleToCanvas(img, 96, 96);
+      const data = ctx.getImageData(0,0,w,h).data;
+
+      let satSum=0, valSum=0;
+      let valSq=0;
+      let edgeLike=0;
+      let prevV=null;
+
+      // sample stride for speed
+      const stride = 4 * 2; // every 2 pixels roughly
+      for(let p=0; p<data.length; p+=stride){
+        const r = data[p], g = data[p+1], b = data[p+2];
+        const {s,v} = rgbToHsv(r,g,b);
+        satSum += s;
+        valSum += v;
+        valSq += v*v;
+        if(prevV !== null){
+          const dv = Math.abs(v - prevV);
+          if(dv > 0.22) edgeLike += 1;
+        }
+        prevV = v;
+      }
+      const n = Math.max(1, Math.floor(data.length / stride));
+      const satAvg = satSum / n;
+      const valAvg = valSum / n;
+      const valVar = (valSq / n) - (valAvg*valAvg);
+      const edgeRate = edgeLike / n;
+
+      // Heuristic intuition:
+      // - Close-up target shots tend to have: higher contrast variance (valVar), noticeable edges (edgeRate),
+      //   and not too low saturation (satAvg).
+      // - Scene photos/pets often have smoother gradients / broader composition -> lower edgeRate in downsample.
+      //
+      // We tune for "stop obvious random photos", not perfect classification.
+
+      const scoreLike = 0.45*clamp01((valVar - 0.02)/0.08) + 0.35*clamp01((edgeRate - 0.10)/0.20) + 0.20*clamp01((satAvg - 0.10)/0.35);
+
+      // If it looks like a generic scene, reject.
+      if(scoreLike < 0.38){
+        return { ok:false, reason:i.lowSample };
+      }
+
+      return { ok:true, reason:"ok" };
+    }
+
+    // =========================
+    // aHash (stable) for score
+    // =========================
+    function aHashFromCanvas(ctx, w, h){
+      // grayscale -> 8x8 -> average -> bitstring
+      const size = 8;
+      const c = document.createElement("canvas");
+      const cctx = c.getContext("2d", { willReadFrequently: true });
+      c.width = size; c.height = size;
+      cctx.drawImage(ctx.canvas, 0,0,w,h, 0,0,size,size);
+      const d = cctx.getImageData(0,0,size,size).data;
+
+      let gray = new Array(size*size);
+      let sum = 0;
+      for(let i=0;i<size*size;i++){
+        const r=d[i*4], g=d[i*4+1], b=d[i*4+2];
+        const y = (r*0.299 + g*0.587 + b*0.114);
+        gray[i]=y; sum+=y;
+      }
+      const avg = sum/(size*size);
+
+      // build bits
+      let bits = "";
+      for(let i=0;i<gray.length;i++){
+        bits += (gray[i] >= avg) ? "1" : "0";
+      }
+
+      // convert bits to int-like rolling hash
+      let hash = 0;
+      for(let i=0;i<bits.length;i++){
+        hash = (hash*31 + (bits[i]==="1"?1:0)) >>> 0;
+      }
+      return hash;
+    }
+
+    async function stableScoreFromFile(file){
+      const img = await loadImageFromFile(file);
+      const { ctx, w, h } = downsampleToCanvas(img, 256, 256);
+      const h32 = aHashFromCanvas(ctx, w, h);
+      // map to 0..100
+      const score = (h32 % 101); // 0-100
+      return score;
+    }
+
+    // =========================
+    // Result mapping + record
+    // =========================
+    function mapScore(score){
+      const i = t();
+      let emoji="😀", msg=i.scoreMid, desc="";
+
+      if(score <= 30){
+        emoji="🥺"; msg=i.scoreLow;
+      }else if(score <= 60){
+        emoji="😀"; msg=i.scoreMid;
+      }else{
+        emoji="😆"; msg=i.scoreHigh;
+      }
+      desc = "";
+      return {emoji, msg, desc};
+    }
+
+    function showResult({emoji, scoreText, msg, desc}){
+      $("resEmoji").innerText = emoji;
+      $("resScore").innerText = scoreText;
+      $("resMsg").innerText = msg;
+      $("resDesc").innerText = desc;
+
+      showPage("pageResult");
+      // keep bottom nav selection on Today for result
+      setActiveTab("tabToday");
+    }
+
+    function addRecord(entry){
+      const records = loadRecords();
+      records.unshift(entry);
+      saveRecords(records.slice(0, 120)); // cap
+    }
+
+    function renderRecords(){
+      const i = t();
+      const list = $("recordList");
+      list.innerHTML = "";
+      const records = loadRecords();
+
+      if(!records.length){
+        const empty = document.createElement("div");
+        empty.className = "card";
+        empty.style.textAlign = "center";
+        empty.style.color = "var(--muted)";
+        empty.style.fontWeight = "800";
+        empty.innerText = i.recEmpty;
+        list.appendChild(empty);
+        return;
+      }
+
+      records.forEach(r=>{
+        const row = document.createElement("div");
+        row.className = "item";
+        const left = document.createElement("div");
+        left.className = "left";
+        left.innerHTML = `<span style="font-size:20px;">${r.emoji}</span><span>${r.date}</span>`;
+        const pill = document.createElement("div");
+        pill.className = "pill";
+        pill.innerText = (typeof r.score === "number") ? String(r.score) : "--";
+        row.appendChild(left);
+        row.appendChild(pill);
+        list.appendChild(row);
+      });
+    }
+
+    // =========================
+    // Analyze pipeline (with Gate)
+    // =========================
+    async function analyzeFile(file){
+      const i = t();
+      if(!file) return;
+
+      // Show "loading" quick
+      showResult({
+        emoji:"⏳",
+        scoreText:"--",
+        msg:"分析中…",
+        desc:""
+      });
+
+      // 1) Gate
+      const gate = await targetGate(file);
+      if(!gate.ok){
+        showResult({
+          emoji:"⚠️",
+          scoreText:"--",
+          msg:i.invalid,
+          desc:gate.reason
+        });
+        return;
+      }
+
+      // 2) Stable score
+      let score;
+      try{
+        score = await stableScoreFromFile(file);
+      }catch(e){
+        showResult({
+          emoji:"⚠️",
+          scoreText:"--",
+          msg:i.invalid,
+          desc:i.lowSample
+        });
+        return;
+      }
+
+      // 3) Map
+      const mapped = mapScore(score);
+
+      // 4) Save record (date)
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      const dateStr = `${yyyy}-${mm}-${dd}`;
+
+      addRecord({
+        date: dateStr,
+        score,
+        emoji: mapped.emoji,
+        ts: Date.now()
+      });
+
+      // 5) Render and show
+      renderRecords();
+      showResult({
+        emoji: mapped.emoji,
+        scoreText: `${score}`,
+        msg: mapped.msg,
+        desc: mapped.desc || ""
+      });
+    }
+
+    // =========================
+    // Weekly insight cooldown
+    // =========================
+    function canGenerateInsight(){
+      const last = Number(localStorage.getItem(LS.insightTs) || "0");
+      const now = Date.now();
+      const sevenDays = 7 * 24 * 60 * 60 * 1000;
+      return (now - last) >= sevenDays;
+    }
+
+    function setInsightTs(){
+      localStorage.setItem(LS.insightTs, String(Date.now()));
+    }
+
+    function generateInsightText(){
+      const i = t();
+      const records = loadRecords();
+      if(!records.length) return i.weekBody;
+
+      // last 7 days
+      const now = Date.now();
+      const seven = 7*24*60*60*1000;
+      const recent = records.filter(r => (now - (r.ts||0)) <= seven).slice(0, 30);
+
+      if(!recent.length) return i.weekBody;
+
+      const avg = recent.reduce((a,b)=>a+(b.score||0),0)/recent.length;
+      const rounded = Math.round(avg);
+
+      if(rounded <= 35) return `${i.weekTitle}：平均約 ${rounded}。建議規律作息、持續觀察趨勢。`;
+      if(rounded <= 65) return `${i.weekTitle}：平均約 ${rounded}。狀態穩定，維持目前節奏。`;
+      return `${i.weekTitle}：平均約 ${rounded}。狀態良好，注意不要過度解讀單次波動。`;
+    }
+
+    // =========================
+    // Events
+    // =========================
+    function openCamera(){
+      // IMPORTANT: must be triggered by user gesture
+      $("cameraInput").value = "";
+      $("cameraInput").click();
+    }
+    function openGallery(){
+      $("galleryInput").value = "";
+      $("galleryInput").click();
+    }
+
+    // Bottom tabs
+    $("tabToday").addEventListener("click", ()=>{
+      setActiveTab("tabToday");
+      showPage("pageToday");
+    });
+    $("tabRecords").addEventListener("click", ()=>{
+      setActiveTab("tabRecords");
+      showPage("pageRecords");
+      renderRecords();
+    });
+    $("tabInsights").addEventListener("click", ()=>{
+      setActiveTab("tabInsights");
+      showPage("pageInsights");
+    });
+
+    // Gear -> settings
+    $("gearBtn").addEventListener("click", ()=>{
+      showPage("pageSettings");
+      // deactivate all tabs
+      ["tabToday","tabRecords","tabInsights"].forEach(id=>$(id).classList.remove("active"));
+      // fill input
+      $("nameInput").value = state.name || "";
+    });
+
+    // Today interactions
+    $("bigCircle").addEventListener("click", ()=>{
+      // open camera directly for fastest
+      openCamera();
+    });
+    $("btnChoose").addEventListener("click", openModal);
+    $("btnGallery").addEventListener("click", openGallery);
+
+    // Modal actions
+    $("modalClose").addEventListener("click", closeModal);
+    $("modalMask").addEventListener("click", (e)=>{
+      if(e.target === $("modalMask")) closeModal();
+    });
+    $("modalCamera").addEventListener("click", ()=>{
+      closeModal();
+      openCamera();
+    });
+    $("modalGallery").addEventListener("click", ()=>{
+      closeModal();
+      openGallery();
+    });
+
+    // File inputs
+    $("cameraInput").addEventListener("change", (e)=>{
+      const file = e.target.files && e.target.files[0];
+      analyzeFile(file);
+    });
+    $("galleryInput").addEventListener("change", (e)=>{
+      const file = e.target.files && e.target.files[0];
+      analyzeFile(file);
+    });
+
+    // Result buttons
+    $("btnAgain").addEventListener("click", ()=>{
+      // choose again
+      openModal();
+    });
+    $("btnHome").addEventListener("click", ()=>{
+      showPage("pageToday");
+    });
+
+    // Insights
+    $("btnInsight").addEventListener("click", ()=>{
+      const i = t();
+      if(!canGenerateInsight()){
+        $("insBody").innerText = "本週洞察已生成，請 7 天後再試。";
+        return;
+      }
+      $("insBody").innerText = generateInsightText();
+      setInsightTs();
+    });
+
+    $("btnClear").addEventListener("click", ()=>{
+      const i = t();
+      localStorage.removeItem(LS.records);
+      localStorage.removeItem(LS.insightTs);
+      renderRecords();
+      $("insBody").innerText = i.cleared;
+      alert(i.cleared);
+    });
+
+    // Settings: save name
+    $("btnSaveName").addEventListener("click", ()=>{
+      const i = t();
+      state.name = ($("nameInput").value || "").trim() || "";
+      localStorage.setItem(LS.name, state.name);
+      $("helloText").innerText = i.hello(state.name);
+      alert(i.saved);
+    });
+
+    // Settings: language
+    document.querySelectorAll('[data-lang]').forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const lang = btn.getAttribute("data-lang");
+        state.lang = lang;
+        localStorage.setItem(LS.lang, lang);
+        renderTexts();
+        renderRecords();
+      });
+    });
+
+    // Init
+    renderTexts();
+    renderRecords();
+    showPage("pageToday");
+  </script>
 </body>
 </html>

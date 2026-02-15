@@ -1228,6 +1228,120 @@
       // ✅ 確保 DOM 準備好才 init（避免事件綁不上）
       document.addEventListener("DOMContentLoaded", init);
     })();
+    <!-- ✅ 手機必修補丁：直接貼到 </script> 前 -->
+<script>
+/* =========================
+   Flux Companion Mobile Patch
+   - safer camera/album trigger
+   - stable change handling on mobile
+   - avoid cached preview
+   - click-through overlay fix
+========================= */
+
+(function () {
+  // --- small helpers (不會覆蓋你原本的)
+  const $ = (id) => document.getElementById(id);
+
+  // 若你原本有 toast() 就用你的；沒有就給一個簡易版
+  if (typeof window.toast !== "function") {
+    window.toast = (msg) => {
+      let t = $("__toast__");
+      if (!t) {
+        t = document.createElement("div");
+        t.id = "__toast__";
+        t.style.cssText =
+          "position:fixed;left:50%;bottom:18px;transform:translateX(-50%);" +
+          "background:rgba(0,0,0,.75);color:#fff;padding:10px 12px;border-radius:12px;" +
+          "font-size:14px;z-index:99999;max-width:90%;text-align:center;line-height:1.3";
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(window.__toastTimer__);
+      window.__toastTimer__ = setTimeout(() => (t.style.display = "none"), 1600);
+    };
+  }
+
+  // --- 1) 防止裝飾層蓋住按鈕（手機常見）
+  const style = document.createElement("style");
+  style.textContent = `
+    button, .btn, [role="button"] { pointer-events:auto !important; }
+    .wrap, .card, .modal, .modalWrap { pointer-events:auto !important; }
+    .bg, .decor, .ring, .glow, .noise, .blurLayer { pointer-events:none !important; }
+  `;
+  document.head.appendChild(style);
+
+  // --- 2) objectURL 快取修正：每次換照片都確實換預覽
+  let lastObjUrl = null;
+  function previewFile(file) {
+    const img = $("previewImg");
+    if (!img) return;
+    try {
+      if (lastObjUrl) URL.revokeObjectURL(lastObjUrl);
+      lastObjUrl = URL.createObjectURL(file);
+      img.src = lastObjUrl;
+    } catch (e) {
+      // fallback：不做預覽也不擋流程
+    }
+  }
+
+  // --- 3) 你的主處理：優先呼叫你原本的 handleFile(file)
+  // 如果你沒有 handleFile，請把你的處理函式名稱改成 handleFile 或在此處接上你的流程
+  async function handlePickedFile(file) {
+    if (!file) return;
+
+    // ✅ 讓你確認：手機到底有沒有真的換到檔案
+    toast(`讀取：${file.name} · ${(file.size / 1024).toFixed(1)}KB`);
+
+    // ✅ 更新預覽（避免手機看似換了、實際用到舊 URL）
+    previewFile(file);
+
+    // ✅ 交給你原本的邏輯
+    if (typeof window.handleFile === "function") {
+      return window.handleFile(file);
+    }
+
+    // 如果沒有 handleFile，就至少不要報錯
+    console.warn("No handleFile(file) found. Please connect your processing pipeline.");
+  }
+
+  // --- 4) 更穩的相簿/相機開啟：先清 value + setTimeout click
+  function openAlbumPatched() {
+    const inA = $("inAlbum");
+    if (!inA) return toast("找不到 inAlbum");
+    inA.value = ""; // ✅ 不清空會導致同檔不觸發 change
+    setTimeout(() => inA.click(), 0);
+  }
+
+  function openCameraPatched() {
+    const inC = $("inCamera");
+    if (!inC) return toast("找不到 inCamera");
+    inC.value = "";
+    setTimeout(() => inC.click(), 0);
+  }
+
+  // 把 patched function 掛到全域，讓你的按鈕可以直接用
+  window.openAlbum = openAlbumPatched;
+  window.openCameraSmart = openCameraPatched;
+
+  // --- 5) 手機 change 事件常常同步拿不到 files：延遲 50ms 再讀
+  function bindInput(id) {
+    const input = $(id);
+    if (!input) return;
+    input.addEventListener("change", () => {
+      setTimeout(() => {
+        const f = input.files && input.files[0];
+        if (f) handlePickedFile(f);
+      }, 50);
+    });
+  }
+
+  bindInput("inAlbum");
+  bindInput("inCamera");
+
+})();
+</script>
+
   </script>
 </body>
 </html>

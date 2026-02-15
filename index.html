@@ -4,20 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1020" />
-  <title>Flux Companion · Your Gentle AI Listener</title>
+  <title>Flux Companion · Premium</title>
   <style>
     :root{
       --bg0:#070a14;
       --bg1:#0b1020;
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.12);
+
+      --card: rgba(255,255,255,.055);
+      --stroke: rgba(255,255,255,.10);
+
       --text: rgba(255,255,255,.92);
       --muted: rgba(255,255,255,.70);
       --muted2: rgba(255,255,255,.55);
-      --good:#31d07d;
-      --warn:#ffcc66;
-      --btn:#4b7dff;
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
+
+      --btnStroke: rgba(255,255,255,.12);
+
+      --shadow:
+        0 8px 30px rgba(0,0,0,.35),
+        0 1px 0 rgba(255,255,255,.06) inset;
+
       --r: 24px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans TC, "PingFang TC", "Microsoft JhengHei", Arial;
     }
@@ -28,11 +33,14 @@
       font-family:var(--font);
       color:var(--text);
       background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(108,99,255,.28), transparent 55%),
-        radial-gradient(900px 500px at 80% 20%, rgba(58,157,255,.20), transparent 55%),
+        radial-gradient(1200px 600px at 20% 10%, rgba(108,99,255,.26), transparent 55%),
+        radial-gradient(900px 500px at 80% 20%, rgba(58,157,255,.18), transparent 55%),
         linear-gradient(180deg, var(--bg1), var(--bg0));
       overflow-x:hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+
     .wrap{
       min-height:100%;
       display:flex;
@@ -42,7 +50,7 @@
       margin: 0 auto;
     }
 
-    /* Top bar (minimal) */
+    /* Top bar (premium minimal) */
     .top{
       display:flex;
       align-items:center;
@@ -54,13 +62,13 @@
     .dot{
       width:10px;height:10px;border-radius:50%;
       background: radial-gradient(circle at 30% 30%, #b6a7ff, #5aa2ff 70%, #2b4cff);
-      box-shadow: 0 0 18px rgba(90,162,255,.35);
+      box-shadow: 0 0 18px rgba(90,162,255,.30);
       flex: 0 0 auto;
     }
     .brandText{display:flex;flex-direction:column;min-width:0}
     .brandTitle{
-      font-weight: 900;
-      letter-spacing:.2px;
+      font-weight: 850;
+      letter-spacing:.15px;
       font-size: 16px;
       line-height: 1.1;
       white-space:nowrap;
@@ -71,19 +79,22 @@
       font-size: 12px;
       color: var(--muted2);
       margin-top: 2px;
+      opacity: .78;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
     .gear{
       width:40px;height:40px;border-radius:14px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
       display:grid;place-items:center;
       cursor:pointer; user-select:none;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+      backdrop-filter: blur(10px);
     }
-    .gear:active{transform:scale(.98)}
-    .gear svg{opacity:.9}
+    .gear:active{transform:scale(.985); filter: brightness(1.05)}
+    .gear svg{opacity:.92}
 
     /* Main card */
     .hero{
@@ -94,25 +105,27 @@
       padding: 18px 18px 16px;
       position:relative;
       overflow:hidden;
+      backdrop-filter: blur(12px);
     }
     .hero::before{
       content:"";
-      position:absolute; inset:-80px -120px auto auto;
-      width:260px;height:260px;border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, rgba(90,162,255,.30), transparent 65%);
+      position:absolute; inset:-90px -140px auto auto;
+      width:280px;height:280px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(90,162,255,.26), transparent 65%);
       pointer-events:none;
+      opacity:.95;
     }
     .today{font-size:12px;letter-spacing:.6px;color:var(--muted2)}
     .hello{
       margin-top:6px;
       font-size: clamp(28px, 4vw, 40px);
-      font-weight: 950;
-      letter-spacing: .2px;
+      font-weight: 900;
+      letter-spacing: .10px;
     }
     .desc{
       margin-top: 8px;
       color: var(--muted);
-      line-height: 1.5;
+      line-height: 1.52;
       max-width: 52ch;
     }
 
@@ -124,18 +137,30 @@
       position:relative;
       border-radius: 22px;
       background:
-        radial-gradient(circle at 50% 45%, rgba(255,255,255,.08), transparent 55%),
-        radial-gradient(circle at 50% 55%, rgba(90,162,255,.12), transparent 55%);
-      border: 1px solid rgba(255,255,255,.10);
+        radial-gradient(circle at 50% 45%, rgba(255,255,255,.075), transparent 55%),
+        radial-gradient(circle at 50% 55%, rgba(90,162,255,.11), transparent 55%);
+      border: 1px solid rgba(255,255,255,.095);
       overflow:hidden;
+      cursor:pointer;
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .center:active{transform: scale(.995); filter: brightness(1.02)}
+    .center::after{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,.08), transparent 55%),
+        radial-gradient(circle at 70% 80%, rgba(90,162,255,.10), transparent 60%);
+      opacity:.55;
+      pointer-events:none;
     }
     .rings{
       position:absolute; inset:-40px;
       background:
-        radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,255,255,.08) 40% 40.5%, transparent 41%),
-        radial-gradient(circle at 50% 50%, transparent 0 54%, rgba(255,255,255,.06) 54% 54.5%, transparent 55%),
-        radial-gradient(circle at 50% 50%, transparent 0 68%, rgba(255,255,255,.05) 68% 68.5%, transparent 69%);
-      opacity:.9;
+        radial-gradient(circle at 50% 50%, transparent 0 40%, rgba(255,255,255,.075) 40% 40.45%, transparent 41%),
+        radial-gradient(circle at 50% 50%, transparent 0 54%, rgba(255,255,255,.055) 54% 54.45%, transparent 55%),
+        radial-gradient(circle at 50% 50%, transparent 0 68%, rgba(255,255,255,.045) 68% 68.45%, transparent 69%);
+      opacity:.92;
       pointer-events:none;
     }
     .preview{
@@ -148,7 +173,8 @@
       width:100%;height:100%;
       object-fit:cover;
       border-radius: 22px;
-      filter: saturate(1.02);
+      filter: saturate(1.03);
+      transform: scale(1.01);
     }
     .preview.show{opacity:1}
 
@@ -162,21 +188,24 @@
       flex:1 1 160px;
       height: 54px;
       border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid var(--btnStroke);
       cursor:pointer;
       font-weight: 900;
       letter-spacing:.2px;
       font-size: 16px;
       display:flex; align-items:center; justify-content:center;
       user-select:none;
+      transition: transform .12s ease, filter .12s ease, background .12s ease;
+      backdrop-filter: blur(10px);
     }
+    .btn:active{transform:scale(.985); filter: brightness(1.02)}
     .btnPrimary{
       background: linear-gradient(135deg, rgba(107,99,255,.95), rgba(90,162,255,.95));
       color: #fff;
       border-color: rgba(255,255,255,.08);
     }
     .btnGhost{
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.055);
       color: rgba(255,255,255,.88);
     }
     .hint{
@@ -204,7 +233,13 @@
       border-radius: 24px;
       box-shadow: 0 28px 90px rgba(0,0,0,.55);
       overflow:hidden;
+
+      transform: translateY(10px) scale(.98);
+      opacity: 0;
+      transition: .18s ease;
     }
+    .modalWrap.show .modal{ transform: translateY(0) scale(1); opacity: 1; }
+
     .modalHeader{
       display:flex; align-items:center; justify-content:space-between;
       padding: 14px 16px;
@@ -214,24 +249,27 @@
     .close{
       width:38px;height:38px;border-radius: 14px;
       display:grid;place-items:center;
-      background: rgba(255,255,255,.07);
+      background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
       cursor:pointer;
+      transition: transform .12s ease, filter .12s ease;
     }
+    .close:active{transform:scale(.985); filter: brightness(1.05)}
     .modalBody{padding: 14px 16px 16px}
 
     .resultCard{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.11);
       border-radius: 20px;
       padding: 14px;
+      backdrop-filter: blur(10px);
     }
     .resultTop{display:flex;align-items:center;gap:10px}
     .emoji{
       width:46px;height:46px;border-radius: 16px;
       display:grid;place-items:center;
       font-size: 24px;
-      background: rgba(255,255,255,.07);
+      background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
       flex: 0 0 auto;
     }
@@ -246,8 +284,8 @@
     .pill{
       padding: 8px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.11);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
       color: rgba(255,255,255,.78);
       font-size: 12px;
     }
@@ -257,11 +295,13 @@
       height: 46px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.07);
-      color: rgba(255,255,255,.9);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.92);
       font-weight: 950;
       cursor:pointer; user-select:none;
+      transition: transform .12s ease, filter .12s ease;
     }
+    .smallBtn:active{transform:scale(.985); filter: brightness(1.04)}
     .smallBtn.primary{
       background: linear-gradient(135deg, rgba(107,99,255,.92), rgba(90,162,255,.92));
       border-color: rgba(255,255,255,.10);
@@ -273,17 +313,19 @@
     .item{
       padding: 12px 12px;
       border-radius: 18px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.11);
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.10);
       cursor:pointer;
+      transition: transform .12s ease, filter .12s ease;
     }
+    .item:active{transform:scale(.99); filter: brightness(1.03)}
     .itemTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .itemWhen{font-size: 12px; color: var(--muted2)}
     .itemTag{
       font-size: 12px;
       padding: 6px 8px;
       border-radius: 999px;
-      background: rgba(255,255,255,.07);
+      background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.10);
       color: rgba(255,255,255,.80);
       white-space:nowrap;
@@ -315,11 +357,16 @@
       font-size: 13px;
       max-width: 92vw;
       text-align:center;
+      backdrop-filter: blur(10px);
     }
     .toast.show{display:block}
 
-    /* Hidden file inputs */
     input[type="file"]{display:none}
+
+    /* a11y */
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none !important}
+    }
   </style>
 </head>
 
@@ -496,7 +543,7 @@
         }
       }
 
-      // ---------- Image analysis (more differentiating) ----------
+      // ---------- Image analysis (differentiating) ----------
       function analyzeImage(file){
         return new Promise((resolve,reject)=>{
           const reader = new FileReader();
@@ -518,15 +565,11 @@
               let sumR=0, sumG=0, sumB=0;
               let lMin=999, lMax=-999;
 
-              // sample every 6 px
-              const step = 4 * 6;
+              const step = 4 * 6; // sample every 6px
               for(let i=0; i<data.length; i+=step){
                 const r=data[i], g=data[i+1], b=data[i+2];
 
-                // luminance 0..1
                 const l = (0.2126*r + 0.7152*g + 0.0722*b) / 255;
-
-                // saturation approx 0..1
                 const max = Math.max(r,g,b), min = Math.min(r,g,b);
                 const s = (max===0) ? 0 : (max-min)/max;
 
@@ -546,13 +589,13 @@
               const avgG = (sumG / n) / 255;
               const avgB = (sumB / n) / 255;
 
-              // warmth: >0 warm, <0 cool
               const warmth = clamp((avgR - avgB), -1, 1);
 
               // tags
-              const light = avgL < 0.28 ? "偏暗" : (avgL > 0.72 ? "偏亮" : "柔和";
+              const light = avgL < 0.28 ? "偏暗" : (avgL > 0.72 ? "偏亮" : "柔和");
               const tone  = avgS < 0.22 ? "偏中性" : (avgS > 0.56 ? "偏鮮明" : "偏自然");
               const temp  = warmth > 0.08 ? "偏暖" : (warmth < -0.08 ? "偏冷" : "偏中性");
+
               const mood  =
                 (avgL < 0.28 && contrast > 0.40) ? "沉靜" :
                 (avgL > 0.72 && avgS > 0.40) ? "明朗" :
@@ -566,7 +609,7 @@
                 (mood==="沉靜") ? "🫧" :
                 (mood==="清醒") ? "🌙" :
                 (mood==="舒展") ? "🌿" :
-                (mood==="安定") ? "🙂" : "🙂";
+                "🙂";
 
               resolve({
                 dataUrl,
@@ -583,7 +626,7 @@
         });
       }
 
-      // ---------- Reply generator (more varied) ----------
+      // ---------- Reply generator (varied) ----------
       function genReply(analysis){
         const tags = analysis.tags || [];
         const m = analysis.metrics || {avgL:.5, avgS:.3, contrast:.3, warmth:0};
@@ -593,19 +636,17 @@
         const temp  = tags.find(t=>t.startsWith("溫度：")) || "溫度：—";
         const moodT = tags.find(t=>t.startsWith("氛圍：")) || "氛圍：—";
 
-        // A：理解
         let A = "";
         if(m.avgL < 0.28){
           A = "我感覺你此刻比較需要被放慢、被接住。就算你沒有把話說完，我也懂你正在撐。";
         }else if(m.avgL > 0.72){
           A = "我看到一種比較明亮、能喘口氣的狀態。你願意停下來看自己，這本身就很珍貴。";
         }else if(m.contrast > 0.45){
-          A = "這張照片有一種「張力」：像是你同時在扛事情，也在努力不讓自己亂掉。";
+          A = "這張照片有一種張力：像是你同時在扛事情，也在努力不讓自己亂掉。";
         }else{
           A = "這張照片給我一種平衡感：不急、不吵，但也不是空白——像在說你正在找一個可安心的節奏。";
         }
 
-        // B：小步驟
         let B = "";
         if(m.avgL < 0.28 && m.contrast > 0.35){
           B = "接下來只做一件很小的事：把肩膀放鬆一次，慢慢吸氣 4 秒、吐氣 6 秒，做 3 回合就好。";
@@ -638,7 +679,7 @@
         $("modalWrap").classList.remove("show");
       }
 
-      // ---------- Settings + History (hidden from homepage) ----------
+      // ---------- Settings + History ----------
       function renderHistoryInto(container){
         container.innerHTML = "";
         const arr = Array.isArray(state.records) ? state.records : [];
@@ -684,7 +725,6 @@
       function settingsModal(){
         const root = document.createElement("div");
 
-        // --- simple config (minimal) ---
         const block = document.createElement("div");
         block.className = "resultCard";
         block.innerHTML = `
@@ -719,7 +759,6 @@
         `;
         root.appendChild(block);
 
-        // --- history ---
         const title = document.createElement("div");
         title.className = "histTitle";
         title.textContent = "最近的紀錄";
@@ -732,7 +771,6 @@
 
         openModal("設定 / 紀錄", root);
 
-        // fill values
         $("cfgTitle").value = state.cfg.appTitle;
         $("cfgSub").value = state.cfg.appSub;
         $("cfgHello").value = state.cfg.hello;
@@ -905,17 +943,12 @@
           toast("已存成紀錄");
         };
 
-        $("btnRepick").onclick = ()=>{
-          closeModal();
-          // 使用者自己再點拍照/相簿
-        };
-
+        $("btnRepick").onclick = ()=> closeModal();
         $("btnCloseA").onclick = closeModal;
       }
 
       // ---------- Smart fallback (camera -> album) ----------
       function openCameraSmart(){
-        // 先嘗試 camera；650ms 沒 change 就 fallback 到相簿
         let changed = false;
 
         const inC = $("inCamera");
@@ -924,7 +957,6 @@
         const onChange = ()=>{ changed = true; cleanup(); };
         const cleanup = ()=> inC.removeEventListener("change", onChange);
 
-        // 清 value：避免同檔案不觸發 change
         inC.value = "";
         inA.value = "";
 
@@ -984,7 +1016,6 @@
         $("inCamera").addEventListener("change", (e)=>{
           const f = e.target.files && e.target.files[0];
           e.target.value = "";
-          // 手機有時同步拿不到 files，延遲一下更穩
           setTimeout(()=>handleFile(f), 50);
         });
 
@@ -1001,12 +1032,10 @@
         detectEnv();
         renderText();
 
-        // 如果不是 HTTPS，提醒但不阻止
         if(!state.env.isHttps){
           toast("提醒：非 HTTPS 可能影響相機功能");
         }
 
-        // In-app hint (可關)
         if(state.env.inApp && state.cfg.showInAppHint){
           $("hintText").style.display = "block";
         }

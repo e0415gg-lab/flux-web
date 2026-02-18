@@ -1,159 +1,284 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-<!-- PWA 必備（Play商店審核關鍵） -->
-<link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#0b1020">
-<meta name="background-color" content="#0b1020">
+  <!-- PWA 必備 -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="background-color" content="#0b1020">
 
-<!-- Android / Play 商店 Icon -->
-<link rel="icon" sizes="192x192" href="./icons/icon-192.png">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <!-- Icon -->
+  <link rel="icon" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
-<title>Flux Companion</title>
+  <!-- 盡量避免被舊快取黏住（仍以 SW 為主） -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 
-<style>
-:root{
-  --bg0:#070a14;
-  --bg1:#0b1020;
-  --card: rgba(255,255,255,.05);
-  --stroke: rgba(255,255,255,.1);
-  --text: rgba(255,255,255,.92);
-  --muted: rgba(255,255,255,.7);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC";
-  background:linear-gradient(180deg,var(--bg1),var(--bg0));
-  color:var(--text);
-}
-.wrap{
-  max-width:600px;
-  margin:auto;
-  padding:20px;
-}
-.hero{
-  background:var(--card);
-  border:1px solid var(--stroke);
-  border-radius:24px;
-  padding:20px;
-  backdrop-filter:blur(12px);
-}
-.hello{
-  font-size:30px;
-  font-weight:900;
-}
-.desc{
-  margin-top:8px;
-  color:var(--muted);
-  line-height:1.5;
-}
-.center{
-  margin-top:18px;
-  height:260px;
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,.1);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  background:radial-gradient(circle at center, rgba(90,162,255,.1), transparent);
-}
-.actions{
-  display:flex;
-  gap:12px;
-  margin-top:16px;
-}
-.btn{
-  flex:1;
-  height:54px;
-  border-radius:18px;
-  font-weight:900;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
-.btnPrimary{
-  background:linear-gradient(135deg,#6b63ff,#5aa2ff);
-  color:white;
-}
-.btnGhost{
-  background:rgba(255,255,255,.06);
-  color:white;
-  border:1px solid rgba(255,255,255,.12);
-}
-input[type="file"]{display:none}
-</style>
+  <title>Flux Companion</title>
+
+  <style>
+    :root{
+      --bg0:#070a14;
+      --bg1:#0b1020;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --btn1a:#6b63ff;
+      --btn1b:#5aa2ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(107,99,255,.22), transparent 55%),
+                  radial-gradient(1000px 650px at 85% 15%, rgba(90,162,255,.18), transparent 55%),
+                  linear-gradient(180deg,var(--bg1),var(--bg0));
+      color:var(--text);
+      min-height:100dvh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    .wrap{
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 26px;
+    }
+
+    /* Top bar (跟你圖2接近) */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 8px 6px 14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .dot{
+      width:14px;height:14px;border-radius:50%;
+      background: linear-gradient(135deg,var(--btn1a),var(--btn1b));
+      box-shadow: 0 0 18px rgba(107,99,255,.35);
+    }
+    .brandText{line-height:1.1}
+    .brandTitle{font-weight:900; font-size:20px}
+    .brandSub{font-size:13px; color:var(--muted); margin-top:2px}
+    .gear{
+      width:44px;height:44px;border-radius:16px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      display:grid;place-items:center;
+      cursor:pointer;
+    }
+    .gear svg{opacity:.9}
+
+    /* Hero card */
+    .hero{
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius: 28px;
+      padding: 18px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+    }
+    .today{
+      font-size:12px;
+      letter-spacing:.18em;
+      color: rgba(255,255,255,.55);
+      font-weight:800;
+    }
+    .hello{
+      margin-top:10px;
+      font-size: 34px;
+      font-weight: 950;
+      letter-spacing:.02em;
+    }
+    .desc{
+      margin-top:10px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .center{
+      margin-top:18px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(circle at center, rgba(90,162,255,.14), transparent 58%),
+        radial-gradient(circle at center, rgba(107,99,255,.10), transparent 72%);
+      height: 320px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+    }
+    /* 幾圈裝飾（圖2那種感覺） */
+    .ring{
+      position:absolute; inset:auto;
+      width: 82%;
+      aspect-ratio: 1/1;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.10);
+      opacity:.55;
+    }
+    .ring.r2{width: 62%; opacity:.28; border-radius: 999px}
+    .ring.r3{width: 44%; opacity:.18; border-radius: 999px}
+    .centerText{
+      position:relative;
+      font-weight: 900;
+      color: rgba(255,255,255,.78);
+    }
+
+    .actions{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:16px;
+    }
+    .btn{
+      width:100%;
+      height:56px;
+      border-radius: 18px;
+      font-weight: 950;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btnPrimary{
+      background: linear-gradient(135deg,var(--btn1a),var(--btn1b));
+      color:#fff;
+      box-shadow: 0 14px 30px rgba(90,162,255,.18);
+    }
+    .btnGhost{
+      background: rgba(255,255,255,.06);
+      color:#fff;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .hint{
+      margin-top:12px;
+      font-size:12px;
+      color: rgba(255,255,255,.52);
+      line-height:1.5;
+    }
+
+    input[type="file"]{display:none}
+
+    /* 桌機稍微更漂亮一點 */
+    @media (min-width: 900px){
+      .wrap{padding-top:26px}
+      .hero{padding:22px}
+      .center{height:360px}
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="hero">
-    <div class="hello">今天的你，還好嗎？</div>
-    <div class="desc">
-      我在這裡陪你。拍一張照片或選一張照片，我會用溫柔的方式回應你的情緒。
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="brandText">
+          <div class="brandTitle">Flux Companion</div>
+          <div class="brandSub">Your Gentle AI Listener</div>
+        </div>
+      </div>
+
+      <div class="gear" id="btnSettings" title="設定">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="white" stroke-opacity=".9" stroke-width="2"/>
+          <path d="M19.4 15a8.2 8.2 0 0 0 .1-1l2-1.5-2-3.5-2.4.6a8.6 8.6 0 0 0-1.7-1L15 6 11 6l-.4 2.6a8.6 8.6 0 0 0-1.7 1L6.5 9l-2 3.5 2 1.5a8.2 8.2 0 0 0 .1 1l-2 1.5 2 3.5 2.4-.6a8.6 8.6 0 0 0 1.7 1L11 22h4l.4-2.6a8.6 8.6 0 0 0 1.7-1l2.4.6 2-3.5-2-1.5Z" stroke="white" stroke-opacity=".45" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
 
-    <div class="center" id="tapZone">
-      點擊選擇照片
-    </div>
+    <div class="hero">
+      <div class="today">TODAY</div>
+      <div class="hello">今天的你，還好嗎？</div>
+      <div class="desc">
+        我在這裡陪你。拍一張照片或選一張照片，我會用溫柔的方式回應你當下的情境。
+      </div>
 
-    <div class="actions">
-      <div class="btn btnPrimary" id="btnCamera">拍照</div>
-      <div class="btn btnGhost" id="btnAlbum">相簿</div>
-    </div>
+      <div class="center" id="tapZone" role="button" aria-label="選擇照片">
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+        <div class="ring r3"></div>
+        <div class="centerText">點擊選擇照片</div>
+      </div>
 
-    <input id="inCamera" type="file" accept="image/*" capture="environment" />
-    <input id="inAlbum" type="file" accept="image/*" />
+      <div class="actions">
+        <div class="btn btnPrimary" id="btnCamera">拍照</div>
+        <div class="btn btnGhost" id="btnAlbum">相簿</div>
+      </div>
+
+      <div class="hint">
+        若你剛更新但畫面還是舊的：請在瀏覽器「重新整理」一次，或清除此網站快取。<br>
+        （我已加強 SW 更新與自動刷新機制，通常一次就會正常。）
+      </div>
+
+      <input id="inCamera" type="file" accept="image/*" capture="environment" />
+      <input id="inAlbum" type="file" accept="image/*" />
+    </div>
   </div>
-</div>
 
 <script>
-// ====== PWA Service Worker（Play商店必要）======
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
-      .then(() => console.log("Service Worker 註冊成功"))
-      .catch(err => console.log("SW 註冊失敗:", err));
-  });
-}
+  // ====== PWA Service Worker：加版本字串避免黏快取 ======
+  const SW_VERSION = "v20260218-1";
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", async () => {
+      try {
+        const reg = await navigator.serviceWorker.register("./sw.js?"+SW_VERSION);
+        // 主動要求更新（降低「改了但看不到」）
+        try { await reg.update(); } catch(_) {}
 
-// ====== 圖片處理（穩定不會當機版）======
-function handleFile(file){
-  if(!file) return;
+        // 如果 SW 版本切換，讓頁面自動 reload
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          // 避免無限刷新
+          if (!window.__reloading) {
+            window.__reloading = true;
+            window.location.reload();
+          }
+        });
+      } catch (err) {
+        console.log("SW 註冊失敗:", err);
+      }
+    });
+  }
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    alert("照片已讀取成功 ✔\nAI分析功能（本地版）正常運作");
+  // ====== 圖片處理（穩定版）======
+  function handleFile(file){
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      alert("照片已讀取成功 ✔\nAI分析功能（本地版）正常運作");
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ====== UI 綁定 ======
+  const $ = (id)=>document.getElementById(id);
+
+  $("btnCamera").onclick = () => $("inCamera").click();
+  $("btnAlbum").onclick  = () => $("inAlbum").click();
+  $("tapZone").onclick   = () => $("inAlbum").click();
+
+  $("inCamera").addEventListener("change",(e)=>handleFile(e.target.files[0]));
+  $("inAlbum").addEventListener("change",(e)=>handleFile(e.target.files[0]));
+
+  $("btnSettings").onclick = () => {
+    alert("設定功能：下一步我們可以做（語氣/回覆模式/保存日記）");
   };
-  reader.readAsDataURL(file);
-}
-
-// ====== UI 綁定 ======
-document.getElementById("btnCamera").onclick = () => {
-  document.getElementById("inCamera").click();
-};
-
-document.getElementById("btnAlbum").onclick = () => {
-  document.getElementById("inAlbum").click();
-};
-
-document.getElementById("tapZone").onclick = () => {
-  document.getElementById("inAlbum").click();
-};
-
-document.getElementById("inCamera").addEventListener("change",(e)=>{
-  handleFile(e.target.files[0]);
-});
-
-document.getElementById("inAlbum").addEventListener("change",(e)=>{
-  handleFile(e.target.files[0]);
-});
 </script>
 </body>
 </html>

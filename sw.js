@@ -1,5 +1,5 @@
-/* sw.js - minimal, safe cache for GitHub Pages (Flux Companion) */
-const CACHE_NAME = "flux-web-cache-v2";
+/* sw.js - Play Store Stable PWA (Force Update Version) */
+const CACHE_NAME = "flux-web-cache-v3"; // ← 改版本強制更新
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -11,37 +11,41 @@ const CORE_ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting(); // 立刻啟用新SW
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(CORE_ASSETS);
+    })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))))
+      Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key); // 刪除舊快取（關鍵）
+          }
+        })
+      )
     )
   );
-  self.clients.claim();
+  self.clients.claim(); // 立即控制頁面
 });
 
 self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req)
-        .then((res) => {
-          if (res && res.status === 200 && res.type === "basic") {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => caches.match("./"));
-    })
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, copy);
+        });
+        return response;
+      })
+      .catch(() => caches.match("./index.html"))
   );
 });

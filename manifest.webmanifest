@@ -1,27 +1,29 @@
 {
   "name": "Flux Companion",
   "short_name": "Flux",
-  "description": "Flux Companion - Your Gentle AI Listener",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Flux Companion - Your Central AI Listener",
+  "start_url": "/flux-web/",
+  "scope": "/flux-web/",
   "display": "standalone",
-  "background_color": "#0b1020",
-  "theme_color": "#0b1020",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "lang": "zh-TW",
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "/flux-web/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "/flux-web/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512-maskable.png",
+      "src": "/flux-web/icons/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

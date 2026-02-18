@@ -1,98 +1,141 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>隱私權政策 - Flux Companion</title>
-
-<style>
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC";
-  background:linear-gradient(180deg,#0b1020,#070a14);
-  color:#fff;
-}
-.wrap{
-  max-width:720px;
-  margin:auto;
-  padding:24px;
-}
-.card{
-  background:rgba(255,255,255,0.05);
-  border-radius:24px;
-  padding:24px;
-  border:1px solid rgba(255,255,255,0.1);
-  line-height:1.8;
-}
-h1{font-size:28px;margin-bottom:16px;}
-h2{margin-top:24px;font-size:20px;}
-.back{
-  float:right;
-  text-decoration:none;
-  padding:10px 18px;
-  border-radius:16px;
-  background:rgba(255,255,255,0.08);
-  color:white;
-  border:1px solid rgba(255,255,255,0.15);
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Flux Companion 隱私權政策</title>
+  <style>
+    :root{
+      --bg0:#070a14; --bg1:#0b1020;
+      --card:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.12);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.68);
+      --accent:rgba(90,162,255,.9);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;
+      background:linear-gradient(180deg,var(--bg1),var(--bg0));
+      color:var(--text);
+    }
+    .wrap{max-width:860px;margin:0 auto;padding:20px}
+    .top{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin-bottom:14px;
+    }
+    h1{margin:0;font-size:22px;letter-spacing:.5px}
+    .btn{
+      padding:10px 14px;border-radius:14px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      color:var(--text);text-decoration:none;font-weight:800;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:22px;
+      padding:18px;
+      backdrop-filter:blur(12px);
+    }
+    .meta{color:var(--muted);margin:0 0 14px 0;line-height:1.6}
+    h2{margin:18px 0 8px 0;font-size:16px}
+    p,li{color:var(--muted);line-height:1.75}
+    ul{margin:8px 0 0 18px}
+    .tag{
+      display:inline-block;
+      padding:3px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:var(--text);font-weight:800;font-size:12px;
+      margin-right:6px;
+    }
+    .note{
+      margin-top:12px;padding:12px 14px;border-radius:16px;
+      background:rgba(90,162,255,.10);border:1px solid rgba(90,162,255,.25);
+      color:var(--text);
+    }
+    a{color:var(--accent)}
+    code{color:var(--text)}
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-  <a class="back" href="/flux-web/index.html">回到 App</a>
-  <h1>隱私權政策</h1>
+  <div class="wrap">
+    <div class="top">
+      <h1>隱私權政策</h1>
+      <a class="btn" href="./index.html">回到 App</a>
+    </div>
 
-  <div class="card">
-    <p>最後更新：2026-02-18</p>
+    <div class="card">
+      <p class="meta"><span class="tag">Flux Companion</span> 最後更新：<strong>2026-02-18</strong></p>
+      <p class="meta">
+        Flux Companion 是一個協助你整理情緒、陪伴你表達心聲的工具。你可以選擇上傳/拍攝照片、輸入文字，
+        系統會提供溫柔的回應與提示。本政策說明我們如何處理資料、使用權限，以及你擁有的控制權。
+      </p>
 
-    <h2>我們收集哪些資料？</h2>
-    <p>
-    Flux Companion 為本地示範型應用程式。
-    本應用程式不會主動收集、上傳、儲存或分享使用者的個人資料。
-    使用者選擇的照片僅在裝置本地與瀏覽器內暫時讀取，用於功能顯示與本地處理。
-    </p>
+      <h2>我們收集哪些資料？</h2>
+      <p>依你使用的功能不同，可能涉及：</p>
+      <ul>
+        <li><strong>照片/影像</strong>：你拍攝或從相簿選擇的圖片（用於情緒/內容分析或呈現）。</li>
+        <li><strong>文字輸入</strong>：你輸入的文字內容（用於生成回應、情緒整理）。</li>
+        <li><strong>基本連線資訊</strong>：當你連線到本服務頁面或雲端 AI 時，可能產生必要的網路請求記錄（例如 IP/時間戳），由瀏覽器或平台基礎服務產生，用於傳輸與安全維護。</li>
+      </ul>
 
-    <h2>相機與相簿權限用途</h2>
-    <p>
-    當你按下「拍照」或「相簿」時，瀏覽器會依照你的操作請求相機或相簿存取權限。
-    此權限僅用於本地圖片讀取與情緒回應顯示，
-    不會進行人臉辨識、生物辨識、追蹤或背景監控。
-    </p>
+      <h2>資料如何被處理？（本地優先 + 雲端可選）</h2>
+      <ul>
+        <li><strong>本地處理（預設）</strong>：若你使用的是本地示範功能，照片與文字只會在你的裝置/瀏覽器內暫時使用，不會由我們主動上傳或長期保存。</li>
+        <li><strong>雲端 AI（未來/可選）</strong>：若你啟用雲端 AI 分析（例如接 Gemini / OpenAI 等 API），你提供的<strong>文字與/或圖片</strong>可能會被送到第三方 AI 服務進行推論，並回傳結果給你。此行為會以功能需要為限。</li>
+      </ul>
+      <div class="note">
+        重要：啟用雲端 AI 時，你提供的內容會依第三方服務的政策處理。我們會盡量採取「最小化傳輸」原則（只送必要內容）。
+      </div>
 
-    <h2>資料是否會被傳送到伺服器？</h2>
-    <p>
-    不會。本應用程式為純前端本地運作版本，
-    不包含雲端上傳、帳號系統或遠端資料庫。
-    所有圖片與操作資料皆保留在使用者裝置本地，不會傳送至任何伺服器。
-    </p>
+      <h2>相機/相簿權限</h2>
+      <ul>
+        <li>當你點擊「拍照」時，瀏覽器會向你請求相機權限。</li>
+        <li>當你點擊「相簿」或選擇照片時，瀏覽器會向你請求讀取相片/檔案。</li>
+        <li>你可以在系統設定或瀏覽器設定中隨時撤回權限。</li>
+      </ul>
 
-    <h2>資料保存與刪除</h2>
-    <p>
-    本應用程式不會長期儲存使用者資料。
-    使用者選擇的圖片僅於當前瀏覽階段暫時讀取，
-    關閉頁面或清除瀏覽器資料後即自動移除。
-    使用者亦可隨時透過裝置或瀏覽器設定清除資料。
-    </p>
+      <h2>資料用途</h2>
+      <ul>
+        <li>提供核心功能：情緒整理、回應生成、互動呈現。</li>
+        <li>改善體驗：錯誤排除與效能優化（以不識別個人為原則）。</li>
+      </ul>
 
-    <h2>第三方服務</h2>
-    <p>
-    本應用程式透過 GitHub Pages 提供靜態網頁服務。
-    除基本網路連線外，我們未整合任何第三方廣告、分析或追蹤 SDK。
-    </p>
+      <h2>資料是否會被分享或出售？</h2>
+      <p><strong>不會。</strong> 我們不會出售你的資料，也不會把你的內容用於廣告投放。</p>
 
-    <h2>兒少與敏感內容</h2>
-    <p>
-    本應用程式不以蒐集兒少資料為目的，
-    亦不要求使用者提供任何敏感個人資訊。
-    </p>
+      <h2>第三方服務</h2>
+      <ul>
+        <li><strong>GitHub Pages</strong>：本 App 以 GitHub Pages 提供靜態網頁服務。</li>
+        <li><strong>雲端 AI 服務（可選）</strong>：若你啟用雲端 AI，可能使用 Gemini / OpenAI 或其他第三方推論服務。第三方將依其條款與政策處理傳輸內容。</li>
+      </ul>
 
-    <h2>聯絡我們</h2>
-    <p>
-    若對本隱私權政策有任何問題，
-    請透過 Google Play 商店開發者聯絡信箱與我們聯繫。
-    </p>
+      <h2>資料保存與刪除</h2>
+      <ul>
+        <li><strong>本地模式</strong>：內容通常只存在於你的裝置/瀏覽器暫存，關閉頁面或清除瀏覽器資料即可移除。</li>
+        <li><strong>雲端 AI 模式</strong>：內容是否被保存取決於你啟用的第三方服務政策。我們建議你避免上傳敏感個資（身分證、金融、醫療檢驗報告等）。</li>
+      </ul>
+
+      <h2>兒少與敏感內容</h2>
+      <p>本 App 不以蒐集兒少資料為目的，也不要求你提供敏感個資。若你是未成年人，請在監護人同意下使用。</p>
+
+      <h2>你的選擇與控制</h2>
+      <ul>
+        <li>你可以選擇不提供照片/不輸入文字，仍可使用部分功能。</li>
+        <li>你可以隨時撤回相機/相簿權限。</li>
+        <li>你可以清除瀏覽器快取/網站資料移除本地內容。</li>
+      </ul>
+
+      <h2>聯絡我們</h2>
+      <p>
+        若對本隱私政策有任何問題，請透過你在 Google Play 商店上架頁面所填寫的開發者聯絡信箱與我們聯繫。
+      </p>
+    </div>
   </div>
-</div>
 </body>
 </html>

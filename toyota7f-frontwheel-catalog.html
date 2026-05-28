@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toyota 7F 前輪系統｜視覺零件目錄</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --danger: #ef4444;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, sans-serif;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      color: var(--text);
+    }
+
+    .app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: rgba(17,24,39,0.9);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+    }
+
+    .sub {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      background: #0b1220;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      background: #0b1220;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0b1220;
+      min-height: 540px;
+    }
+
+    .wheel-svg {
+      width: 100%;
+      height: 540px;
+      display: block;
+    }
+
+    .hotspot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background: var(--accent);
+      box-shadow: 0 0 0 2px rgba(56,189,248,0.3);
+      cursor: pointer;
+      transition: transform .15s ease;
+    }
+
+    .hotspot:hover { transform: translate(-50%, -50%) scale(1.1); }
+
+    .hotspot.active { background: var(--accent-2); }
+
+    .hotspot.hidden { display: none; }
+
+    .legend {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .cards {
+      display: grid;
+      gap: 10px;
+      max-height: 310px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      background: #0b1220;
+      cursor: pointer;
+    }
+
+    .item h3 { margin: 0 0 6px; font-size: 1rem; }
+    .item .code { color: var(--accent); font-size: .88rem; }
+    .item.active { border-color: var(--accent-2); }
+
+    .detail {
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      padding: 14px;
+      min-height: 220px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 8px 12px;
+      font-size: .93rem;
+    }
+
+    .k { color: var(--muted); }
+
+    .empty {
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .canvas-wrap, .wheel-svg { min-height: 420px; height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="panel">
+      <h1>Toyota 7F 前輪系統（視覺零件目錄）</h1>
+      <p class="sub">左圖為前輪示意圖（placeholder），可點擊熱點查看右側資料卡。</p>
+
+      <div class="search-row">
+        <input id="searchInput" type="search" placeholder="搜尋：OEM / 零件名稱 / 健彰 / ZEFENG / 我家SKU" />
+        <button id="clearBtn" type="button">清除</button>
+      </div>
+
+      <div class="canvas-wrap" id="canvasWrap">
+        <svg class="wheel-svg" viewBox="0 0 800 540" aria-label="前輪示意圖">
+          <rect width="800" height="540" fill="#0a0f1a"></rect>
+          <rect x="120" y="230" width="560" height="120" rx="18" fill="#1f2937" stroke="#475569" stroke-width="2"/>
+          <circle cx="300" cy="290" r="145" fill="#111827" stroke="#64748b" stroke-width="4"/>
+          <circle cx="300" cy="290" r="95" fill="#1f2937" stroke="#94a3b8" stroke-width="3"/>
+          <circle cx="300" cy="290" r="40" fill="#334155" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="510" y="250" width="120" height="80" rx="12" fill="#374151" stroke="#64748b" stroke-width="2"/>
+          <text x="400" y="65" fill="#94a3b8" font-size="18" text-anchor="middle">Front Wheel Placeholder Diagram</text>
+        </svg>
+      </div>
+      <div class="legend">熱點：輪胎 / 螺絲 / 輪轂 / 培林 / 油封 / 煞車</div>
+    </section>
+
+    <section class="panel">
+      <h2 style="margin:0 0 10px;">零件清單與資料卡</h2>
+      <div id="list" class="cards"></div>
+      <div id="emptyState" class="empty" style="display:none;">沒有符合搜尋條件的零件。</div>
+
+      <article class="detail" id="detailCard">
+        <h3 style="margin-top:0;">請先點選左側熱點或清單</h3>
+        <p class="sub" style="margin:0;">資料卡將顯示零件完整資訊。</p>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    const partsData = [
+      {
+        id: "tire",
+        name: "前輪輪胎",
+        oem: "TOY-7F-40111",
+        aftermarket: { jianzhang: "JZ-TY7F-TIRE-01", zefeng: "ZF-7F-TYRE-A1" },
+        sku: "SKU-FW-001",
+        note: "建議搭配同批左右輪，磨耗差異不超過 2mm。",
+        hotspot: { x: 23, y: 55 },
+      },
+      {
+        id: "lug_nut",
+        name: "輪圈螺絲 / 螺帽",
+        oem: "TOY-7F-43521",
+        aftermarket: { jianzhang: "JZ-43521-NUT", zefeng: "ZF-LUG-7F-35" },
+        sku: "SKU-FW-002",
+        note: "鎖附請依扭力規範並採對角順序。",
+        hotspot: { x: 31, y: 54 },
+      },
+      {
+        id: "hub",
+        name: "前輪輪轂",
+        oem: "TOY-7F-43211",
+        aftermarket: { jianzhang: "JZ-HUB-7F-11", zefeng: "ZF-HUB-T7F" },
+        sku: "SKU-FW-003",
+        note: "安裝前請檢查配合面是否有毛邊或撞傷。",
+        hotspot: { x: 37, y: 54 },
+      },
+      {
+        id: "bearing",
+        name: "輪轂培林",
+        oem: "TOY-7F-90368",
+        aftermarket: { jianzhang: "JZ-BRG-90368", zefeng: "ZF-BEAR-7F-68" },
+        sku: "SKU-FW-004",
+        note: "更換時建議同時檢查潤滑脂與座圈。",
+        hotspot: { x: 43, y: 54 },
+      },
+      {
+        id: "oil_seal",
+        name: "輪轂油封",
+        oem: "TOY-7F-90310",
+        aftermarket: { jianzhang: "JZ-SEAL-90310", zefeng: "ZF-SEAL-TY-10" },
+        sku: "SKU-FW-005",
+        note: "油封唇口方向不可裝反，避免滲漏。",
+        hotspot: { x: 49, y: 54 },
+      },
+      {
+        id: "brake",
+        name: "前輪煞車組",
+        oem: "TOY-7F-44610",
+        aftermarket: { jianzhang: "JZ-BRK-44610", zefeng: "ZF-BRAKE-7F" },
+        sku: "SKU-FW-006",
+        note: "煞車片厚度不足時需整組檢查與調整。",
+        hotspot: { x: 71, y: 54 },
+      }
+    ];
+
+    const state = {
+      query: "",
+      filtered: [...partsData],
+      activeId: null,
+    };
+
+    const listEl = document.getElementById("list");
+    const detailEl = document.getElementById("detailCard");
+    const searchInput = document.getElementById("searchInput");
+    const canvasWrap = document.getElementById("canvasWrap");
+    const emptyState = document.getElementById("emptyState");
+
+    function matches(part, query) {
+      const haystack = [
+        part.name,
+        part.oem,
+        part.aftermarket.jianzhang,
+        part.aftermarket.zefeng,
+        part.sku,
+        part.note,
+      ].join(" ").toLowerCase();
+      return haystack.includes(query.toLowerCase());
+    }
+
+    function renderHotspots() {
+      const old = canvasWrap.querySelectorAll(".hotspot");
+      old.forEach(el => el.remove());
+
+      state.filtered.forEach(part => {
+        const btn = document.createElement("button");
+        btn.className = "hotspot" + (state.activeId === part.id ? " active" : "");
+        btn.style.left = `${part.hotspot.x}%`;
+        btn.style.top = `${part.hotspot.y}%`;
+        btn.title = `${part.name} (${part.oem})`;
+        btn.type = "button";
+        btn.addEventListener("click", () => selectPart(part.id));
+        canvasWrap.appendChild(btn);
+      });
+    }
+
+    function renderList() {
+      listEl.innerHTML = "";
+      if (state.filtered.length === 0) {
+        emptyState.style.display = "block";
+      } else {
+        emptyState.style.display = "none";
+      }
+
+      state.filtered.forEach(part => {
+        const item = document.createElement("div");
+        item.className = "item" + (state.activeId === part.id ? " active" : "");
+        item.innerHTML = `
+          <h3>${part.name}</h3>
+          <div class="code">OEM: ${part.oem}</div>
+          <div class="code">健彰: ${part.aftermarket.jianzhang} ｜ ZEFENG: ${part.aftermarket.zefeng}</div>
+          <div class="code">SKU: ${part.sku}</div>
+        `;
+        item.addEventListener("click", () => selectPart(part.id));
+        listEl.appendChild(item);
+      });
+    }
+
+    function renderDetail(part) {
+      if (!part) {
+        detailEl.innerHTML = `
+          <h3 style="margin-top:0;">找不到資料</h3>
+          <p class="sub" style="margin:0;">請調整搜尋條件或重新選擇零件。</p>
+        `;
+        return;
+      }
+
+      detailEl.innerHTML = `
+        <h3 style="margin-top:0; margin-bottom: 10px;">${part.name}</h3>
+        <div class="grid">
+          <div class="k">零件名稱（白話）</div><div>${part.name}</div>
+          <div class="k">Toyota OEM 料號</div><div>${part.oem}</div>
+          <div class="k">健彰料號</div><div>${part.aftermarket.jianzhang}</div>
+          <div class="k">ZEFENG 料號</div><div>${part.aftermarket.zefeng}</div>
+          <div class="k">我家 SKU</div><div>${part.sku}</div>
+          <div class="k">備註</div><div>${part.note}</div>
+        </div>
+      `;
+    }
+
+    function selectPart(id) {
+      state.activeId = id;
+      const part = state.filtered.find(p => p.id === id) || partsData.find(p => p.id === id);
+      renderDetail(part);
+      renderList();
+      renderHotspots();
+    }
+
+    function applyFilter(query) {
+      state.query = query.trim();
+      state.filtered = state.query ? partsData.filter(p => matches(p, state.query)) : [...partsData];
+
+      if (!state.filtered.some(p => p.id === state.activeId)) {
+        state.activeId = state.filtered[0]?.id || null;
+      }
+
+      renderList();
+      renderHotspots();
+      renderDetail(state.filtered.find(p => p.id === state.activeId));
+    }
+
+    searchInput.addEventListener("input", (e) => applyFilter(e.target.value));
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      searchInput.value = "";
+      applyFilter("");
+    });
+
+    applyFilter("");
+  </script>
+</body>
+</html>

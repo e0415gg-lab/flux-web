@@ -60,6 +60,29 @@
       margin-bottom: 14px;
     }
 
+    .data-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .file-label {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    .file-label input { display: none; }
+
+    .data-status { color: var(--muted); font-size: .86rem; }
+    .data-status.error { color: #fca5a5; }
+
     input[type="search"] {
       width: 100%;
       background: #0b1220;
@@ -139,6 +162,18 @@
     .item .code { color: var(--accent); font-size: .88rem; }
     .item.active { border-color: var(--accent-2); }
 
+    .badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #422006;
+      color: #fde68a;
+      font-size: .78rem;
+    }
+
+    .badge.verified { background: #052e16; color: #86efac; }
+
     .detail {
       margin-top: 12px;
       border: 1px solid var(--border);
@@ -178,6 +213,15 @@
       <h1>Toyota 7F 前輪系統（視覺零件目錄）</h1>
       <p class="sub">左圖為前輪示意圖（placeholder），可點擊熱點查看右側資料卡。</p>
 
+      <div class="data-row">
+        <label class="file-label">
+          載入已核對資料（JSON）
+          <input id="dataFile" type="file" accept="application/json,.json" />
+        </label>
+        <button id="resetDataBtn" type="button">恢復待確認資料</button>
+        <span id="dataStatus" class="data-status">目前為展示模式：料號尚未核對，不可用於報價。</span>
+      </div>
+
       <div class="search-row">
         <input id="searchInput" type="search" placeholder="搜尋：OEM / 零件名稱 / 健彰 / ZEFENG / 我家SKU" />
         <button id="clearBtn" type="button">清除</button>
@@ -194,7 +238,7 @@
           <text x="400" y="65" fill="#94a3b8" font-size="18" text-anchor="middle">Front Wheel Placeholder Diagram</text>
         </svg>
       </div>
-      <div class="legend">熱點：輪胎 / 螺絲 / 輪轂 / 培林 / 油封 / 煞車</div>
+      <div class="legend">熱點：輪胎 / 螺絲 / 輪轂 / 培林 / 油封 / 煞車。黃色標籤代表資料待確認。</div>
     </section>
 
     <section class="panel">
@@ -210,62 +254,52 @@
   </div>
 
   <script>
-    const partsData = [
+    const placeholderParts = [
       {
         id: "tire",
         name: "前輪輪胎",
-        oem: "TOY-7F-40111",
-        aftermarket: { jianzhang: "JZ-TY7F-TIRE-01", zefeng: "ZF-7F-TYRE-A1" },
-        sku: "SKU-FW-001",
+        verification: { status: "pending" },
         note: "建議搭配同批左右輪，磨耗差異不超過 2mm。",
         hotspot: { x: 23, y: 55 },
       },
       {
         id: "lug_nut",
         name: "輪圈螺絲 / 螺帽",
-        oem: "TOY-7F-43521",
-        aftermarket: { jianzhang: "JZ-43521-NUT", zefeng: "ZF-LUG-7F-35" },
-        sku: "SKU-FW-002",
+        verification: { status: "pending" },
         note: "鎖附請依扭力規範並採對角順序。",
         hotspot: { x: 31, y: 54 },
       },
       {
         id: "hub",
         name: "前輪輪轂",
-        oem: "TOY-7F-43211",
-        aftermarket: { jianzhang: "JZ-HUB-7F-11", zefeng: "ZF-HUB-T7F" },
-        sku: "SKU-FW-003",
+        verification: { status: "pending" },
         note: "安裝前請檢查配合面是否有毛邊或撞傷。",
         hotspot: { x: 37, y: 54 },
       },
       {
         id: "bearing",
         name: "輪轂培林",
-        oem: "TOY-7F-90368",
-        aftermarket: { jianzhang: "JZ-BRG-90368", zefeng: "ZF-BEAR-7F-68" },
-        sku: "SKU-FW-004",
+        verification: { status: "pending" },
         note: "更換時建議同時檢查潤滑脂與座圈。",
         hotspot: { x: 43, y: 54 },
       },
       {
         id: "oil_seal",
         name: "輪轂油封",
-        oem: "TOY-7F-90310",
-        aftermarket: { jianzhang: "JZ-SEAL-90310", zefeng: "ZF-SEAL-TY-10" },
-        sku: "SKU-FW-005",
+        verification: { status: "pending" },
         note: "油封唇口方向不可裝反，避免滲漏。",
         hotspot: { x: 49, y: 54 },
       },
       {
         id: "brake",
         name: "前輪煞車組",
-        oem: "TOY-7F-44610",
-        aftermarket: { jianzhang: "JZ-BRK-44610", zefeng: "ZF-BRAKE-7F" },
-        sku: "SKU-FW-006",
+        verification: { status: "pending" },
         note: "煞車片厚度不足時需整組檢查與調整。",
         hotspot: { x: 71, y: 54 },
       }
     ];
+
+    let partsData = structuredClone(placeholderParts);
 
     const state = {
       query: "",
@@ -278,14 +312,25 @@
     const searchInput = document.getElementById("searchInput");
     const canvasWrap = document.getElementById("canvasWrap");
     const emptyState = document.getElementById("emptyState");
+    const dataStatus = document.getElementById("dataStatus");
+
+    function isVerified(part) {
+      return part.verification?.status === "verified";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>'"]/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;"
+      })[character]);
+    }
 
     function matches(part, query) {
       const haystack = [
         part.name,
-        part.oem,
-        part.aftermarket.jianzhang,
-        part.aftermarket.zefeng,
-        part.sku,
+        isVerified(part) ? part.oem : "",
+        isVerified(part) ? part.aftermarket?.jianzhang : "",
+        isVerified(part) ? part.aftermarket?.zefeng : "",
+        isVerified(part) ? part.sku : "",
         part.note,
       ].join(" ").toLowerCase();
       return haystack.includes(query.toLowerCase());
@@ -300,7 +345,8 @@
         btn.className = "hotspot" + (state.activeId === part.id ? " active" : "");
         btn.style.left = `${part.hotspot.x}%`;
         btn.style.top = `${part.hotspot.y}%`;
-        btn.title = `${part.name} (${part.oem})`;
+        btn.title = part.name;
+        btn.setAttribute("aria-label", `查看${part.name}`);
         btn.type = "button";
         btn.addEventListener("click", () => selectPart(part.id));
         canvasWrap.appendChild(btn);
@@ -320,9 +366,8 @@
         item.className = "item" + (state.activeId === part.id ? " active" : "");
         item.innerHTML = `
           <h3>${part.name}</h3>
-          <div class="code">OEM: ${part.oem}</div>
-          <div class="code">健彰: ${part.aftermarket.jianzhang} ｜ ZEFENG: ${part.aftermarket.zefeng}</div>
-          <div class="code">SKU: ${part.sku}</div>
+          <span class="badge ${isVerified(part) ? "verified" : ""}">${isVerified(part) ? "已核對" : "待確認"}</span>
+          ${isVerified(part) ? `<div class="code">OEM: ${escapeHtml(part.oem || "—")}</div>` : ""}
         `;
         item.addEventListener("click", () => selectPart(part.id));
         listEl.appendChild(item);
@@ -342,10 +387,15 @@
         <h3 style="margin-top:0; margin-bottom: 10px;">${part.name}</h3>
         <div class="grid">
           <div class="k">零件名稱（白話）</div><div>${part.name}</div>
-          <div class="k">Toyota OEM 料號</div><div>${part.oem}</div>
-          <div class="k">健彰料號</div><div>${part.aftermarket.jianzhang}</div>
-          <div class="k">ZEFENG 料號</div><div>${part.aftermarket.zefeng}</div>
-          <div class="k">我家 SKU</div><div>${part.sku}</div>
+          <div class="k">資料狀態</div><div><span class="badge ${isVerified(part) ? "verified" : ""}">${isVerified(part) ? "已核對" : "待確認"}</span></div>
+          ${isVerified(part) ? `
+            <div class="k">Toyota OEM 料號</div><div>${escapeHtml(part.oem || "—")}</div>
+            <div class="k">健彰料號</div><div>${escapeHtml(part.aftermarket?.jianzhang || "—")}</div>
+            <div class="k">ZEFENG 料號</div><div>${escapeHtml(part.aftermarket?.zefeng || "—")}</div>
+            <div class="k">我家 SKU</div><div>${escapeHtml(part.sku || "—")}</div>
+            <div class="k">核對來源</div><div>${escapeHtml(part.verification.source)}</div>
+            <div class="k">核對日期</div><div>${escapeHtml(part.verification.checkedAt)}</div>
+          ` : ""}
           <div class="k">備註</div><div>${part.note}</div>
         </div>
       `;
@@ -371,6 +421,51 @@
       renderHotspots();
       renderDetail(state.filtered.find(p => p.id === state.activeId));
     }
+
+    function validateImportedParts(payload) {
+      if (payload.schemaVersion !== 1) throw new Error("不支援的 schemaVersion");
+      if (payload.catalog !== "toyota-7f-front-wheel") throw new Error("catalog 名稱不符");
+      const value = payload.parts;
+      if (!Array.isArray(value) || value.length === 0) throw new Error("parts 必須是非空陣列");
+      const knownIds = new Set(placeholderParts.map(part => part.id));
+      const seenIds = new Set();
+      return value.map((part, index) => {
+        if (!knownIds.has(part.id)) throw new Error(`第 ${index + 1} 筆使用未知 id：${part.id || "空白"}`);
+        if (seenIds.has(part.id)) throw new Error(`id 重複：${part.id}`);
+        seenIds.add(part.id);
+        if (part.verification?.status !== "verified") throw new Error(`${part.id} 尚未標記為 verified`);
+        if (!part.verification.source?.trim()) throw new Error(`${part.id} 缺少核對來源 source`);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(part.verification.checkedAt || "")) throw new Error(`${part.id} 的 checkedAt 必須是 YYYY-MM-DD`);
+        const base = placeholderParts.find(item => item.id === part.id);
+        return { ...base, ...part, name: base.name, hotspot: base.hotspot };
+      });
+    }
+
+    document.getElementById("dataFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const payload = JSON.parse(await file.text());
+        partsData = validateImportedParts(payload);
+        state.activeId = null;
+        dataStatus.className = "data-status";
+        dataStatus.textContent = `已載入 ${partsData.length} 筆核對資料：${file.name}`;
+        applyFilter(searchInput.value);
+      } catch (error) {
+        dataStatus.className = "data-status error";
+        dataStatus.textContent = `載入失敗：${error.message}`;
+      } finally {
+        event.target.value = "";
+      }
+    });
+
+    document.getElementById("resetDataBtn").addEventListener("click", () => {
+      partsData = structuredClone(placeholderParts);
+      state.activeId = null;
+      dataStatus.className = "data-status";
+      dataStatus.textContent = "目前為展示模式：料號尚未核對，不可用於報價。";
+      applyFilter(searchInput.value);
+    });
 
     searchInput.addEventListener("input", (e) => applyFilter(e.target.value));
     document.getElementById("clearBtn").addEventListener("click", () => {

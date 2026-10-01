@@ -446,10 +446,14 @@
       if (!file) return;
       try {
         const payload = JSON.parse(await file.text());
-        partsData = validateImportedParts(payload);
+        const importedParts = validateImportedParts(payload);
+        const importedById = new Map(importedParts.map(part => [part.id, part]));
+        partsData = placeholderParts.map(base =>
+          importedById.get(base.id) || structuredClone(base)
+        );
         state.activeId = null;
         dataStatus.className = "data-status";
-        dataStatus.textContent = `已載入 ${partsData.length} 筆核對資料：${file.name}`;
+        dataStatus.textContent = `已載入 ${importedParts.length} 筆核對資料，其餘 ${partsData.length - importedParts.length} 筆維持待確認：${file.name}`;
         applyFilter(searchInput.value);
       } catch (error) {
         dataStatus.className = "data-status error";

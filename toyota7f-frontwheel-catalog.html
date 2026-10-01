@@ -396,7 +396,7 @@
             <div class="k">核對來源</div><div>${escapeHtml(part.verification.source)}</div>
             <div class="k">核對日期</div><div>${escapeHtml(part.verification.checkedAt)}</div>
           ` : ""}
-          <div class="k">備註</div><div>${part.note}</div>
+          <div class="k">備註</div><div>${escapeHtml(part.note)}</div>
         </div>
       `;
     }
@@ -422,6 +422,15 @@
       renderDetail(state.filtered.find(p => p.id === state.activeId));
     }
 
+    function isValidIsoDate(value) {
+      if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+      const [year, month, day] = value.split("-").map(Number);
+      const date = new Date(Date.UTC(year, month - 1, day));
+      return date.getUTCFullYear() === year
+        && date.getUTCMonth() === month - 1
+        && date.getUTCDate() === day;
+    }
+
     function validateImportedParts(payload) {
       if (payload.schemaVersion !== 1) throw new Error("不支援的 schemaVersion");
       if (payload.catalog !== "toyota-7f-front-wheel") throw new Error("catalog 名稱不符");
@@ -434,8 +443,12 @@
         if (seenIds.has(part.id)) throw new Error(`id 重複：${part.id}`);
         seenIds.add(part.id);
         if (part.verification?.status !== "verified") throw new Error(`${part.id} 尚未標記為 verified`);
-        if (!part.verification.source?.trim()) throw new Error(`${part.id} 缺少核對來源 source`);
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(part.verification.checkedAt || "")) throw new Error(`${part.id} 的 checkedAt 必須是 YYYY-MM-DD`);
+        if (typeof part.verification.source !== "string" || !part.verification.source.trim()) {
+          throw new Error(`${part.id} 缺少有效的核對來源 source`);
+        }
+        if (!isValidIsoDate(part.verification.checkedAt)) {
+          throw new Error(`${part.id} 的 checkedAt 必須是真實的 YYYY-MM-DD 日期`);
+        }
         const base = placeholderParts.find(item => item.id === part.id);
         return { ...base, ...part, name: base.name, hotspot: base.hotspot };
       });

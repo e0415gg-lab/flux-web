@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "catalog": "toyota-7f-front-wheel",
+  "instructions": "僅供匯入流程測試，不代表正式料號核對，不可報價。",
+  "parts": [
+    {
+      "id": "tire",
+      "oem": "",
+      "aftermarket": {
+        "jianzhang": "",
+        "zefeng": ""
+      },
+      "sku": "",
+      "note": "匯入流程測試，不可報價",
+      "verification": {
+        "status": "test",
+        "source": "本地匯入流程測試；無正式料號資料",
+        "checkedAt": "2026-10-03"
+      }
+    }
+  ]
+}

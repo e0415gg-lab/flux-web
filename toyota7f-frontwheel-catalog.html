@@ -60,6 +60,9 @@
       margin-bottom: 14px;
     }
 
+    .search-row input { min-width: 0; }
+    .search-row button { flex-shrink: 0; white-space: nowrap; }
+
     .data-row {
       display: flex;
       align-items: center;
@@ -78,9 +81,23 @@
       cursor: pointer;
     }
 
-    .file-label input { display: none; }
+    .file-label { position: relative; }
+    .file-label input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
 
-    .data-status { color: var(--muted); font-size: .86rem; }
+    button:focus-visible, input:focus-visible, .file-label:focus-within {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .data-status { color: var(--muted); font-size: .86rem; overflow-wrap: anywhere; }
     .data-status.error { color: #fca5a5; }
 
     input[type="search"] {
@@ -158,7 +175,8 @@
       cursor: pointer;
     }
 
-    .item h3 { margin: 0 0 6px; font-size: 1rem; }
+    .item { width: 100%; text-align: left; font: inherit; }
+    .item .item-name { display: block; margin: 0 0 6px; font-size: 1rem; font-weight: 700; }
     .item .code { color: var(--accent); font-size: .88rem; }
     .item.active { border-color: var(--accent-2); }
 
@@ -173,6 +191,7 @@
     }
 
     .badge.verified { background: #052e16; color: #86efac; }
+    .badge.test { background: #172554; color: #93c5fd; }
 
     .detail {
       margin-top: 12px;
@@ -191,6 +210,7 @@
     }
 
     .k { color: var(--muted); }
+    .grid > div { min-width: 0; overflow-wrap: anywhere; }
 
     .empty {
       color: var(--muted);
@@ -215,15 +235,15 @@
 
       <div class="data-row">
         <label class="file-label">
-          載入已核對資料（JSON）
+          載入零件資料（JSON）
           <input id="dataFile" type="file" accept="application/json,.json" />
         </label>
         <button id="resetDataBtn" type="button">恢復待確認資料</button>
-        <span id="dataStatus" class="data-status">目前為展示模式：料號尚未核對，不可用於報價。</span>
+        <span id="dataStatus" class="data-status" role="status" aria-live="polite" aria-atomic="true">目前為展示模式：料號尚未核對，不可用於報價。</span>
       </div>
 
       <div class="search-row">
-        <input id="searchInput" type="search" placeholder="搜尋：OEM / 零件名稱 / 健彰 / ZEFENG / 我家SKU" />
+        <input id="searchInput" aria-label="搜尋零件名稱或料號" type="search" placeholder="搜尋：OEM / 零件名稱 / 健彰 / ZEFENG / 我家SKU" />
         <button id="clearBtn" type="button">清除</button>
       </div>
 
@@ -238,7 +258,8 @@
           <text x="400" y="65" fill="#94a3b8" font-size="18" text-anchor="middle">Front Wheel Placeholder Diagram</text>
         </svg>
       </div>
-      <div class="legend">熱點：輪胎 / 螺絲 / 輪轂 / 培林 / 油封 / 煞車。黃色標籤代表資料待確認。</div>
+      <div class="legend">熱點：輪胎 / 螺絲 / 輪轂 / 培林 / 油封 / 煞車。黃色：待確認；藍色：僅供測試；綠色：已有核對紀錄。</div>
+      <p class="sub">空白料號代表未提供；核對紀錄僅適用於已填欄位，報價前仍須確認車型與適用性。</p>
     </section>
 
     <section class="panel">
@@ -259,42 +280,42 @@
         id: "tire",
         name: "前輪輪胎",
         verification: { status: "pending" },
-        note: "建議搭配同批左右輪，磨耗差異不超過 2mm。",
+        note: "展示資料；料號、適用車型與維修規範尚待來源核對。",
         hotspot: { x: 23, y: 55 },
       },
       {
         id: "lug_nut",
         name: "輪圈螺絲 / 螺帽",
         verification: { status: "pending" },
-        note: "鎖附請依扭力規範並採對角順序。",
+        note: "展示資料；料號、適用車型與維修規範尚待來源核對。",
         hotspot: { x: 31, y: 54 },
       },
       {
         id: "hub",
         name: "前輪輪轂",
         verification: { status: "pending" },
-        note: "安裝前請檢查配合面是否有毛邊或撞傷。",
+        note: "展示資料；料號、適用車型與維修規範尚待來源核對。",
         hotspot: { x: 37, y: 54 },
       },
       {
         id: "bearing",
         name: "輪轂培林",
         verification: { status: "pending" },
-        note: "更換時建議同時檢查潤滑脂與座圈。",
+        note: "展示資料；料號、適用車型與維修規範尚待來源核對。",
         hotspot: { x: 43, y: 54 },
       },
       {
         id: "oil_seal",
         name: "輪轂油封",
         verification: { status: "pending" },
-        note: "油封唇口方向不可裝反，避免滲漏。",
+        note: "展示資料；料號、適用車型與維修規範尚待來源核對。",
         hotspot: { x: 49, y: 54 },
       },
       {
         id: "brake",
         name: "前輪煞車組",
         verification: { status: "pending" },
-        note: "煞車片厚度不足時需整組檢查與調整。",
+        note: "展示資料；料號、適用車型與維修規範尚待來源核對。",
         hotspot: { x: 71, y: 54 },
       }
     ];
@@ -318,6 +339,21 @@
       return part.verification?.status === "verified";
     }
 
+    function isTest(part) {
+      return part.verification?.status === "test";
+    }
+
+    function hasPartNumber(part) {
+      return [part.oem, part.aftermarket?.jianzhang, part.aftermarket?.zefeng, part.sku]
+        .some(value => typeof value === "string" && value.trim());
+    }
+
+    function statusBadge(part) {
+      const kind = isVerified(part) ? "verified" : isTest(part) ? "test" : "";
+      const label = isVerified(part) ? "已填料號有核對紀錄" : isTest(part) ? "僅供測試・不可報價" : "待確認";
+      return `<span class="badge ${kind}">${label}</span>`;
+    }
+
     function escapeHtml(value) {
       return String(value ?? "").replace(/[&<>'"]/g, character => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;"
@@ -336,6 +372,15 @@
       return haystack.includes(query.toLowerCase());
     }
 
+    function positionHotspot(button, part) {
+      // SVG uses xMidYMid meet: account for the blank space around its viewBox.
+      const width = canvasWrap.clientWidth;
+      const height = canvasWrap.clientHeight;
+      const scale = Math.min(width / 800, height / 540);
+      button.style.left = `${(width - 800 * scale) / 2 + part.hotspot.x / 100 * 800 * scale}px`;
+      button.style.top = `${(height - 540 * scale) / 2 + part.hotspot.y / 100 * 540 * scale}px`;
+    }
+
     function renderHotspots() {
       const old = canvasWrap.querySelectorAll(".hotspot");
       old.forEach(el => el.remove());
@@ -343,11 +388,12 @@
       state.filtered.forEach(part => {
         const btn = document.createElement("button");
         btn.className = "hotspot" + (state.activeId === part.id ? " active" : "");
-        btn.style.left = `${part.hotspot.x}%`;
-        btn.style.top = `${part.hotspot.y}%`;
+        positionHotspot(btn, part);
         btn.title = part.name;
         btn.setAttribute("aria-label", `查看${part.name}`);
         btn.type = "button";
+        btn.dataset.partId = part.id;
+        btn.setAttribute("aria-pressed", String(state.activeId === part.id));
         btn.addEventListener("click", () => selectPart(part.id));
         canvasWrap.appendChild(btn);
       });
@@ -362,11 +408,14 @@
       }
 
       state.filtered.forEach(part => {
-        const item = document.createElement("div");
+        const item = document.createElement("button");
+        item.type = "button";
+        item.dataset.partId = part.id;
+        item.setAttribute("aria-pressed", String(state.activeId === part.id));
         item.className = "item" + (state.activeId === part.id ? " active" : "");
         item.innerHTML = `
-          <h3>${part.name}</h3>
-          <span class="badge ${isVerified(part) ? "verified" : ""}">${isVerified(part) ? "已核對" : "待確認"}</span>
+          <span class="item-name">${part.name}</span>
+          ${statusBadge(part)}
           ${isVerified(part) ? `<div class="code">OEM: ${escapeHtml(part.oem || "—")}</div>` : ""}
         `;
         item.addEventListener("click", () => selectPart(part.id));
@@ -387,14 +436,14 @@
         <h3 style="margin-top:0; margin-bottom: 10px;">${part.name}</h3>
         <div class="grid">
           <div class="k">零件名稱（白話）</div><div>${part.name}</div>
-          <div class="k">資料狀態</div><div><span class="badge ${isVerified(part) ? "verified" : ""}">${isVerified(part) ? "已核對" : "待確認"}</span></div>
-          ${isVerified(part) ? `
+          <div class="k">資料狀態</div><div>${statusBadge(part)}</div>
+          ${isVerified(part) || isTest(part) ? `
             <div class="k">Toyota OEM 料號</div><div>${escapeHtml(part.oem || "—")}</div>
             <div class="k">健彰料號</div><div>${escapeHtml(part.aftermarket?.jianzhang || "—")}</div>
             <div class="k">ZEFENG 料號</div><div>${escapeHtml(part.aftermarket?.zefeng || "—")}</div>
             <div class="k">我家 SKU</div><div>${escapeHtml(part.sku || "—")}</div>
-            <div class="k">核對來源</div><div>${escapeHtml(part.verification.source)}</div>
-            <div class="k">核對日期</div><div>${escapeHtml(part.verification.checkedAt)}</div>
+            <div class="k">${isTest(part) ? "測試記錄" : "核對來源"}</div><div>${escapeHtml(part.verification.source)}</div>
+            <div class="k">${isTest(part) ? "測試日期" : "核對日期"}</div><div>${escapeHtml(part.verification.checkedAt)}</div>
           ` : ""}
           <div class="k">備註</div><div>${escapeHtml(part.note)}</div>
         </div>
@@ -402,11 +451,15 @@
     }
 
     function selectPart(id) {
+      const focused = document.activeElement;
+      const focusContainer = focused?.classList.contains("hotspot") ? canvasWrap : listEl;
+      const restoreFocus = focused?.dataset.partId === id;
       state.activeId = id;
       const part = state.filtered.find(p => p.id === id) || partsData.find(p => p.id === id);
       renderDetail(part);
       renderList();
       renderHotspots();
+      if (restoreFocus) focusContainer.querySelector(`[data-part-id="${id}"]`)?.focus();
     }
 
     function applyFilter(query) {
@@ -431,7 +484,18 @@
         && date.getUTCDate() === day;
     }
 
+    function isObject(value) {
+      return value !== null && typeof value === "object" && !Array.isArray(value);
+    }
+
+    function readText(object, key, context) {
+      if (!Object.hasOwn(object, key)) return "";
+      if (typeof object[key] !== "string") throw new Error(`${context}.${key} 必須是字串`);
+      return object[key].trim();
+    }
+
     function validateImportedParts(payload) {
+      if (!isObject(payload)) throw new Error("資料必須是 JSON 物件");
       if (payload.schemaVersion !== 1) throw new Error("不支援的 schemaVersion");
       if (payload.catalog !== "toyota-7f-front-wheel") throw new Error("catalog 名稱不符");
       const value = payload.parts;
@@ -439,18 +503,45 @@
       const knownIds = new Set(placeholderParts.map(part => part.id));
       const seenIds = new Set();
       return value.map((part, index) => {
-        if (!knownIds.has(part.id)) throw new Error(`第 ${index + 1} 筆使用未知 id：${part.id || "空白"}`);
+        if (!isObject(part)) throw new Error(`第 ${index + 1} 筆必須是物件`);
+        if (typeof part.id !== "string" || !knownIds.has(part.id)) {
+          throw new Error(`第 ${index + 1} 筆使用未知或無效 id`);
+        }
         if (seenIds.has(part.id)) throw new Error(`id 重複：${part.id}`);
         seenIds.add(part.id);
-        if (part.verification?.status !== "verified") throw new Error(`${part.id} 尚未標記為 verified`);
-        if (typeof part.verification.source !== "string" || !part.verification.source.trim()) {
-          throw new Error(`${part.id} 缺少有效的核對來源 source`);
+        if (!isObject(part.verification)) throw new Error(`${part.id} 缺少有效的 verification`);
+        const status = part.verification.status;
+        if (status !== "verified" && status !== "test") {
+          throw new Error(`${part.id} 必須標記為 verified 或 test；pending 不可載入`);
         }
+        const source = readText(part.verification, "source", part.id + ".verification");
+        if (!source) throw new Error(`${part.id} 缺少有效的來源或測試記錄 source`);
         if (!isValidIsoDate(part.verification.checkedAt)) {
           throw new Error(`${part.id} 的 checkedAt 必須是真實的 YYYY-MM-DD 日期`);
         }
+        if (Object.hasOwn(part, "aftermarket") && !isObject(part.aftermarket)) {
+          throw new Error(`${part.id}.aftermarket 必須是物件`);
+        }
+        const aftermarket = part.aftermarket || {};
         const base = placeholderParts.find(item => item.id === part.id);
-        return { ...base, ...part, name: base.name, hotspot: base.hotspot };
+        const normalized = {
+          ...base,
+          oem: readText(part, "oem", part.id),
+          aftermarket: {
+            jianzhang: readText(aftermarket, "jianzhang", part.id + ".aftermarket"),
+            zefeng: readText(aftermarket, "zefeng", part.id + ".aftermarket"),
+          },
+          sku: readText(part, "sku", part.id),
+          note: Object.hasOwn(part, "note") ? readText(part, "note", part.id) : base.note,
+          verification: { status, source, checkedAt: part.verification.checkedAt },
+        };
+        if (status === "test" && hasPartNumber(normalized)) {
+          throw new Error(`${part.id} 測試資料的所有料號與 SKU 必須留空`);
+        }
+        if (status === "verified" && !hasPartNumber(normalized)) {
+          throw new Error(`${part.id} 未提供任何料號或 SKU；流程測試請使用 test`);
+        }
+        return normalized;
       });
     }
 
@@ -466,7 +557,9 @@
         );
         state.activeId = null;
         dataStatus.className = "data-status";
-        dataStatus.textContent = `已載入 ${importedParts.length} 筆核對資料，其餘 ${partsData.length - importedParts.length} 筆維持待確認：${file.name}`;
+        const verifiedCount = importedParts.filter(isVerified).length;
+        const testCount = importedParts.filter(isTest).length;
+        dataStatus.textContent = `已載入：${verifiedCount} 筆有核對紀錄、${testCount} 筆僅供測試，其餘 ${partsData.length - importedParts.length} 筆待確認。${testCount ? "測試資料不可報價。" : ""} 檔案：${file.name}`;
         applyFilter(searchInput.value);
       } catch (error) {
         dataStatus.className = "data-status error";
@@ -489,6 +582,13 @@
       searchInput.value = "";
       applyFilter("");
     });
+
+    new ResizeObserver(() => {
+      canvasWrap.querySelectorAll(".hotspot").forEach(button => {
+        const part = partsData.find(item => item.id === button.dataset.partId);
+        if (part) positionHotspot(button, part);
+      });
+    }).observe(canvasWrap);
 
     applyFilter("");
   </script>

@@ -1,0 +1,20 @@
+name: Toyota 7F front wheel tests
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run Toyota 7F front wheel tests
+        run: node --test tests/toyota7f-frontwheel-catalog.test.cjs

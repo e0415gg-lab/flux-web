@@ -15,7 +15,7 @@ test("research catalog validates and pending records cannot carry OEM numbers", 
 
   const bad = structuredClone(research);
   const pending = bad.parts.find(p => p.researchStatus === "pending");
-  pending.oemNumbers = ["__FAKE_OEM__"];
+  pending.oemNumbers = ["99999-99999-71"];
   assert.throws(() => api.validateResearchCatalog(bad), /Pending records must not publish/);
 });
 

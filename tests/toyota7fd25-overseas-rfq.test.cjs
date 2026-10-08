@@ -97,5 +97,6 @@ test("staging page stays noindex and has mobile/RFQ safety copy", () => {
   assert.match(html, /Serial or nameplate photo is required/);
   assert.match(html, /@media\(max-width:390px\)/);
   assert.match(html, /No online payment/);
-  assert.match(html, /not an official Toyota EPC exploded diagram/i);\n  assert.match(html, /not presented as Toyota EPC-verified fitment/i);
+  assert.match(html, /not an official Toyota EPC exploded diagram/i);
+  assert.match(html, /not presented as Toyota EPC-verified fitment/i);
 });

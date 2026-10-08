@@ -35,7 +35,7 @@ test("public dataset contains only publishable research candidates", () => {
 
 test("search matches OEM, English name and model", () => {
   assert.equal(api.searchParts(publicParts, "47410-23420-71")[0].id, "brake-wheel-cylinder");
-  assert.ok(api.searchParts(publicParts, "brake shoe").some(p => p.id === "brake-shoe"));
+  assert.ok(api.searchParts(publicParts, "brake shoe").some(p => ["brake-shoe-primary", "brake-shoe-secondary"].includes(p.id)));
   assert.ok(api.searchParts(publicParts, "7FD25").length >= 4);
 });
 

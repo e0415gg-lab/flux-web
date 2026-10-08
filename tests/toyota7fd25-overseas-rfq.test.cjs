@@ -27,7 +27,7 @@ test("corroborated records require two sources", () => {
 });
 
 test("public dataset contains only publishable research candidates", () => {
-  assert.ok(publicParts.length >= 6);
+  assert.equal(publicParts.length, 16);
   assert.equal(publicParts.every(api.isPublicResearchPart), true);
   assert.equal(publicParts.every(p => Array.isArray(p.oemNumbers) && p.oemNumbers.length >= 1), true);
   assert.equal(publicParts.every(p => p.fitmentStatus === "needs_serial_confirmation"), true);
@@ -99,4 +99,33 @@ test("staging page stays noindex and has mobile/RFQ safety copy", () => {
   assert.match(html, /No online payment/);
   assert.match(html, /not an official Toyota EPC exploded diagram/i);
   assert.match(html, /not presented as Toyota EPC-verified fitment/i);
+});
+
+
+test("deployment routes expose clean English URLs and staging remains noindex", () => {
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+  const sources = vercel.rewrites.map(r => r.source);
+  assert.ok(sources.includes("/en/toyota/7fd25"));
+  assert.ok(sources.includes("/en/toyota/7fd25/front-drive-axle"));
+  assert.ok(sources.includes("/en/parts/:oem"));
+  assert.match(html, /noindex,nofollow/);
+});
+
+test("health API reports RFQ delivery configuration without secrets", () => {
+  const health = require(path.join(root, "api", "health.js"));
+  const old = process.env.RFQ_WEBHOOK_URL;
+  delete process.env.RFQ_WEBHOOK_URL;
+  let code = null;
+  let body = null;
+  const res = {
+    setHeader() {},
+    status(value) { code = value; return this; },
+    json(value) { body = value; return this; }
+  };
+  health({ method: "GET" }, res);
+  assert.equal(code, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.rfqDeliveryConfigured, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(body, "webhook"), false);
+  if (old) process.env.RFQ_WEBHOOK_URL = old;
 });

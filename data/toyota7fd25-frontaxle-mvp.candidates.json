@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 2,
+  "catalogId": "toyota-7fd25-front-drive-axle-research",
+  "brand": "Toyota",
+  "series": "7F",
+  "model": "7FD25",
+  "system": "front-drive-axle",
+  "purpose": "Research candidate dataset for Overseas RFQ MVP. Not for direct quotation.",
+  "checkedAt": "2026-10-08",
+  "statusDefinitions": {
+    "pending": "Expected component group; exact 7FD25 diagram/OEM not confirmed.",
+    "corroborated_public": "Public sources agree on part/application; not yet Toyota-EPC verified.",
+    "needs_serial_confirmation": "Fitment may vary by serial/configuration and must be confirmed before quote."
+  },
+  "parts": [
+    {
+      "id": "front-tire",
+      "partNameEn": "Front tire",
+      "partNameZh": "前輪輪胎",
+      "category": "wheel",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "front-wheel-rim",
+      "partNameEn": "Front wheel / rim",
+      "partNameZh": "前輪輪圈",
+      "category": "wheel",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "front-hub-bolt",
+      "partNameEn": "Front hub bolt",
+      "partNameZh": "前輪轂螺栓",
+      "category": "hub-hardware",
+      "oemNumbers": [
+        "42483-23420-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Folangsi",
+          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2744.html",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Motofork",
+          "url": "https://www.motofork.com/products/hub-bolt-26",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "front-hub-nut",
+      "partNameEn": "Front hub nut",
+      "partNameZh": "前輪轂螺帽",
+      "category": "hub-hardware",
+      "oemNumbers": [
+        "90179-16003-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Folangsi",
+          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2744.html",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "ForkliftPartSales",
+          "url": "https://www.forkliftpartsales.com/site/itemdetail/TY90179-16003-71",
+          "supports": [
+            "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-drum",
+      "partNameEn": "Front brake drum",
+      "partNameZh": "前輪煞車鼓",
+      "category": "brake",
+      "oemNumbers": [
+        "42431-23420-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Dada Parts",
+          "url": "https://www.dadaparts.com/toyota-forklift-brake-drum-42431-23420-71/",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "ForkliftPartSales",
+          "url": "https://www.forkliftpartsales.com/site/itemdetail/TY42431-23420-71",
+          "supports": [
+            "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "front-wheel-hub",
+      "partNameEn": "Front wheel hub",
+      "partNameZh": "前輪輪轂",
+      "category": "hub",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "front-hub-outer-oil-seal",
+      "partNameEn": "Front axle hub oil seal",
+      "partNameZh": "前輪轂油封",
+      "category": "seal",
+      "oemNumbers": [
+        "42415-23420-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Lift Parts Warehouse",
+          "url": "https://www.liftpartswarehouse.com/product-p/ty42415-23420-71.htm",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Folangsi",
+          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2680.html",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "front-axle-shaft-oil-seal",
+      "partNameEn": "Front axle shaft / inner oil seal",
+      "partNameZh": "前橋半軸／內側油封",
+      "category": "seal",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "front-hub-inner-bearing",
+      "partNameEn": "Front hub inner bearing",
+      "partNameZh": "前輪轂內培林",
+      "category": "bearing",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "front-hub-outer-bearing",
+      "partNameEn": "Front hub outer bearing",
+      "partNameZh": "前輪轂外培林",
+      "category": "bearing",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "bearing-spacer-thrust-washer",
+      "partNameEn": "Bearing spacer / thrust washer",
+      "partNameZh": "培林間隔套／止推墊片",
+      "category": "hub-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "hub-adjusting-retaining-nut",
+      "partNameEn": "Hub adjusting / retaining nut",
+      "partNameZh": "輪轂調整／固定螺帽",
+      "category": "hub-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "hub-lock-washer-retainer",
+      "partNameEn": "Hub lock washer / retainer",
+      "partNameZh": "輪轂止退墊片／固定片",
+      "category": "hub-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "front-axle-shaft",
+      "partNameEn": "Front axle shaft",
+      "partNameZh": "前橋半軸",
+      "category": "drive-axle",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "axle-shaft-retaining-ring",
+      "partNameEn": "Axle shaft retaining ring / snap ring",
+      "partNameZh": "半軸固定環／扣環",
+      "category": "drive-axle",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-shoe-primary",
+      "partNameEn": "Brake shoe — primary",
+      "partNameZh": "煞車蹄片－主蹄",
+      "category": "brake",
+      "oemNumbers": [
+        "47405-23600-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Lift Parts Warehouse",
+          "url": "https://www.liftpartswarehouse.com/product-p/ty47405-23600-71.htm",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "SS Parts Brasil",
+          "url": "https://www.sspartsbrasil.com.br/kit-par-sapata-de-freio-p-empilhadeira-toyota-still-e-heli",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-shoe-secondary",
+      "partNameEn": "Brake shoe — secondary",
+      "partNameZh": "煞車蹄片－副蹄",
+      "category": "brake",
+      "oemNumbers": [
+        "47405-23600-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Lift Parts Warehouse",
+          "url": "https://www.liftpartswarehouse.com/product-p/ty47405-23600-71.htm",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "SS Parts Brasil",
+          "url": "https://www.sspartsbrasil.com.br/kit-par-sapata-de-freio-p-empilhadeira-toyota-still-e-heli",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-wheel-cylinder",
+      "partNameEn": "Brake wheel cylinder",
+      "partNameZh": "煞車分泵／輪缸",
+      "category": "brake",
+      "oemNumbers": [
+        "47410-23420-71"
+      ],
+      "crossReferences": [
+        "234A3-72001"
+      ],
+      "applicableModels": [
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Sourcefy",
+          "url": "https://www.sourcefy.com/products/wheel-cylinder-47410-2342071",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Helmar",
+          "url": "https://www.helmarparts.com/47410-23420-71-wheel-cylinder/",
+          "supports": [
+            "part_number",
+            "dimensions",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "wheel-cylinder-repair-kit",
+      "partNameEn": "Wheel cylinder repair kit",
+      "partNameZh": "輪缸修理包",
+      "category": "brake",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-upper-return-spring",
+      "partNameEn": "Brake upper return spring",
+      "partNameZh": "煞車上回位彈簧",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-lower-return-spring",
+      "partNameEn": "Brake lower return spring",
+      "partNameZh": "煞車下回位彈簧",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-hold-down-pin",
+      "partNameEn": "Brake shoe hold-down pin",
+      "partNameZh": "煞車蹄片固定銷",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-hold-down-spring-cup",
+      "partNameEn": "Brake shoe hold-down spring / cup",
+      "partNameZh": "煞車蹄片固定彈簧／彈簧座",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-adjuster-screw",
+      "partNameEn": "Brake adjuster screw assembly",
+      "partNameZh": "煞車調整器螺桿總成",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-adjuster-lever-cable",
+      "partNameEn": "Brake adjuster lever / cable",
+      "partNameZh": "煞車調整桿／拉線",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-anchor-pin",
+      "partNameEn": "Brake anchor pin / shoe support",
+      "partNameZh": "煞車固定銷／蹄片支點",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-backing-plate",
+      "partNameEn": "Brake backing plate",
+      "partNameZh": "煞車底板",
+      "category": "brake",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "wheel-cylinder-bleeder",
+      "partNameEn": "Wheel cylinder bleeder screw / dust cap",
+      "partNameZh": "輪缸放氣螺絲／防塵帽",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    }
+  ]
+}

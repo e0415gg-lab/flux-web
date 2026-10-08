@@ -1,4 +1,4 @@
-name: Toyota 7F front wheel tests
+name: Toyota 7F catalog and RFQ tests
 
 on:
   pull_request:
@@ -16,5 +16,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Run Toyota 7F front wheel tests
+      - name: Run legacy Toyota 7F front-wheel tests
         run: node --test tests/toyota7f-frontwheel-catalog.test.cjs
+      - name: Run Toyota 7FD25 overseas RFQ tests
+        run: node --test tests/toyota7fd25-overseas-rfq.test.cjs

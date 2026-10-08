@@ -14,10 +14,10 @@
   },
   "parts": [
     {
-      "id": "front-tire",
-      "partNameEn": "Front tire",
-      "partNameZh": "前輪輪胎",
-      "category": "wheel",
+      "id": "axle-shaft-retaining-ring",
+      "partNameEn": "Axle shaft retaining ring / snap ring",
+      "partNameZh": "半軸固定環／扣環",
+      "category": "drive-axle",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -25,27 +25,49 @@
       "quoteAllowed": false
     },
     {
-      "id": "front-wheel-rim",
-      "partNameEn": "Front wheel / rim",
-      "partNameZh": "前輪輪圈",
-      "category": "wheel",
-      "oemNumbers": [],
-      "researchStatus": "pending",
-      "fitmentStatus": "needs_serial_confirmation",
-      "publishStatus": "hold",
-      "quoteAllowed": false
-    },
-    {
-      "id": "front-hub-bolt",
-      "partNameEn": "Front hub bolt",
-      "partNameZh": "前輪轂螺栓",
+      "id": "bearing-spacer-thrust-washer",
+      "partNameEn": "Bearing spacer / thrust washer",
+      "partNameZh": "培林間隔套／止推墊片",
       "category": "hub-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-adjuster-screw",
+      "partNameEn": "Brake adjuster screw assembly",
+      "partNameZh": "煞車調整器螺桿總成",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-anchor-pin",
+      "partNameEn": "Brake anchor pin / shoe support",
+      "partNameZh": "煞車固定銷／蹄片支點",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "brake-assembly-lh",
+      "partNameEn": "Wheel brake assembly LH",
+      "partNameZh": "前輪煞車總成 LH",
+      "category": "brake",
+      "side": "LH",
       "oemNumbers": [
-        "42483-23420-71"
+        "47020-23421-71"
       ],
       "crossReferences": [],
       "applicableModels": [
-        "7FD20",
         "7FD25"
       ],
       "researchStatus": "corroborated_public",
@@ -56,8 +78,8 @@
       "sources": [
         {
           "type": "supplier_product",
-          "name": "Folangsi",
-          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2744.html",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
           "supports": [
             "part_number",
             "fitment"
@@ -66,8 +88,55 @@
         },
         {
           "type": "supplier_product",
-          "name": "Motofork",
-          "url": "https://www.motofork.com/products/hub-bolt-26",
+          "name": "Panacea Aftermarket",
+          "url": "https://paco1.com/collections/forklift-brake-system-parts/products/brake-assy-lh-47020-23421-71",
+          "supports": [
+            "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-assembly-rh",
+      "partNameEn": "Wheel brake assembly RH",
+      "partNameZh": "前輪煞車總成 RH",
+      "category": "brake",
+      "side": "RH",
+      "oemNumbers": [
+        "47010-23421-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25",
+        "7FG20",
+        "7FG25",
+        "7FDU20",
+        "7FDU25",
+        "7FGU20",
+        "7FGU25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "FridayParts",
+          "url": "https://www.fridayparts.com/right-hand-wheel-brake-assembly-47010-23421-71-for-toyota-forklift-7fd20-7fd25-7fg20-7fg25-7fgu25-7fgu30-7fd30",
           "supports": [
             "part_number",
             "fitment"
@@ -77,17 +146,20 @@
       ]
     },
     {
-      "id": "front-hub-nut",
-      "partNameEn": "Front hub nut",
-      "partNameZh": "前輪轂螺帽",
-      "category": "hub-hardware",
+      "id": "brake-backing-plate-lh",
+      "partNameEn": "Brake backing plate LH",
+      "partNameZh": "煞車底板 LH",
+      "category": "brake",
+      "side": "LH",
       "oemNumbers": [
-        "90179-16003-71"
+        "47404-23420-71"
       ],
       "crossReferences": [],
       "applicableModels": [
         "7FD20",
-        "7FD25"
+        "7FD25",
+        "7FG20",
+        "7FG25"
       ],
       "researchStatus": "corroborated_public",
       "fitmentStatus": "needs_serial_confirmation",
@@ -97,8 +169,8 @@
       "sources": [
         {
           "type": "supplier_product",
-          "name": "Folangsi",
-          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2744.html",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
           "supports": [
             "part_number",
             "fitment"
@@ -107,10 +179,54 @@
         },
         {
           "type": "supplier_product",
-          "name": "ForkliftPartSales",
-          "url": "https://www.forkliftpartsales.com/site/itemdetail/TY90179-16003-71",
+          "name": "StaplerteileDirekt",
+          "url": "https://www.staplerteiledirekt.de/BREMSANKERPLATTE-47404-23420-71/TOYOTASD47404-23420-71",
           "supports": [
             "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-backing-plate-rh",
+      "partNameEn": "Brake backing plate RH",
+      "partNameZh": "煞車底板 RH",
+      "category": "brake",
+      "side": "RH",
+      "oemNumbers": [
+        "47403-23420-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25",
+        "7FG20",
+        "7FG25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Manon / Made-in-China",
+          "url": "https://manon-parts.en.made-in-china.com/product/srzYBPHvLXcK/China-High-Quality-Plate-Sub-Assy-Backing-Rh-47403-23420-71-for-Toyota-Forklift-Parts.html",
+          "supports": [
+            "part_number",
+            "fitment"
           ],
           "checkedAt": "2026-10-08"
         }
@@ -157,10 +273,10 @@
       ]
     },
     {
-      "id": "front-wheel-hub",
-      "partNameEn": "Front wheel hub",
-      "partNameZh": "前輪輪轂",
-      "category": "hub",
+      "id": "brake-hold-down-pin",
+      "partNameEn": "Brake shoe hold-down pin",
+      "partNameZh": "煞車蹄片固定銷",
+      "category": "brake-hardware",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -168,16 +284,55 @@
       "quoteAllowed": false
     },
     {
-      "id": "front-hub-outer-oil-seal",
-      "partNameEn": "Front axle hub oil seal",
-      "partNameZh": "前輪轂油封",
-      "category": "seal",
+      "id": "brake-hold-down-spring-cup",
+      "partNameEn": "Brake shoe spring & cup kit",
+      "partNameZh": "煞車蹄片固定彈簧／彈簧座組",
+      "category": "brake-hardware",
       "oemNumbers": [
-        "42415-23420-71"
+        "47435-23420-71"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "applicableModels": [
+        "7FD25",
+        "8FD25"
+      ],
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Panacea Aftermarket",
+          "url": "https://paco1.com/collections/forklift-parts/products/spring-cup-kit-47435-23420-71",
+          "supports": [
+            "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-lever-lh",
+      "partNameEn": "Brake lever LH",
+      "partNameZh": "煞車調整／棘爪桿 LH",
+      "category": "brake-hardware",
+      "side": "LH",
+      "oemNumbers": [
+        "47462-22001-71"
       ],
       "crossReferences": [],
       "applicableModels": [
-        "7FD20",
         "7FD25"
       ],
       "researchStatus": "corroborated_public",
@@ -188,8 +343,8 @@
       "sources": [
         {
           "type": "supplier_product",
-          "name": "Lift Parts Warehouse",
-          "url": "https://www.liftpartswarehouse.com/product-p/ty42415-23420-71.htm",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
           "supports": [
             "part_number",
             "fitment"
@@ -198,8 +353,48 @@
         },
         {
           "type": "supplier_product",
-          "name": "Folangsi",
-          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2680.html",
+          "name": "Helmar",
+          "url": "https://www.helmarparts.com/47462-22001-71-lever-brake/",
+          "supports": [
+            "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-lever-rh",
+      "partNameEn": "Brake lever RH",
+      "partNameZh": "煞車調整／棘爪桿 RH",
+      "category": "brake-hardware",
+      "side": "RH",
+      "oemNumbers": [
+        "47452-22001-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Rising Material Handling",
+          "url": "https://risingforklift.com/product/47452-22001-71lever-rh/",
           "supports": [
             "part_number",
             "fitment"
@@ -209,10 +404,10 @@
       ]
     },
     {
-      "id": "front-axle-shaft-oil-seal",
-      "partNameEn": "Front axle shaft / inner oil seal",
-      "partNameZh": "前橋半軸／內側油封",
-      "category": "seal",
+      "id": "brake-lower-return-spring",
+      "partNameEn": "Brake lower return spring",
+      "partNameZh": "煞車下回位彈簧",
+      "category": "brake-hardware",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -220,81 +415,43 @@
       "quoteAllowed": false
     },
     {
-      "id": "front-hub-inner-bearing",
-      "partNameEn": "Front hub inner bearing",
-      "partNameZh": "前輪轂內培林",
-      "category": "bearing",
-      "oemNumbers": [],
-      "researchStatus": "pending",
+      "id": "brake-shoe-guide-plate",
+      "partNameEn": "Brake shoe guide plate",
+      "partNameZh": "煞車蹄片導板",
+      "category": "brake-hardware",
+      "oemNumbers": [
+        "47446-22000-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
       "fitmentStatus": "needs_serial_confirmation",
       "publishStatus": "hold",
-      "quoteAllowed": false
-    },
-    {
-      "id": "front-hub-outer-bearing",
-      "partNameEn": "Front hub outer bearing",
-      "partNameZh": "前輪轂外培林",
-      "category": "bearing",
-      "oemNumbers": [],
-      "researchStatus": "pending",
-      "fitmentStatus": "needs_serial_confirmation",
-      "publishStatus": "hold",
-      "quoteAllowed": false
-    },
-    {
-      "id": "bearing-spacer-thrust-washer",
-      "partNameEn": "Bearing spacer / thrust washer",
-      "partNameZh": "培林間隔套／止推墊片",
-      "category": "hub-hardware",
-      "oemNumbers": [],
-      "researchStatus": "pending",
-      "fitmentStatus": "needs_serial_confirmation",
-      "publishStatus": "hold",
-      "quoteAllowed": false
-    },
-    {
-      "id": "hub-adjusting-retaining-nut",
-      "partNameEn": "Hub adjusting / retaining nut",
-      "partNameZh": "輪轂調整／固定螺帽",
-      "category": "hub-hardware",
-      "oemNumbers": [],
-      "researchStatus": "pending",
-      "fitmentStatus": "needs_serial_confirmation",
-      "publishStatus": "hold",
-      "quoteAllowed": false
-    },
-    {
-      "id": "hub-lock-washer-retainer",
-      "partNameEn": "Hub lock washer / retainer",
-      "partNameZh": "輪轂止退墊片／固定片",
-      "category": "hub-hardware",
-      "oemNumbers": [],
-      "researchStatus": "pending",
-      "fitmentStatus": "needs_serial_confirmation",
-      "publishStatus": "hold",
-      "quoteAllowed": false
-    },
-    {
-      "id": "front-axle-shaft",
-      "partNameEn": "Front axle shaft",
-      "partNameZh": "前橋半軸",
-      "category": "drive-axle",
-      "oemNumbers": [],
-      "researchStatus": "pending",
-      "fitmentStatus": "needs_serial_confirmation",
-      "publishStatus": "hold",
-      "quoteAllowed": false
-    },
-    {
-      "id": "axle-shaft-retaining-ring",
-      "partNameEn": "Axle shaft retaining ring / snap ring",
-      "partNameZh": "半軸固定環／扣環",
-      "category": "drive-axle",
-      "oemNumbers": [],
-      "researchStatus": "pending",
-      "fitmentStatus": "needs_serial_confirmation",
-      "publishStatus": "hold",
-      "quoteAllowed": false
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Helmar",
+          "url": "https://www.helmarparts.com/47446-22000-71-plate-shoe-guide/",
+          "supports": [
+            "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
     },
     {
       "id": "brake-shoe-primary",
@@ -377,6 +534,58 @@
       ]
     },
     {
+      "id": "brake-strut",
+      "partNameEn": "Brake shoe strut",
+      "partNameZh": "煞車蹄片支撐桿",
+      "category": "brake-hardware",
+      "oemNumbers": [
+        "47443-20541-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD25"
+      ],
+      "dimensions": "M4.5 × 23 × 184L (supplier reference)",
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Chiean Chiang / ABR",
+          "url": "https://www.chieanchiang.com/data-83615",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Sin Soon Loong",
+          "url": "https://www.sinsoonloong.com.my/usr/product.aspx?grpid=13&id=650&pgid=4",
+          "supports": [
+            "part_number",
+            "dimensions"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "brake-upper-return-spring",
+      "partNameEn": "Brake upper return spring",
+      "partNameZh": "煞車上回位彈簧",
+      "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
       "id": "brake-wheel-cylinder",
       "partNameEn": "Brake wheel cylinder",
       "partNameZh": "煞車分泵／輪缸",
@@ -420,10 +629,10 @@
       ]
     },
     {
-      "id": "wheel-cylinder-repair-kit",
-      "partNameEn": "Wheel cylinder repair kit",
-      "partNameZh": "輪缸修理包",
-      "category": "brake",
+      "id": "front-axle-shaft",
+      "partNameEn": "Front axle shaft",
+      "partNameZh": "前橋半軸",
+      "category": "drive-axle",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -431,10 +640,10 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-upper-return-spring",
-      "partNameEn": "Brake upper return spring",
-      "partNameZh": "煞車上回位彈簧",
-      "category": "brake-hardware",
+      "id": "front-axle-shaft-oil-seal",
+      "partNameEn": "Front axle shaft / inner oil seal",
+      "partNameZh": "前橋半軸／內側油封",
+      "category": "seal",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -442,10 +651,51 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-lower-return-spring",
-      "partNameEn": "Brake lower return spring",
-      "partNameZh": "煞車下回位彈簧",
-      "category": "brake-hardware",
+      "id": "front-hub-bolt",
+      "partNameEn": "Front hub bolt",
+      "partNameZh": "前輪轂螺栓",
+      "category": "hub-hardware",
+      "oemNumbers": [
+        "42483-23420-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Folangsi",
+          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2744.html",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Motofork",
+          "url": "https://www.motofork.com/products/hub-bolt-26",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "front-hub-inner-bearing",
+      "partNameEn": "Front hub inner bearing",
+      "partNameZh": "前輪轂內培林",
+      "category": "bearing",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -453,10 +703,50 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-hold-down-pin",
-      "partNameEn": "Brake shoe hold-down pin",
-      "partNameZh": "煞車蹄片固定銷",
-      "category": "brake-hardware",
+      "id": "front-hub-nut",
+      "partNameEn": "Front hub nut",
+      "partNameZh": "前輪轂螺帽",
+      "category": "hub-hardware",
+      "oemNumbers": [
+        "90179-16003-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Folangsi",
+          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2744.html",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "ForkliftPartSales",
+          "url": "https://www.forkliftpartsales.com/site/itemdetail/TY90179-16003-71",
+          "supports": [
+            "part_number"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "front-hub-outer-bearing",
+      "partNameEn": "Front hub outer bearing",
+      "partNameZh": "前輪轂外培林",
+      "category": "bearing",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -464,10 +754,51 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-hold-down-spring-cup",
-      "partNameEn": "Brake shoe hold-down spring / cup",
-      "partNameZh": "煞車蹄片固定彈簧／彈簧座",
-      "category": "brake-hardware",
+      "id": "front-hub-outer-oil-seal",
+      "partNameEn": "Front axle hub oil seal",
+      "partNameZh": "前輪轂油封",
+      "category": "seal",
+      "oemNumbers": [
+        "42415-23420-71"
+      ],
+      "crossReferences": [],
+      "applicableModels": [
+        "7FD20",
+        "7FD25"
+      ],
+      "researchStatus": "corroborated_public",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false,
+      "nameplateRequired": true,
+      "sources": [
+        {
+          "type": "supplier_product",
+          "name": "Lift Parts Warehouse",
+          "url": "https://www.liftpartswarehouse.com/product-p/ty42415-23420-71.htm",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        },
+        {
+          "type": "supplier_product",
+          "name": "Folangsi",
+          "url": "https://www.folangsiforklift.com/Products/DriveParts/FrontAxleHubAssemblies/show_2680.html",
+          "supports": [
+            "part_number",
+            "fitment"
+          ],
+          "checkedAt": "2026-10-08"
+        }
+      ]
+    },
+    {
+      "id": "front-tire",
+      "partNameEn": "Front tire",
+      "partNameZh": "前輪輪胎",
+      "category": "wheel",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -475,10 +806,10 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-adjuster-screw",
-      "partNameEn": "Brake adjuster screw assembly",
-      "partNameZh": "煞車調整器螺桿總成",
-      "category": "brake-hardware",
+      "id": "front-wheel-hub",
+      "partNameEn": "Front wheel hub",
+      "partNameZh": "前輪輪轂",
+      "category": "hub",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -486,10 +817,10 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-adjuster-lever-cable",
-      "partNameEn": "Brake adjuster lever / cable",
-      "partNameZh": "煞車調整桿／拉線",
-      "category": "brake-hardware",
+      "id": "front-wheel-rim",
+      "partNameEn": "Front wheel / rim",
+      "partNameZh": "前輪輪圈",
+      "category": "wheel",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -497,10 +828,10 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-anchor-pin",
-      "partNameEn": "Brake anchor pin / shoe support",
-      "partNameZh": "煞車固定銷／蹄片支點",
-      "category": "brake-hardware",
+      "id": "hub-adjusting-retaining-nut",
+      "partNameEn": "Hub adjusting / retaining nut",
+      "partNameZh": "輪轂調整／固定螺帽",
+      "category": "hub-hardware",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -508,10 +839,10 @@
       "quoteAllowed": false
     },
     {
-      "id": "brake-backing-plate",
-      "partNameEn": "Brake backing plate",
-      "partNameZh": "煞車底板",
-      "category": "brake",
+      "id": "hub-lock-washer-retainer",
+      "partNameEn": "Hub lock washer / retainer",
+      "partNameZh": "輪轂止退墊片／固定片",
+      "category": "hub-hardware",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",
@@ -523,6 +854,17 @@
       "partNameEn": "Wheel cylinder bleeder screw / dust cap",
       "partNameZh": "輪缸放氣螺絲／防塵帽",
       "category": "brake-hardware",
+      "oemNumbers": [],
+      "researchStatus": "pending",
+      "fitmentStatus": "needs_serial_confirmation",
+      "publishStatus": "hold",
+      "quoteAllowed": false
+    },
+    {
+      "id": "wheel-cylinder-repair-kit",
+      "partNameEn": "Wheel cylinder repair kit",
+      "partNameZh": "輪缸修理包",
+      "category": "brake",
       "oemNumbers": [],
       "researchStatus": "pending",
       "fitmentStatus": "needs_serial_confirmation",

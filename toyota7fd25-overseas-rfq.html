@@ -189,9 +189,12 @@
         status.textContent = "Uploading photos and submitting RFQ…";
 
         try {
-          const payload = api.buildRfqPayload(input, selected, { now: new Date().toISOString(), sequence: 1 });
-          payload.forklift.nameplateFile = await api.fileToPayload(nameplate);
-          payload.request.partPhotoFile = await api.fileToPayload(partPhoto);
+          const payload = await api.buildRfqSubmission(input, selected, {
+            now: new Date().toISOString(),
+            sequence: 1,
+            nameplateFile: nameplate,
+            partPhotoFile: partPhoto
+          });
           const response = await fetch("/api/rfq", {
             method: "POST",
             headers: { "content-type": "application/json" },

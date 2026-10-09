@@ -198,7 +198,7 @@ test("RFQ endpoint forwards both real photo contents to a loopback-only test rec
     assert.deepEqual(received.attachments.map(a => a.kind), ["nameplate", "part_photo"]);
     assert.equal(received.attachments[0].attachmentId, response.body.rfqId + "-NAMEPLATE");
     assert.equal(received.attachments[1].attachmentId, response.body.rfqId + "-PART");
-    assert.equal(received.attachments[0].name, "_serial-plate.png");
+    assert.equal(received.attachments[0].name, "__serial-plate.png");
     assert.deepEqual(fs.readFileSync(path.join(storageDir, response.body.rfqId + "-nameplate")), nameplateBytes);
     assert.deepEqual(fs.readFileSync(path.join(storageDir, response.body.rfqId + "-part-photo")), partBytes);
     assert.equal(fs.statSync(storageDir).mode & 0o777, 0o700);

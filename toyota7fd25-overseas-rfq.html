@@ -66,18 +66,17 @@
           <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email"></div>
           <div class="field"><label for="model">Forklift model *</label><input id="model" name="model" value="7FD25"></div>
           <div class="field"><label for="serialNumber">Serial number</label><input id="serialNumber" name="serialNumber"><div class="help">Serial or nameplate photo is required.</div></div>
-          <div class="field"><label for="nameplate">Nameplate photo</label><input id="nameplate" name="nameplate" type="file" accept="image/jpeg,image/png,image/webp"><div class="help">JPG/PNG/WEBP, max 5 MB. Staging stores metadata only until upload storage is configured.</div></div>
+          <div class="field"><label for="nameplate">Nameplate photo</label><input id="nameplate" name="nameplate" type="file" accept="image/jpeg,image/png,image/webp"><div class="help">JPG/PNG/WEBP, max 1 MB each. Image contents are sent to a private RFQ receiver; failed delivery is not recorded.</div></div>
           <div class="field"><label for="partPhoto">Part photo</label><input id="partPhoto" name="partPhoto" type="file" accept="image/jpeg,image/png,image/webp"></div>
           <div class="field full"><label for="message">Message</label><textarea id="message" name="message" rows="4" placeholder="Dimensions, side, symptoms, requested brand (genuine/OEM/aftermarket), destination city..."></textarea></div>
         </div>
         <div id="formErrors" class="error" role="alert"></div>
         <button class="cta" type="submit">Create RFQ</button>
-        <button id="copyPayload" class="cta secondary hidden" type="button">Copy RFQ payload</button>
         <div id="submitStatus" class="status hidden" role="status" aria-live="polite"></div>
       </form>
     </section>
 
-    <footer class="footer">Phase 1 staging build. No online payment. No automatic fitment claim. RFQ delivery requires a configured backend webhook.</footer>
+    <footer class="footer">Phase 1 staging build. No online payment. No automatic fitment claim. Photo contents are forwarded only to an HTTPS RFQ webhook and must be saved there in access-controlled private storage. No configured receiver means requests fail without acceptance.</footer>
   </main>
 
   <script src="assets/toyota7fd25-frontaxle-public-data.js"></script>
@@ -93,9 +92,7 @@
       const form = document.getElementById("rfqForm");
       const errors = document.getElementById("formErrors");
       const status = document.getElementById("submitStatus");
-      const copy = document.getElementById("copyPayload");
       let selected = null;
-      let lastPayload = null;
 
       function renderList(items) {
         list.innerHTML = "";
@@ -184,30 +181,30 @@
         const validation = api.validateRfqInput(input);
         if (!validation.ok) { errors.textContent = Object.values(validation.errors).join(" "); return; }
 
-        lastPayload = api.buildRfqPayload(input, selected, { now: new Date().toISOString(), sequence: 1 });
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        const nameplate = document.getElementById("nameplate").files[0];
+        const partPhoto = document.getElementById("partPhoto").files[0];
         status.classList.remove("hidden");
-        status.textContent = "Creating RFQ…";
+        status.textContent = "Uploading photos and submitting RFQ…";
 
         try {
+          const payload = api.buildRfqPayload(input, selected, { now: new Date().toISOString(), sequence: 1 });
+          payload.forklift.nameplateFile = await api.fileToPayload(nameplate);
+          payload.request.partPhotoFile = await api.fileToPayload(partPhoto);
           const response = await fetch("/api/rfq", {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify(lastPayload)
+            body: JSON.stringify(payload)
           });
           const result = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(result.message || result.error || "RFQ delivery is not configured.");
-          status.textContent = "RFQ received: " + result.rfqId + "\\nGuangzhen will confirm fitment before quotation.";
+          if (!response.ok) throw new Error(result.message || result.error || "RFQ could not be delivered.");
+          status.textContent = "RFQ received: " + result.rfqId + "\nGuangzhen will confirm fitment before quotation.";
         } catch (error) {
-          status.textContent = "Staging RFQ created locally. Live delivery is not configured yet.\\n" + String(error.message || error);
-          copy.classList.remove("hidden");
-        }
-      });
-
-      copy.addEventListener("click", async () => {
-        if (!lastPayload) return;
-        await navigator.clipboard.writeText(JSON.stringify(lastPayload, null, 2));
-        status.textContent += "\\nRFQ payload copied.";
-      });
+          status.textContent = "Request not received. Your details and photos were not accepted.\n" + String(error.message || error);
+        } finally {
+          submitButton.disabled = false;
+        });
 
       renderList(api.searchParts(parts, ""));
       const query = new URLSearchParams(location.search).get("part");

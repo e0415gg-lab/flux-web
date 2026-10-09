@@ -191,6 +191,14 @@
     };
   }
 
+  async function buildRfqSubmission(input, part, options) {
+    const opts = options || {};
+    const payload = buildRfqPayload(input, part, opts);
+    payload.forklift.nameplateFile = await fileToPayload(opts.nameplateFile || null);
+    payload.request.partPhotoFile = await fileToPayload(opts.partPhotoFile || null);
+    return payload;
+  }
+
   function partMeta(part) {
     const oem = (part.oemNumbers || [])[0] || "";
     const title = ["Toyota 7FD25", part.partNameEn, oem].filter(Boolean).join(" | ");
@@ -208,6 +216,7 @@
     searchParts,
     validateFileMeta,
     fileToPayload,
+    buildRfqSubmission,
     validateRfqInput,
     makeRfqId,
     buildRfqPayload,

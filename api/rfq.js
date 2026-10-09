@@ -13,7 +13,7 @@ function bad(res, status, error, details) {
 }
 
 function safeFileName(value) {
-  const name = clean(value, 180).replace(/[\\/\\\\\\x00-\\x1f\\x7f]/g, "_").replace(/\\.\\./g, "_");
+  const name = clean(value, 180).replace(/[^A-Za-z0-9._ -]/g, "_").replace(/\.\./g, "_");
   return name || "image";
 }
 
@@ -82,7 +82,7 @@ module.exports = async function handler(req, res) {
   if (!contactName) errors.push("contactName");
   if (!companyName) errors.push("companyName");
   if (!whatsappOrPhone && !email) errors.push("contact");
-  if (email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) errors.push("email");
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push("email");
   if (!model) errors.push("model");
   if (!serialNumber && !forklift.nameplateFile) errors.push("fitment");
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > 9999) errors.push("quantity");

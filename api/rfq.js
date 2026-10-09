@@ -174,7 +174,8 @@ module.exports = async function handler(req, res) {
       method: "POST",
       headers,
       body: JSON.stringify(record),
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
+      redirect: "error"
     });
     if (!response.ok) return bad(res, 502, "rfq_delivery_failed");
     return res.status(201).json({ ok: true, rfqId, status: "new" });

@@ -201,7 +201,7 @@
           if (!response.ok) throw new Error(result.message || result.error || "RFQ could not be delivered.");
           status.textContent = "RFQ received: " + result.rfqId + "\nGuangzhen will confirm fitment before quotation.";
         } catch (error) {
-          status.textContent = "Request not received. Your details and photos were not accepted.\n" + String(error.message || error);
+          status.textContent = "No delivery confirmation. Check with Guangzhen before retrying to avoid duplicate requests.\n" + String(error.message || error);
         } finally {
           submitButton.disabled = false;
         }

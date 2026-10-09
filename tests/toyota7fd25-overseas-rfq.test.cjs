@@ -135,6 +135,9 @@ test("RFQ endpoint forwards both real photo contents to a loopback-only test rec
   const http = require("node:http");
   const os = require("node:os");
   const apiHandler = require(path.join(root, "api", "rfq.js"));
+  const formApi = require(path.join(root, "assets", "toyota7fd25-overseas-rfq.js"));
+  const selectedPart = publicParts.find(part => part.id === "brake-wheel-cylinder");
+
   const storageDir = fs.mkdtempSync(path.join(os.tmpdir(), "gz-rfq-private-test-"));
   fs.chmodSync(storageDir, 0o700);
   const nameplateBytes = Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), Buffer.from("TEST-NAMEPLATE")]);
@@ -177,14 +180,27 @@ test("RFQ endpoint forwards both real photo contents to a loopback-only test rec
     process.env.RFQ_WEBHOOK_BEARER = "test-only-token";
 
     const response = { code: 0, body: null, headers: {}, setHeader(k, v) { this.headers[k] = v; }, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
-    await apiHandler({
-      method: "POST",
-      body: {
-        customer: { country: "Malaysia", contactName: "Test Buyer", companyName: "Demo Forklift Parts Sdn. Bhd.", whatsappOrPhone: "+60000000000", email: "rfq-test@example.invalid" },
-        forklift: { model: "7FD25", serialNumber: "TEST-ONLY-7FD25", nameplateFile: { name: "../serial-plate.png", type: "image/png", size: nameplateBytes.length, contentBase64: nameplateBytes.toString("base64") } },
-        request: { quantity: 2, partId: "brake-wheel-cylinder", partName: "Wheel cylinder", candidateOem: "47410-23420-71", researchStatus: "corroborated_public", fitmentStatus: "needs_serial_confirmation", partPhotoFile: { name: "brake-part.jpg", type: "image/jpeg", size: partBytes.length, contentBase64: partBytes.toString("base64") }, customerMessage: "Test only; do not quote." }
-      }
-    }, response);
+    const nameplateFile = { name: "../serial-plate.png", type: "image/png", size: nameplateBytes.length, async arrayBuffer() { return Uint8Array.from(nameplateBytes).buffer; } };
+    const partPhotoFile = { name: "brake-part.jpg", type: "image/jpeg", size: partBytes.length, async arrayBuffer() { return Uint8Array.from(partBytes).buffer; } };
+    const formPayload = await formApi.buildRfqSubmission({
+      country: "Malaysia",
+      contactName: "Test Buyer",
+      companyName: "Demo Forklift Parts Sdn. Bhd.",
+      whatsappOrPhone: "+60000000000",
+      email: "rfq-test@example.invalid",
+      quantity: 2,
+      model: "7FD25",
+      serialNumber: "TEST-ONLY-7FD25",
+      nameplateFile,
+      partPhotoFile,
+      customerMessage: "Test only; do not quote."
+    }, selectedPart, {
+      now: "2026-10-09T12:00:00.000Z",
+      sequence: 1,
+      nameplateFile,
+      partPhotoFile
+    });
+    await apiHandler({ method: "POST", body: formPayload }, response);
 
     assert.equal(response.code, 201);
     assert.equal(response.body.ok, true);

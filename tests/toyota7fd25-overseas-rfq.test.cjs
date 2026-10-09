@@ -188,7 +188,7 @@ test("RFQ endpoint forwards both real photo contents to a loopback-only test rec
 
     assert.equal(response.code, 201);
     assert.equal(response.body.ok, true);
-    assert.match(response.body.rfqId, /^GZ-RFQ-\\d{8}-[A-F0-9]{6}$/);
+    assert.match(response.body.rfqId, /^GZ-RFQ-\d{8}-[A-F0-9]{6}$/);
     assert.equal(received.rfqId, response.body.rfqId);
     assert.equal(received.customer.companyName, "Demo Forklift Parts Sdn. Bhd.");
     assert.equal(received.forklift.serialNumber, "TEST-ONLY-7FD25");

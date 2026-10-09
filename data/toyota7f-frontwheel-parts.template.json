@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "catalog": "toyota-7f-front-wheel",
+  "instructions": "複製此檔後填入有來源的核對資料。verified 至少提供一個已核對料號或 SKU，其他未知欄位留空。純流程測試使用 test 且所有料號及 SKU 留空。兩種狀態均需 source 與真實 checkedAt。不要猜測料號。",
+  "parts": [
+    {
+      "id": "tire",
+      "oem": "",
+      "aftermarket": {
+        "jianzhang": "",
+        "zefeng": ""
+      },
+      "sku": "",
+      "note": "",
+      "verification": {
+        "status": "pending",
+        "source": "",
+        "checkedAt": ""
+      }
+    }
+  ],
+  "allowedIds": [
+    "tire",
+    "lug_nut",
+    "hub",
+    "bearing",
+    "oil_seal",
+    "brake"
+  ]
+}

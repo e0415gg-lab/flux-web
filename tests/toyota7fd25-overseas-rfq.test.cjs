@@ -129,3 +129,136 @@ test("health API reports RFQ delivery configuration without secrets", () => {
   assert.equal(Object.prototype.hasOwnProperty.call(body, "webhook"), false);
   if (old) process.env.RFQ_WEBHOOK_URL = old;
 });
+
+
+test("RFQ endpoint forwards both real photo contents to a loopback-only test receiver", async () => {
+  const http = require("node:http");
+  const os = require("node:os");
+  const apiHandler = require(path.join(root, "api", "rfq.js"));
+  const storageDir = fs.mkdtempSync(path.join(os.tmpdir(), "gz-rfq-private-test-"));
+  fs.chmodSync(storageDir, 0o700);
+  const nameplateBytes = Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), Buffer.from("TEST-NAMEPLATE")]);
+  const partBytes = Buffer.concat([Buffer.from([255, 216, 255, 224]), Buffer.from("TEST-PART-PHOTO")]);
+  let received = null;
+  const receiver = http.createServer((req, res) => {
+    if (req.method !== "POST" || req.url !== "/private-rfq" || req.headers.authorization !== "Bearer test-only-token") {
+      res.writeHead(403).end();
+      return;
+    }
+    const chunks = [];
+    req.on("data", chunk => chunks.push(chunk));
+    req.on("end", () => {
+      try {
+        const record = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+        for (const attachment of record.attachments) {
+          const suffix = attachment.kind === "nameplate" ? "nameplate" : attachment.kind === "part_photo" ? "part-photo" : null;
+          if (!suffix) throw new Error("Unexpected attachment kind.");
+          const bytes = Buffer.from(attachment.contentBase64, "base64");
+          if (bytes.length !== attachment.size) throw new Error("Attachment size mismatch.");
+          fs.writeFileSync(path.join(storageDir, record.rfqId + "-" + suffix), bytes, { mode: 0o600, flag: "wx" });
+        }
+        received = record;
+        res.writeHead(204).end();
+      } catch (_) {
+        res.writeHead(400).end();
+      }
+    });
+  });
+
+  const previous = {
+    nodeEnv: process.env.NODE_ENV,
+    webhook: process.env.RFQ_WEBHOOK_URL,
+    bearer: process.env.RFQ_WEBHOOK_BEARER
+  };
+  try {
+    await new Promise(resolve => receiver.listen(0, "127.0.0.1", resolve));
+    process.env.NODE_ENV = "test";
+    process.env.RFQ_WEBHOOK_URL = "http://127.0.0.1:" + receiver.address().port + "/private-rfq";
+    process.env.RFQ_WEBHOOK_BEARER = "test-only-token";
+
+    const response = { code: 0, body: null, headers: {}, setHeader(k, v) { this.headers[k] = v; }, status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
+    await apiHandler({
+      method: "POST",
+      body: {
+        customer: { country: "Malaysia", contactName: "Test Buyer", companyName: "Demo Forklift Parts Sdn. Bhd.", whatsappOrPhone: "+60000000000", email: "rfq-test@example.invalid" },
+        forklift: { model: "7FD25", serialNumber: "TEST-ONLY-7FD25", nameplateFile: { name: "../serial-plate.png", type: "image/png", size: nameplateBytes.length, contentBase64: nameplateBytes.toString("base64") } },
+        request: { quantity: 2, partId: "brake-wheel-cylinder", partName: "Wheel cylinder", candidateOem: "47410-23420-71", researchStatus: "corroborated_public", fitmentStatus: "needs_serial_confirmation", partPhotoFile: { name: "brake-part.jpg", type: "image/jpeg", size: partBytes.length, contentBase64: partBytes.toString("base64") }, customerMessage: "Test only; do not quote." }
+      }
+    }, response);
+
+    assert.equal(response.code, 201);
+    assert.equal(response.body.ok, true);
+    assert.match(response.body.rfqId, /^GZ-RFQ-\\d{8}-[A-F0-9]{6}$/);
+    assert.equal(received.rfqId, response.body.rfqId);
+    assert.equal(received.customer.companyName, "Demo Forklift Parts Sdn. Bhd.");
+    assert.equal(received.forklift.serialNumber, "TEST-ONLY-7FD25");
+    assert.equal(received.request.partId, "brake-wheel-cylinder");
+    assert.equal(received.request.candidateOem, "47410-23420-71");
+    assert.equal(received.request.researchStatus, "corroborated_public");
+    assert.deepEqual(received.attachments.map(a => a.kind), ["nameplate", "part_photo"]);
+    assert.equal(received.attachments[0].attachmentId, response.body.rfqId + "-NAMEPLATE");
+    assert.equal(received.attachments[1].attachmentId, response.body.rfqId + "-PART");
+    assert.equal(received.attachments[0].name, "_serial-plate.png");
+    assert.deepEqual(fs.readFileSync(path.join(storageDir, response.body.rfqId + "-nameplate")), nameplateBytes);
+    assert.deepEqual(fs.readFileSync(path.join(storageDir, response.body.rfqId + "-part-photo")), partBytes);
+    assert.equal(fs.statSync(storageDir).mode & 0o777, 0o700);
+    assert.equal(fs.statSync(path.join(storageDir, response.body.rfqId + "-nameplate")).mode & 0o777, 0o600);
+    assert.equal(received.dataHandling.publicUrls, false);
+    assert.match(received.warnings.join(" "), /confirmed by Guangzhen/);
+  } finally {
+    await new Promise(resolve => receiver.close(resolve));
+    if (previous.nodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previous.nodeEnv;
+    if (previous.webhook === undefined) delete process.env.RFQ_WEBHOOK_URL; else process.env.RFQ_WEBHOOK_URL = previous.webhook;
+    if (previous.bearer === undefined) delete process.env.RFQ_WEBHOOK_BEARER; else process.env.RFQ_WEBHOOK_BEARER = previous.bearer;
+    fs.rmSync(storageDir, { recursive: true, force: true });
+  }
+});
+
+test("RFQ endpoint rejects missing delivery config, forged image content and non-TLS production webhook", async () => {
+  const apiHandler = require(path.join(root, "api", "rfq.js"));
+  const previous = { nodeEnv: process.env.NODE_ENV, webhook: process.env.RFQ_WEBHOOK_URL };
+  const base = {
+    customer: { country: "Malaysia", contactName: "Test Buyer", companyName: "Demo Company", whatsappOrPhone: "+60000000000", email: "" },
+    forklift: { model: "7FD25", serialNumber: "TEST-ONLY" },
+    request: { quantity: 1, partId: "brake-wheel-cylinder", partName: "Wheel cylinder", candidateOem: "47410-23420-71", researchStatus: "corroborated_public" }
+  };
+  const invoke = async body => {
+    const response = { code: 0, body: null, setHeader() {}, status(code) { this.code = code; return this; }, json(value) { this.body = value; return this; } };
+    await apiHandler({ method: "POST", body }, response);
+    return response;
+  };
+  try {
+    process.env.NODE_ENV = "production";
+    delete process.env.RFQ_WEBHOOK_URL;
+    const missing = await invoke(base);
+    assert.equal(missing.code, 503);
+    assert.equal(missing.body.error, "rfq_delivery_not_configured");
+    assert.match(missing.body.message, /not submitted/);
+
+    process.env.RFQ_WEBHOOK_URL = "http://example.invalid/collect";
+    const insecure = await invoke(base);
+    assert.equal(insecure.code, 503);
+    assert.equal(insecure.body.error, "rfq_delivery_misconfigured");
+
+    process.env.RFQ_WEBHOOK_URL = "https://receiver.example.invalid/collect";
+    const invalidImage = await invoke({
+      ...base,
+      forklift: { ...base.forklift, nameplateFile: { name: "fake.png", type: "image/png", size: 4, contentBase64: Buffer.from("NOPE").toString("base64") } }
+    });
+    assert.equal(invalidImage.code, 400);
+    assert.equal(invalidImage.body.error, "invalid_image");
+  } finally {
+    if (previous.nodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previous.nodeEnv;
+    if (previous.webhook === undefined) delete process.env.RFQ_WEBHOOK_URL; else process.env.RFQ_WEBHOOK_URL = previous.webhook;
+  }
+});
+
+test("browser photo encoding enforces a 1 MB limit before request transmission", async () => {
+  const api = require(path.join(root, "assets", "toyota7fd25-overseas-rfq.js"));
+  const tinyPng = { name: "plate.png", type: "image/png", size: 8, async arrayBuffer() { return Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]).buffer; } };
+  const encoded = await api.fileToPayload(tinyPng);
+  assert.equal(encoded.name, "plate.png");
+  assert.equal(encoded.contentBase64, "iVBORw0KGgo=");
+  assert.equal(encoded.size, 8);
+  await assert.rejects(api.fileToPayload({ name: "oversized.png", type: "image/png", size: 1024 * 1024 + 1 }), /1 MB or smaller/);
+});

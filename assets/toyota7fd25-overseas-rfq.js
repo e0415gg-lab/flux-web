@@ -97,10 +97,22 @@
     if (!file) return { ok: true };
     const allowed = new Set(["image/jpeg", "image/png", "image/webp"]);
     if (!allowed.has(file.type)) return { ok: false, error: "Use JPG, PNG or WEBP images." };
-    if (Number(file.size) > 5 * 1024 * 1024) return { ok: false, error: "Each image must be 5 MB or smaller." };
+    if (Number(file.size) > 1024 * 1024) return { ok: false, error: "Each image must be 1 MB or smaller." };
     return { ok: true };
   }
 
+  async function fileToPayload(file) {
+    if (!file) return null;
+    const meta = validateFileMeta(file);
+    if (!meta.ok) throw new Error(meta.error);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    let binary = "";
+    const chunkSize = 0x8000;
+    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+    }
+    return { name: text(file.name), type: text(file.type), size: bytes.length, contentBase64: btoa(binary) };
+  }
   function validateRfqInput(input) {
     const errors = {};
     if (!text(input.country)) errors.country = "Country is required.";
@@ -174,7 +186,7 @@
       },
       warnings: [
         "Candidate OEM/application must be confirmed by Guangzhen before quotation.",
-        "Uploaded image storage is not active unless the RFQ backend is configured."
+        "Image contents are sent to the configured private RFQ receiver; without that receiver the request is not submitted."
       ]
     };
   }
@@ -195,6 +207,7 @@
     needsFitmentConfirmation,
     searchParts,
     validateFileMeta,
+    fileToPayload,
     validateRfqInput,
     makeRfqId,
     buildRfqPayload,

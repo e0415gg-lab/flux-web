@@ -204,7 +204,8 @@
           status.textContent = "Request not received. Your details and photos were not accepted.\n" + String(error.message || error);
         } finally {
           submitButton.disabled = false;
-        });
+        }
+      });
 
       renderList(api.searchParts(parts, ""));
       const query = new URLSearchParams(location.search).get("part");

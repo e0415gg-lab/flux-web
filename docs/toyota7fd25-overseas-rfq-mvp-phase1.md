@@ -357,3 +357,20 @@ Before a final public site is built:
 - confirm bearing and seal positions
 - identify exact spring/adjuster/hardware OEMs
 - capture Guangzhen internal SKU/stock/price data separately from public source data
+
+
+## RFQ receiver and private photo contract
+
+The browser sends the selected JPG/PNG/WEBP image bytes as base64 to `POST /api/rfq`. Each image is limited to 1 MiB and the combined original bytes to 2 MiB. The API checks the MIME type against the file signature, exact byte count, email/contact fields and candidate status, assigns a server-side RFQ ID, hashes each image with SHA-256, and forwards the RFQ and photo bytes only to an HTTPS `RFQ_WEBHOOK_URL`. Redirects are rejected. `RFQ_WEBHOOK_BEARER` is optional and must be configured as a deployment secret.
+
+Webhook receiver contract:
+
+- Require the configured bearer token when one is set; acknowledge only after the complete RFQ and all attachments are accepted.
+- Decode `attachments[].contentBase64`, verify `size` and `sha256`, and save bytes to access-controlled private storage keyed by `rfqId` and `attachmentId`.
+- Keep the file name as display metadata only; never use it as a storage path. Do not create public URLs or expose the attachment bytes in logs.
+- Preserve the mapping in `attachments[].kind` (`nameplate` or `part_photo`) and the same RFQ ID on the enquiry. Retention/deletion policy must be set on the receiving storage service.
+- Return a 2xx response only after storage succeeds. On timeout or non-2xx the form reports that delivery is unconfirmed and advises checking before retrying.
+
+CI uses a loopback-only test receiver bound to `127.0.0.1`. It verifies the bearer, writes synthetic images to a temporary directory with directory mode 0700 and file mode 0600, checks that both byte streams and their RFQ association match, then deletes the temporary files. It is a test fixture, not a deployed API route.
+
+No production receiver or storage credentials are present in this repository. Until `RFQ_WEBHOOK_URL` is configured to a receiver implementing this private-storage contract, the endpoint returns 503 and must not be represented as live enquiry intake. Do not remove the page's `noindex,nofollow` staging guard as part of this integration.
